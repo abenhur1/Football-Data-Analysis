@@ -1,8 +1,6 @@
 import pandas as pd
 import sqlite3
-
 from pandas import to_numeric
-
 
 # import numpy as np
 
@@ -50,7 +48,7 @@ def df_creator(path, file):
 
 
 ### Reading the La Liga data files and concatenate the DFs:
-la_liga_path = "C:/Users/User/PycharmProjects/Football-Data-Analysis/Spanish La Liga Dataset/"
+la_liga_path = "C:/Users/User/PycharmProjects/DS/Spanish La Liga Dataset/"
 files_list = ['season-0910_csv.csv',
               'season-1011_csv.csv',
               'season-1112_csv.csv',
@@ -65,27 +63,24 @@ laLiga0919Concat = pd.concat([df_creator(la_liga_path, file) for file in files_l
 
 ## Modifying the DF:
 # Leave relevant columns:
-laLiga0919Filtered = laLiga0919Concatenated[['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR', 'HTHG', 'HTAG', 'HTR']].copy()
+laLiga0919Filtered = laLiga0919Concat[['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR', 'HTHG', 'HTAG', 'HTR']].copy()
 # la_liga_0919_df['Year'] = pd.DatetimeIndex(la_liga_0919_df['Date']).year  # year column.
 
 # Filter out games that draw at HT:
 laLiga0919Filtered2 = laLiga0919Filtered[((laLiga0919Filtered.HTR == 'H')
                                           | (laLiga0919Filtered.HTR == 'A'))].copy()  # Filter out games that draw at HT
-laLiga0919Filtered2.reset_index(drop=True, inplace=True)
 
 # Filter out games that draw at HT and leader leads by exactly 1:
 laLiga0919Filtered3 = laLiga0919Filtered[((laLiga0919Filtered.HTR == 'H') | (laLiga0919Filtered.HTR == 'A'))].copy()
 # Filter out games that draw at HT
 laLiga0919Filtered3 = laLiga0919Filtered3[abs(to_numeric(laLiga0919Filtered3.HTHG) - to_numeric(laLiga0919Filtered3.HTAG))
                                           == 1].copy()  # Leader leads by exactly 1
-laLiga0919Filtered3.reset_index(drop=True, inplace=True)
 
 # Filter out games that draw at HT and leader leads by more than 1:
 laLiga0919Filtered4 = laLiga0919Filtered[((laLiga0919Filtered.HTR == 'H') | (laLiga0919Filtered.HTR == 'A'))].copy()
 # Filter out games that draw at HT
 laLiga0919Filtered4 = laLiga0919Filtered4[abs(to_numeric(laLiga0919Filtered4.HTHG) - to_numeric(laLiga0919Filtered4.HTAG))
                                           > 1].copy()  # Leader leads by exactly 1
-laLiga0919Filtered4.reset_index(drop=True, inplace=True)
 
 
 ### Master Premier League df extracted:
