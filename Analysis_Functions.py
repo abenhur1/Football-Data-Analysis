@@ -92,3 +92,4 @@ def HT_leader_status_at_FT_bar_plot_comparison(league_df_1, league_df_2, graph_t
 HT_leader_status_at_FT_bar_plot_comparison(laLiga0919Filtered2, premierLeague9518Filtered2, graph1_title)
 HT_leader_status_at_FT_bar_plot_comparison(laLiga0919Filtered3, premierLeague9518Filtered3, graph2_title)
 HT_leader_status_at_FT_bar_plot_comparison(laLiga0919Filtered4, premierLeague9518Filtered4, graph3_title)
+d
