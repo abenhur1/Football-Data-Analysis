@@ -2,6 +2,7 @@ import pandas as pd
 import sqlite3
 from pandas import to_numeric
 
+
 # import numpy as np
 
 # notes on files: http://www.football-data.co.uk/notes.txt:
@@ -81,7 +82,6 @@ laLiga0919Filtered4 = laLiga0919Filtered[((laLiga0919Filtered.HTR == 'H') | (laL
 # Filter out games that draw at HT
 laLiga0919Filtered4 = laLiga0919Filtered4[abs(to_numeric(laLiga0919Filtered4.HTHG) - to_numeric(laLiga0919Filtered4.HTAG))
                                           > 1].copy()  # Leader leads by exactly 1
-
 
 ### Master Premier League df extracted:
 con = sqlite3.connect("C:/Users/User/PycharmProjects/"
