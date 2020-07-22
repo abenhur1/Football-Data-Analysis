@@ -1,10 +1,7 @@
 import pandas as pd
 import sqlite3
-import warnings  # current version of seaborn generates a bunch of warnings that we'll ignore
 
 from pandas import to_numeric
-
-warnings.filterwarnings("ignore")
 
 
 # import numpy as np
@@ -64,7 +61,7 @@ files_list = ['season-0910_csv.csv',
               'season-1617_csv.csv',
               'season-1718_csv.csv',
               'season-1819_csv.csv']
-laLiga0919Concatenated = pd.concat([df_creator(la_liga_path, file) for file in files_list])
+laLiga0919Concat = pd.concat([df_creator(la_liga_path, file) for file in files_list])
 
 ## Modifying the DF:
 # Leave relevant columns:
@@ -75,24 +72,20 @@ laLiga0919Filtered = laLiga0919Concatenated[['Date', 'HomeTeam', 'AwayTeam', 'FT
 laLiga0919Filtered2 = laLiga0919Filtered[((laLiga0919Filtered.HTR == 'H')
                                           | (laLiga0919Filtered.HTR == 'A'))].copy()  # Filter out games that draw at HT
 laLiga0919Filtered2.reset_index(drop=True, inplace=True)
-# print(laLiga0919Filtered2.head(50))
 
 # Filter out games that draw at HT and leader leads by exactly 1:
 laLiga0919Filtered3 = laLiga0919Filtered[((laLiga0919Filtered.HTR == 'H') | (laLiga0919Filtered.HTR == 'A'))].copy()
-                                                                                                        # Filter out games that draw at HT
+# Filter out games that draw at HT
 laLiga0919Filtered3 = laLiga0919Filtered3[abs(to_numeric(laLiga0919Filtered3.HTHG) - to_numeric(laLiga0919Filtered3.HTAG))
-                                              == 1].copy()  # Leader leads by exactly 1
+                                          == 1].copy()  # Leader leads by exactly 1
 laLiga0919Filtered3.reset_index(drop=True, inplace=True)
-# print(laLiga0919Filtered3.head(50))
 
 # Filter out games that draw at HT and leader leads by more than 1:
 laLiga0919Filtered4 = laLiga0919Filtered[((laLiga0919Filtered.HTR == 'H') | (laLiga0919Filtered.HTR == 'A'))].copy()
-                                                                                                        # Filter out games that draw at HT
+# Filter out games that draw at HT
 laLiga0919Filtered4 = laLiga0919Filtered4[abs(to_numeric(laLiga0919Filtered4.HTHG) - to_numeric(laLiga0919Filtered4.HTAG))
-                                              > 1].copy()  # Leader leads by exactly 1
+                                          > 1].copy()  # Leader leads by exactly 1
 laLiga0919Filtered4.reset_index(drop=True, inplace=True)
-# print(laLiga0919Filtered4.head(50))
-
 
 
 ### Master Premier League df extracted:
@@ -109,22 +102,19 @@ premierLeague9518Filtered = dfRawTable[924:][['Date', 'HomeTeam', 'AwayTeam', 'F
 premierLeague9518Filtered2 = premierLeague9518Filtered[((premierLeague9518Filtered.HTR == 'H') |
                                                         (premierLeague9518Filtered.HTR == 'A'))].copy()  # Filter out games that draw at HT
 premierLeague9518Filtered2.reset_index(drop=True, inplace=True)
-# print(premierLeague9518Filtered2.head(50))
 
 # Filter out games that draw at HT and leader leads by exactly 1:
 premierLeague9518Filtered3 = premierLeague9518Filtered[((premierLeague9518Filtered.HTR == 'H') |
                                                         (premierLeague9518Filtered.HTR == 'A'))].copy()  # Filter out games that draw at HT
 premierLeague9518Filtered3 = premierLeague9518Filtered3[abs(to_numeric(premierLeague9518Filtered3.HTHG) -
                                                             to_numeric(premierLeague9518Filtered3.HTAG))
-                                                            == 1].copy()  # Leader leads by exactly 1
+                                                        == 1].copy()  # Leader leads by exactly 1
 premierLeague9518Filtered3.reset_index(drop=True, inplace=True)
-# print(premierLeague9518Filtered3.head(50))
 
 # Filter out games that draw at HT and leader leads by more than 1:
 premierLeague9518Filtered4 = premierLeague9518Filtered[((premierLeague9518Filtered.HTR == 'H') |
                                                         (premierLeague9518Filtered.HTR == 'A'))].copy()  # Filter out games that draw at HT
 premierLeague9518Filtered4 = premierLeague9518Filtered4[abs(to_numeric(premierLeague9518Filtered4.HTHG) -
                                                             to_numeric(premierLeague9518Filtered4.HTAG))
-                                                            > 1].copy()  # Leader leads by exactly 1
+                                                        > 1].copy()  # Leader leads by exactly 1
 premierLeague9518Filtered4.reset_index(drop=True, inplace=True)
-# print(premierLeague9518Filtered4.head(50))
