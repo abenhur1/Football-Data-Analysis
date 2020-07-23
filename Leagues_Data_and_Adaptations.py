@@ -87,7 +87,7 @@ laLiga0919Filtered4 = laLiga0919Filtered4[abs(to_numeric(laLiga0919Filtered4.HTH
 con = sqlite3.connect("C:/Users/User/PycharmProjects/"
                       "DS/English Premier League Dataset/SQLite data/EPL_Seasons_1993-2017_RAW_Table.sqlite")
 dfRawTable = pd.read_sql_query("SELECT * FROM EPL", con)
-
+print(dfRawTable.columns)
 ## Modifying the DF:
 # Leave relevant columns:
 premierLeague9518Filtered = dfRawTable[924:][['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR', 'HTHG', 'HTAG', 'HTR']].copy()
