@@ -81,7 +81,7 @@ laLiga0919Filtered3 = laLiga0919Filtered3[abs(to_numeric(laLiga0919Filtered3.HTH
 laLiga0919Filtered4 = laLiga0919Filtered[((laLiga0919Filtered.HTR == 'H') | (laLiga0919Filtered.HTR == 'A'))].copy()
 # Filter out games that draw at HT
 laLiga0919Filtered4 = laLiga0919Filtered4[abs(to_numeric(laLiga0919Filtered4.HTHG) - to_numeric(laLiga0919Filtered4.HTAG))
-                                          > 1].copy()  # Leader leads by exactly 1
+                                          > 1].copy()  # Leader leads by more than 1
 
 ### Master Premier League df extracted:
 con = sqlite3.connect("C:/Users/User/PycharmProjects/"
@@ -111,5 +111,5 @@ premierLeague9518Filtered4 = premierLeague9518Filtered[((premierLeague9518Filter
                                                         (premierLeague9518Filtered.HTR == 'A'))].copy()  # Filter out games that draw at HT
 premierLeague9518Filtered4 = premierLeague9518Filtered4[abs(to_numeric(premierLeague9518Filtered4.HTHG) -
                                                             to_numeric(premierLeague9518Filtered4.HTAG))
-                                                        > 1].copy()  # Leader leads by exactly 1
+                                                        > 1].copy()  # Leader leads by more than 1
 premierLeague9518Filtered4.reset_index(drop=True, inplace=True)
