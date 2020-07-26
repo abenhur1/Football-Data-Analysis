@@ -40,7 +40,7 @@ def HT_leader_status_at_FT_bar_plot_comparison(league_df_1, league_df_2, graph_t
                            (num_of_games_that_draw_at_FT_2 / num_of_games_that_have_lead_at_HT_2) * 100,
                            (num_of_games_that_leader_loses_at_FT_2 / num_of_games_that_have_lead_at_HT_2) * 100]
 
-    fig = plt.figure(2)
+    fig = plt.figure()
     ax = fig.add_subplot(111)
     rects1 = ax.bar(ind, percentages_for_1st, width, color='#07a64c')
     rects2 = ax.bar(ind + width * 1.1, percentages_for_2nd, width, color='#b7040e')
