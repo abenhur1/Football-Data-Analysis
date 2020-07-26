@@ -49,7 +49,7 @@ def df_creator(path, file):
 
 
 ### Reading the La Liga data files and concatenate the DFs:
-la_liga_path = "C:/Users/User/PycharmProjects/DS/Spanish La Liga Dataset/"
+la_liga_path = "C:/Users/User/PycharmProjects/Football-Data-Analysis/"
 files_list = ['season-0910_csv.csv',
               'season-1011_csv.csv',
               'season-1112_csv.csv',
@@ -84,8 +84,7 @@ laLiga0919Filtered4 = laLiga0919Filtered4[abs(to_numeric(laLiga0919Filtered4.HTH
                                           > 1].copy()  # Leader leads by more than 1
 
 ### Master Premier League df extracted:
-con = sqlite3.connect("C:/Users/User/PycharmProjects/"
-                      "DS/English Premier League Dataset/SQLite data/EPL_Seasons_1993-2017_RAW_Table.sqlite")
+con = sqlite3.connect("C:/Users/User/PycharmProjects/Football-Data-Analysis/EPL_Seasons_1993-2017_RAW_Table.sqlite")
 dfRawTable = pd.read_sql_query("SELECT * FROM EPL", con)
 print(dfRawTable.columns)
 ## Modifying the DF:
