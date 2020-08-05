@@ -1,8 +1,6 @@
 import pandas as pd
 import sqlite3
 from pandas import to_numeric
-
-
 # import numpy as np
 
 # notes on files: http://www.football-data.co.uk/notes.txt:
@@ -99,7 +97,7 @@ premierLeague9518Filtered2.reset_index(drop=True, inplace=True)
 
 # Filter out games that draw at HT and leader leads by exactly 1:
 premierLeague9518Filtered3 = premierLeague9518Filtered[((premierLeague9518Filtered.HTR == 'H') |
-                                                        (premierLeague9518Filtered.HTR == 'A'))].copy()  # Filter out games that draw at HT
+                                                        (premierLeague9518Filtered.HTR == 'A'))].copy()
 premierLeague9518Filtered3 = premierLeague9518Filtered3[abs(to_numeric(premierLeague9518Filtered3.HTHG) -
                                                             to_numeric(premierLeague9518Filtered3.HTAG))
                                                         == 1].copy()  # Leader leads by exactly 1
@@ -107,8 +105,8 @@ premierLeague9518Filtered3.reset_index(drop=True, inplace=True)
 
 # Filter out games that draw at HT and leader leads by more than 1:
 premierLeague9518Filtered4 = premierLeague9518Filtered[((premierLeague9518Filtered.HTR == 'H') |
-                                                        (premierLeague9518Filtered.HTR == 'A'))].copy()  # Filter out games that draw at HT
+                                                        (premierLeague9518Filtered.HTR == 'A'))].copy()
 premierLeague9518Filtered4 = premierLeague9518Filtered4[abs(to_numeric(premierLeague9518Filtered4.HTHG) -
                                                             to_numeric(premierLeague9518Filtered4.HTAG))
-                                                        > 1].copy()  # Leader leads by more than 1
+                                                        > 1].copy()
 premierLeague9518Filtered4.reset_index(drop=True, inplace=True)
