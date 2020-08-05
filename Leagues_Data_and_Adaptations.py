@@ -1,5 +1,19 @@
 import pandas as pd
 import sqlite3
+from pandas.plotting import scatter_matrix
+from sklearn.preprocessing import scale
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.naive_bayes import GaussianNB
+from sklearn.svm import SVC
 from pandas import to_numeric
 
 
@@ -116,12 +130,25 @@ premierLeague9518Filtered4 = premierLeague9518Filtered4[abs(to_numeric(premierLe
                                                         > 1].copy()
 premierLeague9518Filtered4.reset_index(drop=True, inplace=True)
 
-#### ML Stage:
-laLiga0919ConcatML = laLiga0919Concat.copy()
-laLiga0919ConcatML.reset_index(drop=True, inplace=True)
-laLiga0919ConcatML.drop(laLiga0919ConcatML.loc[:, 'B365H':'PSCA'].columns, axis=1, inplace=True)
-print(laLiga0919ConcatML.columns)
 
-premierLeague9518FilteredML = dfRawTable[924:].copy()
-premierLeague9518FilteredML.drop(premierLeague9518FilteredML.loc[:, 'B365H':'B365AH'].columns, axis=1, inplace=True)
-print(premierLeague9518FilteredML.columns)
+#### ML Stage:
+### La Liga:
+laLiga0919FilteredML = laLiga0919Concat.copy()
+laLiga0919FilteredML.reset_index(drop=True, inplace=True)
+laLiga0919FilteredML.drop(laLiga0919FilteredML.loc[:, 'B365H':'PSCA'].columns, axis=1, inplace=True)
+laLiga0919FilteredML.drop(['Div', 'Date', 'HomeTeam', 'AwayTeam', 'HTR', 'Match Statistics', 'Attendance', 'Referee'], axis=1)
+
+X_La_Liga = laLiga0919FilteredML.drop(['FTR'], axis=1)
+y_La_Liga = laLiga0919FilteredML['FTR']
+print(X_La_Liga.head())
+for col in X_La_Liga.columns:
+    X_La_Liga[col] = scale(X_La_Liga[col])
+print(X_La_Liga.head())
+
+# ### Premier League:
+# premierLeague9518FilteredML = dfRawTable[924:].copy()
+# premierLeague9518FilteredML.reset_index(drop=True, inplace=True)
+# premierLeague9518FilteredML.drop(premierLeague9518FilteredML.loc[:, 'B365H':'B365AH'].columns, axis=1, inplace=True)
+# print(premierLeague9518FilteredML.head())
+#
+# print(dfRawTable.columns)
