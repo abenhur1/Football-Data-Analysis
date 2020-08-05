@@ -78,7 +78,6 @@ files_list = ['season-0910_csv.csv',
 laLiga0919Concat = pd.concat([df_creator(la_liga_path, file) for file in files_list])
 
 relevant_analysis_cols = ['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR', 'HTHG', 'HTAG', 'HTR']
-relevant_ML_cols = ['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR', 'HTHG', 'HTAG', 'HTR']
 ## Modifying the DF:
 # Leave relevant columns:
 laLiga0919Filtered = laLiga0919Concat[relevant_analysis_cols].copy()
@@ -136,7 +135,8 @@ premierLeague9518Filtered4.reset_index(drop=True, inplace=True)
 laLiga0919FilteredML = laLiga0919Concat.copy()
 laLiga0919FilteredML.reset_index(drop=True, inplace=True)
 laLiga0919FilteredML.drop(laLiga0919FilteredML.loc[:, 'B365H':'PSCA'].columns, axis=1, inplace=True)
-laLiga0919FilteredML.drop(['Div', 'Date', 'HomeTeam', 'AwayTeam', 'HTR', 'Match Statistics', 'Attendance', 'Referee'], axis=1)
+laLiga0919FilteredML.drop(['Div', 'Date', 'HomeTeam', 'AwayTeam', 'HTR'], axis=1, inplace=True)
+print(laLiga0919FilteredML.columns)
 
 X_La_Liga = laLiga0919FilteredML.drop(['FTR'], axis=1)
 y_La_Liga = laLiga0919FilteredML['FTR']
