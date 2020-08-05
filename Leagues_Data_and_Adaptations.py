@@ -1,6 +1,8 @@
 import pandas as pd
 import sqlite3
 from pandas import to_numeric
+
+
 # import numpy as np
 
 # notes on files: http://www.football-data.co.uk/notes.txt:
@@ -60,9 +62,10 @@ files_list = ['season-0910_csv.csv',
               'season-1819_csv.csv']
 laLiga0919Concat = pd.concat([df_creator(la_liga_path, file) for file in files_list])
 
+relevant_cols = ['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR', 'HTHG', 'HTAG', 'HTR']
 ## Modifying the DF:
 # Leave relevant columns:
-laLiga0919Filtered = laLiga0919Concat[['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR', 'HTHG', 'HTAG', 'HTR']].copy()
+laLiga0919Filtered = laLiga0919Concat[relevant_cols].copy()
 # la_liga_0919_df['Year'] = pd.DatetimeIndex(la_liga_0919_df['Date']).year  # year column.
 
 # Filter out games that draw at HT:
@@ -70,24 +73,24 @@ laLiga0919Filtered2 = laLiga0919Filtered[((laLiga0919Filtered.HTR == 'H')
                                           | (laLiga0919Filtered.HTR == 'A'))].copy()  # Filter out games that draw at HT
 
 # Filter out games that draw at HT and leader leads by exactly 1:
-laLiga0919Filtered3 = laLiga0919Filtered[((laLiga0919Filtered.HTR == 'H') | (laLiga0919Filtered.HTR == 'A'))].copy()
-# Filter out games that draw at HT
+laLiga0919Filtered3 = laLiga0919Filtered[((laLiga0919Filtered.HTR == 'H')
+                                          | (laLiga0919Filtered.HTR == 'A'))].copy()
 laLiga0919Filtered3 = laLiga0919Filtered3[abs(to_numeric(laLiga0919Filtered3.HTHG) - to_numeric(laLiga0919Filtered3.HTAG))
                                           == 1].copy()  # Leader leads by exactly 1
 
 # Filter out games that draw at HT and leader leads by more than 1:
-laLiga0919Filtered4 = laLiga0919Filtered[((laLiga0919Filtered.HTR == 'H') | (laLiga0919Filtered.HTR == 'A'))].copy()
-# Filter out games that draw at HT
+laLiga0919Filtered4 = laLiga0919Filtered[((laLiga0919Filtered.HTR == 'H')
+                                          | (laLiga0919Filtered.HTR == 'A'))].copy()
 laLiga0919Filtered4 = laLiga0919Filtered4[abs(to_numeric(laLiga0919Filtered4.HTHG) - to_numeric(laLiga0919Filtered4.HTAG))
                                           > 1].copy()  # Leader leads by more than 1
 
 ### Master Premier League df extracted:
 con = sqlite3.connect("C:/Users/User/PycharmProjects/Football-Data-Analysis/EPL_Seasons_1993-2017_RAW_Table.sqlite")
 dfRawTable = pd.read_sql_query("SELECT * FROM EPL", con)
-print(dfRawTable.columns)
+
 ## Modifying the DF:
 # Leave relevant columns:
-premierLeague9518Filtered = dfRawTable[924:][['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR', 'HTHG', 'HTAG', 'HTR']].copy()
+premierLeague9518Filtered = dfRawTable[924:][relevant_cols].copy()
 # premierLeague9518Filtered['Year'] = pd.DatetimeIndex(la_liga_0919_df['Date']).year  # year column.
 
 # Filter out games that draw at HT:
