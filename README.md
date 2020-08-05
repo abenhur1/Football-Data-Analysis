@@ -9,4 +9,4 @@ The following files are code files:
 Leagues_Data_and_Adaptations.py
 Analysis_Functions.py
 
-The rest is the data. 
+The rest is the data. The data was taken from https://datahub.io/sports-data/spanish-la-liga, https://datahub.io/sports-data/english-premier-league
