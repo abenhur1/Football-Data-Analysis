@@ -42,6 +42,7 @@ from pandas import to_numeric
 # HBP = Home Team Bookings Points (10 = yellow, 25 = red)
 # ABP = Away Team Bookings Points (10 = yellow, 25 = red)
 
+#### Analysis Stage:
 ### Function Helpers:
 def df_creator(path, file):
     file = pd.read_csv(path + file)
@@ -62,10 +63,11 @@ files_list = ['season-0910_csv.csv',
               'season-1819_csv.csv']
 laLiga0919Concat = pd.concat([df_creator(la_liga_path, file) for file in files_list])
 
-relevant_cols = ['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR', 'HTHG', 'HTAG', 'HTR']
+relevant_analysis_cols = ['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR', 'HTHG', 'HTAG', 'HTR']
+relevant_ML_cols = ['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR', 'HTHG', 'HTAG', 'HTR']
 ## Modifying the DF:
 # Leave relevant columns:
-laLiga0919Filtered = laLiga0919Concat[relevant_cols].copy()
+laLiga0919Filtered = laLiga0919Concat[relevant_analysis_cols].copy()
 # la_liga_0919_df['Year'] = pd.DatetimeIndex(la_liga_0919_df['Date']).year  # year column.
 
 # Filter out games that draw at HT:
@@ -90,7 +92,7 @@ dfRawTable = pd.read_sql_query("SELECT * FROM EPL", con)
 
 ## Modifying the DF:
 # Leave relevant columns:
-premierLeague9518Filtered = dfRawTable[924:][relevant_cols].copy()
+premierLeague9518Filtered = dfRawTable[924:][relevant_analysis_cols].copy()
 # premierLeague9518Filtered['Year'] = pd.DatetimeIndex(la_liga_0919_df['Date']).year  # year column.
 
 # Filter out games that draw at HT:
@@ -113,3 +115,13 @@ premierLeague9518Filtered4 = premierLeague9518Filtered4[abs(to_numeric(premierLe
                                                             to_numeric(premierLeague9518Filtered4.HTAG))
                                                         > 1].copy()
 premierLeague9518Filtered4.reset_index(drop=True, inplace=True)
+
+#### ML Stage:
+laLiga0919ConcatML = laLiga0919Concat.copy()
+laLiga0919ConcatML.reset_index(drop=True, inplace=True)
+laLiga0919ConcatML.drop(laLiga0919ConcatML.loc[:, 'B365H':'PSCA'].columns, axis=1, inplace=True)
+print(laLiga0919ConcatML.columns)
+
+premierLeague9518FilteredML = dfRawTable[924:].copy()
+premierLeague9518FilteredML.drop(premierLeague9518FilteredML.loc[:, 'B365H':'B365AH'].columns, axis=1, inplace=True)
+print(premierLeague9518FilteredML.columns)
