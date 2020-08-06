@@ -1,6 +1,5 @@
 import pandas as pd
 from pandas import to_numeric
-from IPython.display import display
 import sqlite3
 import matplotlib.pyplot as plt
 from pandas.plotting import scatter_matrix
