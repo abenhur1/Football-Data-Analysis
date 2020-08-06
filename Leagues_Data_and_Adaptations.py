@@ -70,6 +70,10 @@ def abs_goal_diff_calc(df_league):
     return abs(to_numeric(df_league.HTHG) - to_numeric(df_league.HTAG))
 
 
+def reset_index_df(df_league):
+    return df_league.reset_index(drop=True, inplace=True)
+
+
 ### Reading the La Liga data files and concatenate the DFs:
 la_liga_path = "C:/Users/User/PycharmProjects/Football-Data-Analysis/"
 files_list = ['season-0910_csv.csv',
@@ -112,23 +116,18 @@ premierLeague9518Filtered = dfRawTable[924:][relevant_analysis_cols].copy()
 # Filter out games that draw at HT:
 premierLeague9518Filtered2 = premierLeague9518Filtered[((premierLeague9518Filtered.HTR == 'H') |
                                                         (premierLeague9518Filtered.HTR == 'A'))].copy()  # Filter out games that draw at HT
-premierLeague9518Filtered2.reset_index(drop=True, inplace=True)
 
 # Filter out games that draw at HT and leader leads by exactly 1:
-premierLeague9518Filtered3 = premierLeague9518Filtered[((premierLeague9518Filtered.HTR == 'H') |
-                                                        (premierLeague9518Filtered.HTR == 'A'))].copy()
-premierLeague9518Filtered3 = premierLeague9518Filtered3[abs(to_numeric(premierLeague9518Filtered3.HTHG) -
-                                                            to_numeric(premierLeague9518Filtered3.HTAG))
-                                                        == 1].copy()  # Leader leads by exactly 1
-premierLeague9518Filtered3.reset_index(drop=True, inplace=True)
+premierLeague9518Filtered3 = premierLeague9518Filtered2[abs_goal_diff_calc(premierLeague9518Filtered2) == 1].copy()
 
 # Filter out games that draw at HT and leader leads by more than 1:
-premierLeague9518Filtered4 = premierLeague9518Filtered[((premierLeague9518Filtered.HTR == 'H') |
-                                                        (premierLeague9518Filtered.HTR == 'A'))].copy()
-premierLeague9518Filtered4 = premierLeague9518Filtered4[abs(to_numeric(premierLeague9518Filtered4.HTHG) -
-                                                            to_numeric(premierLeague9518Filtered4.HTAG))
-                                                        > 1].copy()
-premierLeague9518Filtered4.reset_index(drop=True, inplace=True)
+premierLeague9518Filtered4 = premierLeague9518Filtered2[abs_goal_diff_calc(premierLeague9518Filtered2) > 1].copy()
+
+reset_index_list = [premierLeague9518Filtered2, premierLeague9518Filtered3, premierLeague9518Filtered4]
+for df in reset_index_list:
+    reset_index_df(df)
+
+
 
 #### ML Stage:
 ### La Liga:
@@ -142,10 +141,8 @@ X_La_Liga = laLiga0919FilteredML.drop(['FTR'], axis=1)
 y_La_Liga = laLiga0919FilteredML['FTR']
 X_La_Liga_train, X_La_Liga_validation, y_La_Liga_train, y_La_Liga_validation = train_test_split(X_La_Liga, y_La_Liga, test_size=0.20,
                                                                                                 random_state=1)
-# print(X_La_Liga.head())
 for col in X_La_Liga.columns:
     X_La_Liga[col] = scale(X_La_Liga[col])
-# print(X_La_Liga.head())
 
 models = []
 models.append(('LogReg', LogisticRegression(solver='liblinear', multi_class='ovr')))
@@ -155,19 +152,19 @@ models.append(('DeciTree', DecisionTreeClassifier()))
 models.append(('GaussianNB', GaussianNB()))
 models.append(('SVM', SVC(kernel='rbf', gamma='auto')))
 models.append(('XGB', xgb.XGBClassifier()))
-# evaluate each model in turn
-results = []
-names = []
-for name, model in models:
-    kfold = StratifiedKFold(n_splits=10, random_state=1, shuffle=True)
-    cv_results = cross_val_score(model, X_La_Liga_train, y_La_Liga_train, cv=kfold, scoring='accuracy')
-    results.append(cv_results)
-    names.append(name)
-    print('%s: %f (%f)' % (name, cv_results.mean(), cv_results.std()))
-# Compare Algorithms
-plt.boxplot(results, labels=names)
-plt.title('Algorithm Comparison')
-plt.show()
+# # evaluate each model in turn
+# results = []
+# names = []
+# for name, model in models:
+#     kfold = StratifiedKFold(n_splits=10, random_state=1, shuffle=True)
+#     cv_results = cross_val_score(model, X_La_Liga_train, y_La_Liga_train, cv=kfold, scoring='accuracy')
+#     results.append(cv_results)
+#     names.append(name)
+#     print('%s: %f (%f)' % (name, cv_results.mean(), cv_results.std()))
+# # Compare Algorithms
+# plt.boxplot(results, labels=names)
+# plt.title('Algorithm Comparison')
+# plt.show()
 
 # ### Premier League:
 # premierLeague9518FilteredML = dfRawTable[924:].copy()
