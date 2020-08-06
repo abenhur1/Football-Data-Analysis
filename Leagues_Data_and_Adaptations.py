@@ -66,6 +66,10 @@ def df_creator(path, file):
     return file
 
 
+def abs_goal_diff_calc(df_league):
+    return abs(to_numeric(df_league.HTHG) - to_numeric(df_league.HTAG))
+
+
 ### Reading the La Liga data files and concatenate the DFs:
 la_liga_path = "C:/Users/User/PycharmProjects/Football-Data-Analysis/"
 files_list = ['season-0910_csv.csv',
@@ -91,16 +95,10 @@ laLiga0919Filtered2 = laLiga0919Filtered[((laLiga0919Filtered.HTR == 'H')
                                           | (laLiga0919Filtered.HTR == 'A'))].copy()  # Filter out games that draw at HT
 
 # Filter out games that draw at HT and leader leads by exactly 1:
-laLiga0919Filtered3 = laLiga0919Filtered[((laLiga0919Filtered.HTR == 'H')
-                                          | (laLiga0919Filtered.HTR == 'A'))].copy()
-laLiga0919Filtered3 = laLiga0919Filtered3[abs(to_numeric(laLiga0919Filtered3.HTHG) - to_numeric(laLiga0919Filtered3.HTAG))
-                                          == 1].copy()  # Leader leads by exactly 1
+laLiga0919Filtered3 = laLiga0919Filtered2[abs_goal_diff_calc(laLiga0919Filtered2) == 1].copy()  # Leader leads by exactly 1
 
 # Filter out games that draw at HT and leader leads by more than 1:
-laLiga0919Filtered4 = laLiga0919Filtered[((laLiga0919Filtered.HTR == 'H')
-                                          | (laLiga0919Filtered.HTR == 'A'))].copy()
-laLiga0919Filtered4 = laLiga0919Filtered4[abs(to_numeric(laLiga0919Filtered4.HTHG) - to_numeric(laLiga0919Filtered4.HTAG))
-                                          > 1].copy()  # Leader leads by more than 1
+laLiga0919Filtered4 = laLiga0919Filtered2[abs_goal_diff_calc(laLiga0919Filtered2) > 1].copy()  # Leader leads by more than 1
 
 ### Master Premier League df extracted:
 con = sqlite3.connect("C:/Users/User/PycharmProjects/Football-Data-Analysis/EPL_Seasons_1993-2017_RAW_Table.sqlite")
@@ -132,7 +130,6 @@ premierLeague9518Filtered4 = premierLeague9518Filtered4[abs(to_numeric(premierLe
                                                         > 1].copy()
 premierLeague9518Filtered4.reset_index(drop=True, inplace=True)
 
-
 #### ML Stage:
 ### La Liga:
 laLiga0919FilteredML = laLiga0919Concat.copy()
@@ -143,20 +140,21 @@ laLiga0919FilteredML.drop(['Div', 'Date', 'HomeTeam', 'AwayTeam', 'HTR'], axis=1
 
 X_La_Liga = laLiga0919FilteredML.drop(['FTR'], axis=1)
 y_La_Liga = laLiga0919FilteredML['FTR']
-X_La_Liga_train, X_La_Liga_validation, y_La_Liga_train, y_La_Liga_validation = train_test_split(X_La_Liga, y_La_Liga, test_size=0.20, random_state=1)
+X_La_Liga_train, X_La_Liga_validation, y_La_Liga_train, y_La_Liga_validation = train_test_split(X_La_Liga, y_La_Liga, test_size=0.20,
+                                                                                                random_state=1)
 # print(X_La_Liga.head())
 for col in X_La_Liga.columns:
     X_La_Liga[col] = scale(X_La_Liga[col])
 # print(X_La_Liga.head())
 
 models = []
-models.append(('LR', LogisticRegression(solver='liblinear', multi_class='ovr')))
-models.append(('LDA', LinearDiscriminantAnalysis()))
+models.append(('LogReg', LogisticRegression(solver='liblinear', multi_class='ovr')))
+models.append(('LinDiscAnal', LinearDiscriminantAnalysis()))
 models.append(('KNN', KNeighborsClassifier()))
-models.append(('CART', DecisionTreeClassifier()))
-models.append(('NB', GaussianNB()))
+models.append(('DeciTree', DecisionTreeClassifier()))
+models.append(('GaussianNB', GaussianNB()))
 models.append(('SVM', SVC(kernel='rbf', gamma='auto')))
-models.append((xgb.XGBClassifier()))
+models.append(('XGB', xgb.XGBClassifier()))
 # evaluate each model in turn
 results = []
 names = []
