@@ -2,15 +2,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.transforms
 
-from Leagues_Data_and_Adaptations import laLiga0919Filtered2, laLiga0919Filtered3, laLiga0919Filtered4, laLiga0919FilteredML
+from Leagues_Data_and_Adaptations import laLiga0919Filtered2, laLiga0919Filtered3, laLiga0919Filtered4
 from Leagues_Data_and_Adaptations import premierLeague9518Filtered2, premierLeague9518Filtered3, premierLeague9518Filtered4
-# from Leagues_Data_and_Adaptations premierLeague9518FilteredML
+
+# from Leagues_Data_and_Adaptations laLiga0919FilteredML, premierLeague9518FilteredML
 
 plt.style.use(['seaborn-white', 'bmh'])
 
 Analysis_graph1_title = "Half-Time-Leader's result at Final-Time"
 Analysis_graph2_title = "Half-Time-Leader's result at Final-Time (leads by exactly 1)"
 Analysis_graph3_title = "Half-Time-Leader's result at Final-Time (leads by 2 or more)"
+
 
 ##### Analysis Stage:
 #### Bar graph of Half-Time-leader's status at Final Time result
@@ -94,6 +96,7 @@ def HT_leader_status_at_FT_bar_plot_comparison(league_df_1, league_df_2, graph_t
 #### Effect of match location on winning bar graph
 ML_by_location_graph_title = 'Effect of Match Location on Winning'
 
+
 def winning_chances_by_location_bar_plot_comparison(league_df_1, league_df_2, graph_title):
     ind = np.arange(3)  # the x locations for the groups
     width = 0.27  # the width of the bars
@@ -171,5 +174,5 @@ def winning_chances_by_location_bar_plot_comparison(league_df_1, league_df_2, gr
 ##### Function Calls:
 # winning_chances_by_location_bar_plot_comparison(laLiga0919FilteredML, premierLeague9518FilteredML, ML_by_location_graph_title)
 HT_leader_status_at_FT_bar_plot_comparison(laLiga0919Filtered2, premierLeague9518Filtered2, Analysis_graph1_title)
-# HT_leader_status_at_FT_bar_plot_comparison(laLiga0919Filtered3, premierLeague9518Filtered3, Analysis_graph2_title)
-# HT_leader_status_at_FT_bar_plot_comparison(laLiga0919Filtered4, premierLeague9518Filtered4, Analysis_graph3_title)
+HT_leader_status_at_FT_bar_plot_comparison(laLiga0919Filtered3, premierLeague9518Filtered3, Analysis_graph2_title)
+HT_leader_status_at_FT_bar_plot_comparison(laLiga0919Filtered4, premierLeague9518Filtered4, Analysis_graph3_title)
