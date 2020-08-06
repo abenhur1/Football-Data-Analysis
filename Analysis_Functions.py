@@ -14,7 +14,7 @@ Analysis_graph2_title = "Half-Time-Leader's result at Final-Time (leads by exact
 Analysis_graph3_title = "Half-Time-Leader's result at Final-Time (leads by 2 or more)"
 
 
-##### Analysis Stage:
+##### Data Analysis Stage:
 #### Bar graph of Half-Time-leader's status at Final Time result
 def HT_leader_status_at_FT_bar_plot_comparison(league_df_1, league_df_2, graph_title):
     ind = np.arange(3)  # the x locations for the groups
