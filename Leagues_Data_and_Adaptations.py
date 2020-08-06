@@ -1,5 +1,8 @@
 import pandas as pd
+from pandas import to_numeric
+from IPython.display import display
 import sqlite3
+import matplotlib.pyplot as plt
 from pandas.plotting import scatter_matrix
 from sklearn.preprocessing import scale
 from sklearn.model_selection import train_test_split
@@ -14,7 +17,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
-from pandas import to_numeric
+import xgboost as xgb
 
 
 # import numpy as np
@@ -136,14 +139,37 @@ laLiga0919FilteredML = laLiga0919Concat.copy()
 laLiga0919FilteredML.reset_index(drop=True, inplace=True)
 laLiga0919FilteredML.drop(laLiga0919FilteredML.loc[:, 'B365H':'PSCA'].columns, axis=1, inplace=True)
 laLiga0919FilteredML.drop(['Div', 'Date', 'HomeTeam', 'AwayTeam', 'HTR'], axis=1, inplace=True)
-print(laLiga0919FilteredML.columns)
+# print(laLiga0919FilteredML.columns)
 
 X_La_Liga = laLiga0919FilteredML.drop(['FTR'], axis=1)
 y_La_Liga = laLiga0919FilteredML['FTR']
-print(X_La_Liga.head())
+X_La_Liga_train, X_La_Liga_validation, y_La_Liga_train, y_La_Liga_validation = train_test_split(X_La_Liga, y_La_Liga, test_size=0.20, random_state=1)
+# print(X_La_Liga.head())
 for col in X_La_Liga.columns:
     X_La_Liga[col] = scale(X_La_Liga[col])
-print(X_La_Liga.head())
+# print(X_La_Liga.head())
+
+models = []
+models.append(('LR', LogisticRegression(solver='liblinear', multi_class='ovr')))
+models.append(('LDA', LinearDiscriminantAnalysis()))
+models.append(('KNN', KNeighborsClassifier()))
+models.append(('CART', DecisionTreeClassifier()))
+models.append(('NB', GaussianNB()))
+models.append(('SVM', SVC(kernel='rbf', gamma='auto')))
+models.append((xgb.XGBClassifier()))
+# evaluate each model in turn
+results = []
+names = []
+for name, model in models:
+    kfold = StratifiedKFold(n_splits=10, random_state=1, shuffle=True)
+    cv_results = cross_val_score(model, X_La_Liga_train, y_La_Liga_train, cv=kfold, scoring='accuracy')
+    results.append(cv_results)
+    names.append(name)
+    print('%s: %f (%f)' % (name, cv_results.mean(), cv_results.std()))
+# Compare Algorithms
+plt.boxplot(results, labels=names)
+plt.title('Algorithm Comparison')
+plt.show()
 
 # ### Premier League:
 # premierLeague9518FilteredML = dfRawTable[924:].copy()
