@@ -1,7 +1,8 @@
 import pandas as pd
 from pandas import to_numeric
 import sqlite3
-from IPython.display import display, HTML
+pd.set_option('display.width', 320)
+pd.set_option('display.max_columns', 12)
 
 
 # import numpy as np
@@ -57,8 +58,8 @@ def reset_index_df(dataframe):
     return dataframe.reset_index(drop=True, inplace=True)
 
 
-def rename_leagues_columns(league_df, dict):
-    league_df.rename(columns=dict, inplace=True)
+def rename_leagues_columns(league_df, dictionary):
+    league_df.rename(columns=dictionary, inplace=True)
 
 
 ### Reading the La Liga data files and concatenate the DFs:
@@ -119,11 +120,10 @@ rename_leagues_columns(laLiga0919FilteredML, La_Liga_Renaming)
 reset_index_df(laLiga0919FilteredML)
 laLiga0919FilteredML.drop(laLiga0919FilteredML.loc[:, 'B365H':'PSCA'].columns, axis=1, inplace=True)
 laLiga0919FilteredML.drop(['Div', 'Date', 'HomeTeam', 'AwayTeam', 'HTR'], axis=1, inplace=True)
-print(laLiga0919FilteredML.columns)
+# print(laLiga0919FilteredML.columns)
 
-X_La_Liga = laLiga0919FilteredML.drop(['FTR'], axis=1)
-print(laLiga0919FilteredML)
-# display(HTML(laLiga0919FilteredML.to_html()))
+X_La_Liga = laLiga0919FilteredML.drop(['FTHG', 'FTAG', 'FTR', 'HTHG', 'HTAG'], axis=1)
+print(X_La_Liga.head())
 y_La_Liga = laLiga0919FilteredML['FTR']
 
 # ### Premier League:
