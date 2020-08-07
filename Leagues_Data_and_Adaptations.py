@@ -12,7 +12,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
-# import xgboost as xgb
+import xgboost as xgb
 # from pandas.plotting import scatter_matrix
 # from sklearn.metrics import classification_report
 # from sklearn.metrics import confusion_matrix
@@ -65,7 +65,7 @@ def df_creator(path, file):
 
 
 def abs_goal_diff_calc(df_league):
-    return abs(to_numeric(df_league.HTHG) - to_numeric(df_league.HTAG))
+    return abs(to_numeric(df_league['HTHG']) - to_numeric(df_league['HTAG']))
 
 
 def reset_index_df(df_league):
@@ -99,8 +99,7 @@ laLiga0919Filtered = laLiga0919Concat[relevant_analysis_cols].copy()
 # la_liga_0919_df['Year'] = pd.DatetimeIndex(la_liga_0919_df['Date']).year  # year column.
 
 # Filter out games that draw at HT:
-laLiga0919Filtered2 = laLiga0919Filtered[((laLiga0919Filtered.HTR == 'H')
-                                          | (laLiga0919Filtered.HTR == 'A'))].copy()  # Filter out games that draw at HT
+laLiga0919Filtered2 = laLiga0919Filtered[((laLiga0919Filtered['HTR'] == 'H') | (laLiga0919Filtered['HTR'] == 'A'))].copy()  # No Draws
 # Filter out games that draw at HT and leader leads by exactly 1:
 laLiga0919Filtered3 = laLiga0919Filtered2[abs_goal_diff_calc(laLiga0919Filtered2) == 1].copy()  # Leader leads by exactly 1
 # Filter out games that draw at HT and leader leads by more than 1:
@@ -131,10 +130,10 @@ laLiga0919FilteredML = laLiga0919Concat.copy()
 reset_index_df(laLiga0919FilteredML)
 laLiga0919FilteredML.drop(laLiga0919FilteredML.loc[:, 'B365H':'PSCA'].columns, axis=1, inplace=True)
 laLiga0919FilteredML.drop(['Div', 'Date', 'HomeTeam', 'AwayTeam', 'HTR'], axis=1, inplace=True)
-# print(laLiga0919FilteredML.columns)
+print(laLiga0919FilteredML.columns)
 
 X_La_Liga = laLiga0919FilteredML.drop(['FTR'], axis=1)
-# print(X_La_Liga.head())
+print(X_La_Liga.head())
 y_La_Liga = laLiga0919FilteredML['FTR']
 for col in X_La_Liga.columns:
     X_La_Liga[col] = scale(X_La_Liga[col])
@@ -144,8 +143,7 @@ X_La_Liga_train, X_La_Liga_validation, y_La_Liga_train, y_La_Liga_validation = \
 # Evaluate each model in turn and compare algorithms:
 models = [('LogReg', LogisticRegression(solver='liblinear', multi_class='ovr')), ('LinDiscAnal', LinearDiscriminantAnalysis()),
           ('KNN', KNeighborsClassifier()), ('DeciTree', DecisionTreeClassifier()), ('GaussianNB', GaussianNB()),
-          ('SVM', SVC(kernel='rbf', gamma='auto'))]
-# , ('XGB', xgb.XGBClassifier())
+          ('SVM', SVC(kernel='rbf', gamma='auto')), ('XGB', xgb.XGBClassifier())]
 results = []
 names = []
 for name, model in models:
@@ -156,13 +154,10 @@ for name, model in models:
     print('%s: %f (%f)' % (name, cv_results.mean(), cv_results.std()))
 plt.boxplot(results, labels=names)
 plt.title('Algorithm Comparison')
-# plt.show()
-print(X_La_Liga_train.head())
+plt.show()
 
 ### Premier League:
 premierLeague9518FilteredML = dfRawTable[924:].copy()
 premierLeague9518FilteredML.reset_index(drop=True, inplace=True)
 premierLeague9518FilteredML.drop(premierLeague9518FilteredML.loc[:, 'B365H':'B365AH'].columns, axis=1, inplace=True)
-# print(premierLeague9518FilteredML.head())
-
-# print(dfRawTable.columns)
+print(premierLeague9518FilteredML.head())
