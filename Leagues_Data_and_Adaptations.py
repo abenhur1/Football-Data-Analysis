@@ -1,6 +1,7 @@
 import pandas as pd
 from pandas import to_numeric
 import sqlite3
+from IPython.display import display, HTML
 
 
 # import numpy as np
@@ -121,7 +122,8 @@ laLiga0919FilteredML.drop(['Div', 'Date', 'HomeTeam', 'AwayTeam', 'HTR'], axis=1
 print(laLiga0919FilteredML.columns)
 
 X_La_Liga = laLiga0919FilteredML.drop(['FTR'], axis=1)
-print(X_La_Liga.head())
+print(laLiga0919FilteredML)
+# display(HTML(laLiga0919FilteredML.to_html()))
 y_La_Liga = laLiga0919FilteredML['FTR']
 
 # ### Premier League:
