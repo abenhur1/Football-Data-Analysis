@@ -1,10 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.transforms
+import warnings  # current version of seaborn generates a bunch of warnings that we'll ignore
 
 from Leagues_Data_and_Adaptations import laLiga0919Filtered2, laLiga0919Filtered3, laLiga0919Filtered4
 from Leagues_Data_and_Adaptations import premierLeague9518Filtered2, premierLeague9518Filtered3, premierLeague9518Filtered4
-from Leagues_Data_and_Adaptations import laLiga0919FilteredML, premierLeague9518FilteredML
+
+warnings.filterwarnings("ignore")
+
+# from Leagues_Data_and_Adaptations import laLiga0919FilteredML, premierLeague9518FilteredML
 
 plt.style.use(['seaborn-white', 'bmh'])
 
@@ -44,8 +48,8 @@ def ML_bar_plot_param(league_df):
     A_Wins_Percents_1 = len(league_df[league_df['FTR'] == 'A']) / league_df_1_Matches
 
     percentages = [H_Wins_Percents_1 * 100,
-                           Draws_Percents_1 * 100,
-                           A_Wins_Percents_1 * 100]
+                   Draws_Percents_1 * 100,
+                   A_Wins_Percents_1 * 100]
 
     return percentages
 
@@ -106,9 +110,9 @@ def two_leagues_bar_plot_comparison(league1_name, league2_name, graph_title, xla
 ##### Function Calls:
 two_leagues_bar_plot_comparison(La_Liga_name, Premier_League_Name, Analysis_graph1_title, xlabel_anal, xticklabels_anal,
                                 anal_bar_plot_param(laLiga0919Filtered2), anal_bar_plot_param(premierLeague9518Filtered2))
-two_leagues_bar_plot_comparison(La_Liga_name, Premier_League_Name, Analysis_graph1_title, xlabel_anal, xticklabels_anal,
+two_leagues_bar_plot_comparison(La_Liga_name, Premier_League_Name, Analysis_graph2_title, xlabel_anal, xticklabels_anal,
                                 anal_bar_plot_param(laLiga0919Filtered3), anal_bar_plot_param(premierLeague9518Filtered3))
-two_leagues_bar_plot_comparison(La_Liga_name, Premier_League_Name, Analysis_graph1_title, xlabel_anal, xticklabels_anal,
+two_leagues_bar_plot_comparison(La_Liga_name, Premier_League_Name, Analysis_graph3_title, xlabel_anal, xticklabels_anal,
                                 anal_bar_plot_param(laLiga0919Filtered4), anal_bar_plot_param(premierLeague9518Filtered4))
-two_leagues_bar_plot_comparison(La_Liga_name, Premier_League_Name, ML_graph_title, xlabel_ML, xticklabels_ML,
-                                ML_bar_plot_param(laLiga0919FilteredML), ML_bar_plot_param(premierLeague9518FilteredML))
+# two_leagues_bar_plot_comparison(La_Liga_name, Premier_League_Name, ML_graph_title, xlabel_ML, xticklabels_ML,
+#                                 ML_bar_plot_param(laLiga0919FilteredML), ML_bar_plot_param(premierLeague9518FilteredML))
