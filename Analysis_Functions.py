@@ -3,9 +3,8 @@ import matplotlib.pyplot as plt
 import matplotlib.transforms
 import warnings  # current version of seaborn generates a bunch of warnings that we'll ignore
 
-from Leagues_Data_and_Adaptations import laLiga0919Filtered2, laLiga0919Filtered3, laLiga0919Filtered4
-from Leagues_Data_and_Adaptations import premierLeague9518Filtered2, premierLeague9518Filtered3, premierLeague9518Filtered4
-# from Leagues_Data_and_Adaptations import laLiga0919FilteredML, premierLeague9518FilteredML
+from Leagues_Data_and_Adaptations import laLiga0919Filtered, laLiga0919Filtered2, laLiga0919Filtered3, laLiga0919Filtered4
+from Leagues_Data_and_Adaptations import premierLeague9518Filtered, premierLeague9518Filtered2, premierLeague9518Filtered3, premierLeague9518Filtered4
 
 warnings.filterwarnings("ignore")
 
@@ -14,17 +13,17 @@ plt.style.use(['seaborn-white', 'bmh'])
 Analysis_graph1_title = "Half-Time-Leader's result at Final-Time"
 Analysis_graph2_title = "Half-Time-Leader's result at Final-Time (leads by exactly 1)"
 Analysis_graph3_title = "Half-Time-Leader's result at Final-Time (leads by 2 or more)"
-ML_graph_title = "Effect of Match Location on Winning"
+Analysis_graph4_title = "Effect of Match Location on Winning"
 La_Liga_name = "La Liga"
 Premier_League_Name = "Premier League"
-xticklabels_anal = np.array(["Leader Won", "Draw", "Leader Lost"])
-xticklabels_ML = np.array(["Home Team Won", "Draw", "Away Team Won"])
-xlabel_anal = "Leader's Status"
-xlabel_ML = "Winning teams/Draw"
+xticklabels_HT_influence = np.array(["Leader Won", "Draw", "Leader Lost"])
+xticklabels_location_influence = np.array(["Home Team Won", "Draw", "Away Team Won"])
+xlabel_HT_influence = "Leader's Status"
+xlabel_location_influence = "Winning teams/Draw"
 
 
 ##### Data Analysis:
-def anal_bar_plot_param(league_df):
+def HT_influence_bar_plot_param(league_df):
     print(league_df.columns)
     num_of_games_that_have_lead_at_HT = len(league_df)
     num_of_games_that_leader_wins_at_FT = len(league_df[league_df['FTR'] == league_df['HTR']])
@@ -40,7 +39,7 @@ def anal_bar_plot_param(league_df):
     return percentages
 
 
-def ML_bar_plot_param(league_df):
+def location_influence_bar_plot_param(league_df):
     league_df_1_Matches = len(league_df)
     H_Wins_Percents_1 = len(league_df[league_df['FTR'] == 'H']) / league_df_1_Matches
     Draws_Percents_1 = len(league_df[league_df['FTR'] == 'D']) / league_df_1_Matches
@@ -107,11 +106,11 @@ def two_leagues_bar_plot_comparison(league1_name, league2_name, graph_title, xla
 
 
 ##### Function Calls:
-two_leagues_bar_plot_comparison(La_Liga_name, Premier_League_Name, Analysis_graph1_title, xlabel_anal, xticklabels_anal,
-                                anal_bar_plot_param(laLiga0919Filtered2), anal_bar_plot_param(premierLeague9518Filtered2))
-two_leagues_bar_plot_comparison(La_Liga_name, Premier_League_Name, Analysis_graph2_title, xlabel_anal, xticklabels_anal,
-                                anal_bar_plot_param(laLiga0919Filtered3), anal_bar_plot_param(premierLeague9518Filtered3))
-two_leagues_bar_plot_comparison(La_Liga_name, Premier_League_Name, Analysis_graph3_title, xlabel_anal, xticklabels_anal,
-                                anal_bar_plot_param(laLiga0919Filtered4), anal_bar_plot_param(premierLeague9518Filtered4))
-# two_leagues_bar_plot_comparison(La_Liga_name, Premier_League_Name, ML_graph_title, xlabel_ML, xticklabels_ML,
-#                                 ML_bar_plot_param(laLiga0919FilteredML), ML_bar_plot_param(premierLeague9518FilteredML))
+two_leagues_bar_plot_comparison(La_Liga_name, Premier_League_Name, Analysis_graph1_title, xlabel_HT_influence, xticklabels_HT_influence,
+                                HT_influence_bar_plot_param(laLiga0919Filtered2), HT_influence_bar_plot_param(premierLeague9518Filtered2))
+two_leagues_bar_plot_comparison(La_Liga_name, Premier_League_Name, Analysis_graph2_title, xlabel_HT_influence, xticklabels_HT_influence,
+                                HT_influence_bar_plot_param(laLiga0919Filtered3), HT_influence_bar_plot_param(premierLeague9518Filtered3))
+two_leagues_bar_plot_comparison(La_Liga_name, Premier_League_Name, Analysis_graph3_title, xlabel_HT_influence, xticklabels_HT_influence,
+                                HT_influence_bar_plot_param(laLiga0919Filtered4), HT_influence_bar_plot_param(premierLeague9518Filtered4))
+two_leagues_bar_plot_comparison(La_Liga_name, Premier_League_Name, Analysis_graph4_title, xlabel_location_influence, xticklabels_location_influence,
+                                location_influence_bar_plot_param(laLiga0919Filtered), location_influence_bar_plot_param(premierLeague9518Filtered))

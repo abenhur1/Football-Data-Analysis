@@ -1,6 +1,7 @@
 import pandas as pd
 from pandas import to_numeric
 import sqlite3
+
 pd.set_option('display.width', 320)
 pd.set_option('display.max_columns', 15)
 
@@ -69,9 +70,9 @@ def Home_Away_Merger(df_league):
 
 def get_total_goals_scored_in_season_until_match(season_league_df, team):
     total_goals_scored_in_season_until_match = 0
-    for match in season_league_df:
-        total_goals_scored_in_season_until_match +=
-    return(team, )
+    # for match in season_league_df:
+    # total_goals_scored_in_season_until_match +=
+    return (team,)
 
 
 # Collects aggregate score difference from last 3 games between the two team
@@ -80,15 +81,9 @@ def get_last_3_games_aggregate_for_specific_teams(league_df, team1, team2, leagu
     AwayTeam = league_df['AwayTeam']
     league_df['TeamsAggDiff'] = None
     relevant_teams_reduction_df = league_df.loc[team1 in league_df['TeamsList'] and team2 in league_df['TeamsList']].copy()
-    last_game_score = relevant_teams_reduction_df['FTHG'].iloc[-1] -
+    # last_game_score = relevant_teams_reduction_df['FTHG'].iloc[-1] -
     counter = 0
     match_index = league_df_match_index - 1
-
-    while counter < 3:
-        league_df.iloc
-    for match_index in range(0, league_df_match_index): # runs through league games until current game and not after
-        if team1 in league_df['TeamsList'] and team2 in league_df['TeamsList']: # finds a former match of the two teams
-            if
 
 
 ### Reading the La Liga data files and concatenate the DFs:
@@ -105,11 +100,11 @@ files_list = ['season-0910_csv.csv',
               'season-1819_csv.csv']
 laLiga0919Concat = pd.concat([df_creator(la_liga_path, file) for file in files_list])
 La_Liga_Renaming = {'HS': 'Home Shots', 'AS': 'Away Shots', 'HST': 'Home Shots on Target', 'AST': 'Away Shots on Target',
-                              'HF': 'Home Fouls Committed', 'AF': 'Away Fouls Committed', 'HC': 'Home Corners', 'AC': 'Away Corners',
-                              'HY': 'Home Yellows', 'AY': 'Away Yellows', 'HR': 'Home Reds', 'AR': 'Away Reds'}
+                    'HF': 'Home Fouls Committed', 'AF': 'Away Fouls Committed', 'HC': 'Home Corners', 'AC': 'Away Corners',
+                    'HY': 'Home Yellows', 'AY': 'Away Yellows', 'HR': 'Home Reds', 'AR': 'Away Reds'}
 rename_leagues_columns(laLiga0919Concat, La_Liga_Renaming)
 relevant_analysis_cols = ['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR', 'HTHG', 'HTAG', 'HTR']
-relevant_ML_cols = ['Date','HomeTeam','AwayTeam','FTHG','FTAG','FTR']
+relevant_ML_cols = ['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR']
 
 ### Master Premier League df extracted:
 con = sqlite3.connect("C:/Users/User/PycharmProjects/Football-Data-Analysis/EPL_Seasons_1993-2017_RAW_Table.sqlite")
@@ -119,7 +114,6 @@ dfRawTable = pd.read_sql_query("SELECT * FROM EPL", con)
 ## Modifying the La Liga DF:
 # Leave relevant columns:
 laLiga0919Filtered = laLiga0919Concat[relevant_analysis_cols].copy()
-# la_liga_0919_df['Year'] = pd.DatetimeIndex(la_liga_0919_df['Date']).year  # year column.
 # Filter out games that draw at HT:
 laLiga0919Filtered2 = laLiga0919Filtered[((laLiga0919Filtered['HTR'] == 'H') | (laLiga0919Filtered['HTR'] == 'A'))].copy()  # No Draws
 # Filter out games that draw at HT and leader leads by exactly 1:
@@ -130,11 +124,9 @@ laLiga0919Filtered4 = laLiga0919Filtered2[abs_goal_diff_calc(laLiga0919Filtered2
 ## Modifying the Premier League DF:
 # Leave relevant columns:
 premierLeague9518Filtered = dfRawTable[924:][relevant_analysis_cols].copy()
-# premierLeague9518Filtered['Year'] = pd.DatetimeIndex(la_liga_0919_df['Date']).year  # year column.
-
 # Filter out games that draw at HT:
 premierLeague9518Filtered2 = premierLeague9518Filtered[((premierLeague9518Filtered['HTR'] == 'H') |
-                                                        (premierLeague9518Filtered['HTR'] == 'A'))].copy()  # Filter out draws
+                                                        (premierLeague9518Filtered['HTR'] == 'A'))].copy()
 # Filter out games that draw at HT and leader leads by exactly 1:
 premierLeague9518Filtered3 = premierLeague9518Filtered2[abs_goal_diff_calc(premierLeague9518Filtered2) == 1].copy()
 # Filter out games that draw at HT and leader leads by more than 1:
@@ -146,24 +138,32 @@ for df in reset_index_list:
 
 #### ML Stage:
 ### La Liga df modification:
-season_0910_ = df_creator(la_liga_path, 'season-0910_csv.csv')[relevant_ML_cols].copy()
-season_1011 = df_creator(la_liga_path, 'season-1011_csv.csv')[relevant_ML_cols].copy()
+season_0910_filtered = df_creator(la_liga_path, 'season-0910_csv.csv')[relevant_ML_cols].copy()
+season_1011_filtered = df_creator(la_liga_path, 'season-1011_csv.csv')[relevant_ML_cols].copy()
+season_1112_filtered = df_creator(la_liga_path, 'season-1112_csv.csv')[relevant_ML_cols].copy()
+season_1213_filtered = df_creator(la_liga_path, 'season-1213_csv.csv')[relevant_ML_cols].copy()
+season_1314_filtered = df_creator(la_liga_path, 'season-1314_csv.csv')[relevant_ML_cols].copy()
+season_1415_filtered = df_creator(la_liga_path, 'season-1415_csv.csv')[relevant_ML_cols].copy()
+season_1516_filtered = df_creator(la_liga_path, 'season-1516_csv.csv')[relevant_ML_cols].copy()
+season_1617_filtered = df_creator(la_liga_path, 'season-1617_csv.csv')[relevant_ML_cols].copy()
+season_1718_filtered = df_creator(la_liga_path, 'season-1718_csv.csv')[relevant_ML_cols].copy()
+season_1819_filtered = df_creator(la_liga_path, 'season-1819_csv.csv')[relevant_ML_cols].copy()
+laLigaLeaguesFilteredList = [season_0910_filtered,
+                             season_1011_filtered,
+                             season_1112_filtered,
+                             season_1213_filtered,
+                             season_1314_filtered,
+                             season_1415_filtered,
+                             season_1516_filtered,
+                             season_1617_filtered,
+                             season_1718_filtered,
+                             season_1819_filtered]
 
-laLiga0919FilteredML = laLiga0919Concat.copy()
-# Home_Away_Merger(laLiga0919FilteredML)
-reset_index_df(laLiga0919FilteredML)
-laLiga0919FilteredML.drop(laLiga0919FilteredML.loc[:, 'B365H':'PSCA'].columns, axis=1, inplace=True)
-laLiga0919FilteredML.drop(['Div', 'Date'], axis=1, inplace=True)
-# laLiga0919FilteredML.drop(['Div', 'Date', 'HomeTeam', 'AwayTeam', 'HTR'], axis=1, inplace=True) # leave only match parameters
+laLiga0919FilteredML = pd.concat(file for file in laLigaLeaguesFilteredList)
 
 print(laLiga0919FilteredML.columns)
 
-X_La_Liga = laLiga0919FilteredML.drop(['FTHG', 'FTAG', 'FTR', 'HTHG', 'HTAG'], axis=1)
+X_La_Liga = laLiga0919FilteredML.drop(['FTR'], axis=1)
 print(X_La_Liga.head())
 y_La_Liga = laLiga0919FilteredML['FTR']
-
-# ### Premier League df modification:
-# premierLeague9518FilteredML = dfRawTable[924:].copy()
-# premierLeague9518FilteredML.reset_index(drop=True, inplace=True)
-# premierLeague9518FilteredML.drop(premierLeague9518FilteredML.loc[:, 'B365H':'B365AH'].columns, axis=1, inplace=True)
-# print(premierLeague9518FilteredML.head())
+print(y_La_Liga.head())
