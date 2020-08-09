@@ -82,7 +82,6 @@ def get_last_3_games_aggregate_for_specific_teams(league_df, team1, team2, leagu
     league_df['TeamsAggDiff'] = None
     relevant_teams_reduction_df = league_df.loc[team1 in league_df['TeamsList'] and team2 in league_df['TeamsList']].copy()
     # last_game_score = relevant_teams_reduction_df['FTHG'].iloc[-1] -
-    counter = 0
     match_index = league_df_match_index - 1
 
 
@@ -99,10 +98,10 @@ files_list = ['season-0910_csv.csv',
               'season-1718_csv.csv',
               'season-1819_csv.csv']
 laLiga0919Concat = pd.concat([df_creator(la_liga_path, file) for file in files_list])
-La_Liga_Renaming = {'HS': 'Home Shots', 'AS': 'Away Shots', 'HST': 'Home Shots on Target', 'AST': 'Away Shots on Target',
-                    'HF': 'Home Fouls Committed', 'AF': 'Away Fouls Committed', 'HC': 'Home Corners', 'AC': 'Away Corners',
-                    'HY': 'Home Yellows', 'AY': 'Away Yellows', 'HR': 'Home Reds', 'AR': 'Away Reds'}
-rename_leagues_columns(laLiga0919Concat, La_Liga_Renaming)
+laLiga_cols_renaming = {'HS': 'Home Shots', 'AS': 'Away Shots', 'HST': 'Home Shots on Target', 'AST': 'Away Shots on Target',
+                        'HF': 'Home Fouls Committed', 'AF': 'Away Fouls Committed', 'HC': 'Home Corners', 'AC': 'Away Corners',
+                        'HY': 'Home Yellows', 'AY': 'Away Yellows', 'HR': 'Home Reds', 'AR': 'Away Reds'}
+rename_leagues_columns(laLiga0919Concat, laLiga_cols_renaming)
 relevant_analysis_cols = ['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR', 'HTHG', 'HTAG', 'HTR']
 relevant_ML_cols = ['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR']
 
