@@ -63,26 +63,26 @@ def rename_leagues_columns(league_df, dictionary):
     league_df.rename(columns=dictionary, inplace=True)
 
 
-# Create a tuple of lists of match's teams
-def Home_Away_Merger(df_league):
-    df_league['TeamsList'] = (df_league['HomeTeam'], df_league['AwayTeam'])
+def get_goals_scored(playing_stat):
+    # Create a dictionary with team names as keys
+    teams = {}
+    for i in playing_stat.groupby('HomeTeam').mean().T.columns:
+        teams[i] = []
 
+    # the value corresponding to keys is a list containing the match location.
+    for i in range(len(playing_stat)):
+        HTGS = playing_stat.iloc[i]['FTHG']
+        ATGS = playing_stat.iloc[i]['FTAG']
+        teams[playing_stat.iloc[i].HomeTeam].append(HTGS)
+        teams[playing_stat.iloc[i].AwayTeam].append(ATGS)
 
-def get_total_goals_scored_in_season_until_match(season_league_df, team):
-    total_goals_scored_in_season_until_match = 0
-    # for match in season_league_df:
-    # total_goals_scored_in_season_until_match +=
-    return (team,)
-
-
-# Collects aggregate score difference from last 3 games between the two team
-def get_last_3_games_aggregate_for_specific_teams(league_df, team1, team2, league_df_match_index):
-    HomeTeam = league_df['HomeTeam']
-    AwayTeam = league_df['AwayTeam']
-    league_df['TeamsAggDiff'] = None
-    relevant_teams_reduction_df = league_df.loc[team1 in league_df['TeamsList'] and team2 in league_df['TeamsList']].copy()
-    # last_game_score = relevant_teams_reduction_df['FTHG'].iloc[-1] -
-    match_index = league_df_match_index - 1
+    # Create a dataframe for goals scored where rows are teams and cols are matchweek.
+    GoalsScored = pd.DataFrame(data=teams, index=[i for i in range(1, 39)]).T
+    GoalsScored[0] = 0
+    # Aggregate to get uptil that point
+    for i in range(2, 39):
+        GoalsScored[i] = GoalsScored[i] + GoalsScored[i - 1]
+    return GoalsScored
 
 
 ### Reading the La Liga data files and concatenate the DFs:

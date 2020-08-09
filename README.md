@@ -10,4 +10,5 @@ Leagues_Data_Cleaning.py
 Analysis_Functions.py
 ML_Functions.py
 
-The rest is the data. The data was taken from https://datahub.io/sports-data/spanish-la-liga, https://datahub.io/sports-data/english-premier-league
+The rest is the data (CSV and SQLite files). 
+The data was taken from https://datahub.io/sports-data/spanish-la-liga, https://datahub.io/sports-data/english-premier-league. 

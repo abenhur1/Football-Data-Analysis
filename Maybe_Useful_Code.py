@@ -1,4 +1,4 @@
-#### Leagues_Data_and_Adaptations:
+#### Leagues_Data_Cleaning:
 ### Helper Functions:
 # # Collects aggregate score difference from last 3 games between the two team
 # def get_last_3_games_aggregate_for_specific_teams(league_df, team1, team2, league_df_match_index):
@@ -15,6 +15,23 @@
 #     for match_index in range(0, league_df_match_index): # runs through league games until current game and not after
 #         if team1 in league_df['TeamsList'] and team2 in league_df['TeamsList']: # finds a former match of the two teams
 #             if
+#
+# def get_total_goals_scored_in_season_until_match(season_league_df, team):
+#     total_goals_scored_in_season_until_match = 0
+#     # for match in season_league_df:
+#     # total_goals_scored_in_season_until_match +=
+#     return (team,)
+#
+#
+# # Collects aggregate score difference from last 3 games between the two team
+# def get_last_3_games_aggregate_for_specific_teams(league_df, team1, team2, league_df_match_index):
+#     HomeTeam = league_df['HomeTeam']
+#     AwayTeam = league_df['AwayTeam']
+#     league_df['TeamsAggDiff'] = None
+#     relevant_teams_reduction_df = league_df.loc[team1 in league_df['TeamsList'] and team2 in league_df['TeamsList']].copy()
+#     # last_game_score = relevant_teams_reduction_df['FTHG'].iloc[-1] -
+#     match_index = league_df_match_index - 1
+
 
 ### Analysis Stage:
 # la_liga_0919_df['Year'] = pd.DatetimeIndex(la_liga_0919_df['Date']).year  # year column.
