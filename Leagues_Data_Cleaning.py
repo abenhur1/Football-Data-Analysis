@@ -63,9 +63,11 @@ def rename_leagues_columns(league_df, dictionary):
     league_df.rename(columns=dictionary, inplace=True)
 
 
+# Gets the goals scored agg arranged by teams and matchweek
 def get_goals_scored(playing_stat):
     # Create a dictionary with team names as keys
     teams = {}
+    print(playing_stat.groupby('HomeTeam').mean().T)
     for i in playing_stat.groupby('HomeTeam').mean().T.columns:
         teams[i] = []
 
@@ -75,13 +77,16 @@ def get_goals_scored(playing_stat):
         ATGS = playing_stat.iloc[i]['FTAG']
         teams[playing_stat.iloc[i].HomeTeam].append(HTGS)
         teams[playing_stat.iloc[i].AwayTeam].append(ATGS)
+        # print(teams)
 
     # Create a dataframe for goals scored where rows are teams and cols are matchweek.
     GoalsScored = pd.DataFrame(data=teams, index=[i for i in range(1, 39)]).T
+    print(GoalsScored)
     GoalsScored[0] = 0
-    # Aggregate to get uptil that point
+    # Aggregate to get until that point
     for i in range(2, 39):
         GoalsScored[i] = GoalsScored[i] + GoalsScored[i - 1]
+    print(GoalsScored)
     return GoalsScored
 
 
@@ -159,10 +164,11 @@ laLigaLeaguesFilteredList = [season_0910_filtered,
                              season_1819_filtered]
 
 laLiga0919FilteredML = pd.concat(file for file in laLigaLeaguesFilteredList)
-
-print(laLiga0919FilteredML.columns)
+# print(laLiga0919FilteredML.columns)
 
 X_La_Liga = laLiga0919FilteredML.drop(['FTR'], axis=1)
-print(X_La_Liga.head())
+# print(X_La_Liga.head())
 y_La_Liga = laLiga0919FilteredML['FTR']
-print(y_La_Liga.head())
+# print(y_La_Liga.head())
+
+get_goals_scored(season_0910_filtered)
