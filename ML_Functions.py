@@ -20,7 +20,7 @@ import xgboost as xgb
 # from sklearn.model_selection import GridSearchCV
 # from sklearn.metrics import make_scorer, f1_score
 
-from Leagues_Data_and_Adaptations import X_La_Liga, y_La_Liga
+from Leagues_Data_Cleaning import X_La_Liga, y_La_Liga
 
 
 for col in X_La_Liga.columns:
