@@ -2,7 +2,7 @@ import pandas as pd
 from pandas import to_numeric
 import sqlite3
 pd.set_option('display.width', 320)
-pd.set_option('display.max_columns', 12)
+pd.set_option('display.max_columns', 15)
 
 
 # import numpy as np
@@ -44,7 +44,7 @@ pd.set_option('display.max_columns', 12)
 # HBP = Home Team Bookings Points (10 = yellow, 25 = red)
 # ABP = Away Team Bookings Points (10 = yellow, 25 = red)
 
-### Function Helpers:
+### Function Helpers for both stages:
 def df_creator(path, file):
     file = pd.read_csv(path + file)
     return file
@@ -62,6 +62,35 @@ def rename_leagues_columns(league_df, dictionary):
     league_df.rename(columns=dictionary, inplace=True)
 
 
+# Create a tuple of lists of match's teams
+def Home_Away_Merger(df_league):
+    df_league['TeamsList'] = (df_league['HomeTeam'], df_league['AwayTeam'])
+
+
+def get_total_goals_scored_in_season_until_match(season_league_df, team):
+    total_goals_scored_in_season_until_match = 0
+    for match in season_league_df:
+        total_goals_scored_in_season_until_match +=
+    return(team, )
+
+
+# Collects aggregate score difference from last 3 games between the two team
+def get_last_3_games_aggregate_for_specific_teams(league_df, team1, team2, league_df_match_index):
+    HomeTeam = league_df['HomeTeam']
+    AwayTeam = league_df['AwayTeam']
+    league_df['TeamsAggDiff'] = None
+    relevant_teams_reduction_df = league_df.loc[team1 in league_df['TeamsList'] and team2 in league_df['TeamsList']].copy()
+    last_game_score = relevant_teams_reduction_df['FTHG'].iloc[-1] -
+    counter = 0
+    match_index = league_df_match_index - 1
+
+    while counter < 3:
+        league_df.iloc
+    for match_index in range(0, league_df_match_index): # runs through league games until current game and not after
+        if team1 in league_df['TeamsList'] and team2 in league_df['TeamsList']: # finds a former match of the two teams
+            if
+
+
 ### Reading the La Liga data files and concatenate the DFs:
 la_liga_path = "C:/Users/User/PycharmProjects/Football-Data-Analysis/"
 files_list = ['season-0910_csv.csv',
@@ -75,13 +104,18 @@ files_list = ['season-0910_csv.csv',
               'season-1718_csv.csv',
               'season-1819_csv.csv']
 laLiga0919Concat = pd.concat([df_creator(la_liga_path, file) for file in files_list])
+La_Liga_Renaming = {'HS': 'Home Shots', 'AS': 'Away Shots', 'HST': 'Home Shots on Target', 'AST': 'Away Shots on Target',
+                              'HF': 'Home Fouls Committed', 'AF': 'Away Fouls Committed', 'HC': 'Home Corners', 'AC': 'Away Corners',
+                              'HY': 'Home Yellows', 'AY': 'Away Yellows', 'HR': 'Home Reds', 'AR': 'Away Reds'}
+rename_leagues_columns(laLiga0919Concat, La_Liga_Renaming)
+relevant_analysis_cols = ['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR', 'HTHG', 'HTAG', 'HTR']
+relevant_ML_cols = ['Date','HomeTeam','AwayTeam','FTHG','FTAG','FTR']
 
 ### Master Premier League df extracted:
 con = sqlite3.connect("C:/Users/User/PycharmProjects/Football-Data-Analysis/EPL_Seasons_1993-2017_RAW_Table.sqlite")
 dfRawTable = pd.read_sql_query("SELECT * FROM EPL", con)
 
 ### Data Analysis Stage:
-relevant_analysis_cols = ['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR', 'HTHG', 'HTAG', 'HTR']
 ## Modifying the La Liga DF:
 # Leave relevant columns:
 laLiga0919Filtered = laLiga0919Concat[relevant_analysis_cols].copy()
@@ -112,21 +146,23 @@ for df in reset_index_list:
 
 #### ML Stage:
 ### La Liga df modification:
+season_0910_ = df_creator(la_liga_path, 'season-0910_csv.csv')[relevant_ML_cols].copy()
+season_1011 = df_creator(la_liga_path, 'season-1011_csv.csv')[relevant_ML_cols].copy()
+
 laLiga0919FilteredML = laLiga0919Concat.copy()
-La_Liga_Renaming = {'HS': 'Home Shots', 'AS': 'Away Shots', 'HST': 'Home Shots on Target', 'AST': 'Away Shots on Target',
-                              'HF': 'Home Fouls Committed', 'AF': 'Away Fouls Committed', 'HC': 'Home Corners', 'AC': 'Away Corners',
-                              'HY': 'Home Yellows', 'AY': 'Away Yellows', 'HR': 'Home Reds', 'AR': 'Away Reds'}
-rename_leagues_columns(laLiga0919FilteredML, La_Liga_Renaming)
+# Home_Away_Merger(laLiga0919FilteredML)
 reset_index_df(laLiga0919FilteredML)
 laLiga0919FilteredML.drop(laLiga0919FilteredML.loc[:, 'B365H':'PSCA'].columns, axis=1, inplace=True)
-laLiga0919FilteredML.drop(['Div', 'Date', 'HomeTeam', 'AwayTeam', 'HTR'], axis=1, inplace=True)
-# print(laLiga0919FilteredML.columns)
+laLiga0919FilteredML.drop(['Div', 'Date'], axis=1, inplace=True)
+# laLiga0919FilteredML.drop(['Div', 'Date', 'HomeTeam', 'AwayTeam', 'HTR'], axis=1, inplace=True) # leave only match parameters
+
+print(laLiga0919FilteredML.columns)
 
 X_La_Liga = laLiga0919FilteredML.drop(['FTHG', 'FTAG', 'FTR', 'HTHG', 'HTAG'], axis=1)
 print(X_La_Liga.head())
 y_La_Liga = laLiga0919FilteredML['FTR']
 
-# ### Premier League:
+# ### Premier League df modification:
 # premierLeague9518FilteredML = dfRawTable[924:].copy()
 # premierLeague9518FilteredML.reset_index(drop=True, inplace=True)
 # premierLeague9518FilteredML.drop(premierLeague9518FilteredML.loc[:, 'B365H':'B365AH'].columns, axis=1, inplace=True)
