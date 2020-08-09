@@ -8,6 +8,6 @@ it involves locating, extracting, processing and presenting analyses, conclusion
 The following files are the relevant python code files: 
 Leagues_Data_Cleaning.py
 Analysis_Functions.py
-ML_Functions
+ML_Functions.py
 
 The rest is the data. The data was taken from https://datahub.io/sports-data/spanish-la-liga, https://datahub.io/sports-data/english-premier-league
