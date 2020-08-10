@@ -63,7 +63,7 @@ def rename_leagues_columns(league_df, dictionary):
     league_df.rename(columns=dictionary, inplace=True)
 
 
-# Returns the goals scored agg arranged by teams and matchweek:
+# Returns a dataframe of the agg goals scored, arranged by teams and matchweek:
 def get_agg_goals_scored(season_matches):
     num_of_games = len(season_matches)
     # Create a dictionary with team names as keys
@@ -78,35 +78,64 @@ def get_agg_goals_scored(season_matches):
         teams[season_matches.iloc[match_ind]['AwayTeam']].append(AwayTeamGoalsScored)  # Inserts on "teams" dictionary the team's goals
 
     # Create a dataframe for goals scored where rows are teams and cols are the matchweek's goals for the team. list breaks into columns.
-    GoalsScoredByTeam = pd.DataFrame(data=teams, index=[index for index in range(1, 39)]).T  # Teams are rows again. 
-    GoalsScoredByTeam[0] = 0
-    # Aggregate to get until that point (columns turns into cumulative sum of former columns).
-    for match_ind in range(2, 39):
-        GoalsScoredByTeam[match_ind] = GoalsScoredByTeam[match_ind] + GoalsScoredByTeam[match_ind - 1]
+    GoalsScoredByTeam = pd.DataFrame(data=teams, index=[index for index in range(1, 39)]).T  # Teams are rows again.
+    # GoalsScoredByTeam[0] = 0  # Is that code line necessary
+    # Aggregate to get until that point (df values turn into cumulative sum of former values):
+    for match_week in range(2, 39):
+        GoalsScoredByTeam[match_week] = GoalsScoredByTeam[match_week] + GoalsScoredByTeam[match_week - 1]
 
     return GoalsScoredByTeam
 
 
-# Returns the goals conceded agg arranged by teams and matchweek (see former function
+# Returns a dataframe of the agg goals conceded, arranged by teams and matchweek (see former function for documentation):
 def get_agg_goals_conceded(season_matches):
     num_of_games = len(season_matches)
     teams = {}
     for team in season_matches.groupby('HomeTeam').median().T.columns:
         teams[team] = []
 
-    for team in range(num_of_games):
-        HomeTeamGoalsConceded = season_matches.iloc[team]['FTHG']
-        AwayTeamGoalsConceded = season_matches.iloc[team]['FTAG']
-        teams[season_matches.iloc[team]['HomeTeam']].append(HomeTeamGoalsConceded)
-        teams[season_matches.iloc[team]['AwayTeam']].append(AwayTeamGoalsConceded)
+    for match_ind in range(num_of_games):
+        HomeTeamGoalsConceded = season_matches.iloc[match_ind]['FTAG']  # (There's no mistake here)
+        AwayTeamGoalsConceded = season_matches.iloc[match_ind]['FTHG']
+        teams[season_matches.iloc[match_ind]['HomeTeam']].append(HomeTeamGoalsConceded)
+        teams[season_matches.iloc[match_ind]['AwayTeam']].append(AwayTeamGoalsConceded)
 
     GoalsConcededByTeam = pd.DataFrame(data=teams, index=[index for index in range(1, 39)]).T
-    GoalsConcededByTeam[0] = 0
-
-    for team in range(2, 39):
-        GoalsConcededByTeam[team] = GoalsConcededByTeam[team] + GoalsConcededByTeam[team - 1]
+    # GoalsScoredByTeam[0] = 0  # Is that code line necessary
+    for match_week in range(2, 39):
+        GoalsConcededByTeam[match_week] = GoalsConcededByTeam[match_week] + GoalsConcededByTeam[match_week - 1]
 
     return GoalsConcededByTeam
+
+
+def get_gss(season_matches):
+    num_of_games = len(season_matches)
+    agg_goals_scored = get_agg_goals_scored(season_matches)
+    agg_goals_conceded = get_agg_goals_conceded(season_matches)
+
+    j = 0
+    HomeTeamAggGoalScored = []
+    AwayTeamAggGoalScored = []
+    HomeTeamAggGoalConceded = []
+    AwayTeamAggGoalConceded = []
+
+    for match_ind in range(num_of_games):
+        HomeTeam = season_matches.iloc[match_ind].HomeTeam
+        AwayTeam = season_matches.iloc[match_ind].AwayTeam
+        HomeTeamAggGoalScored.append(agg_goals_scored.loc[HomeTeam][j])
+        AwayTeamAggGoalScored.append(agg_goals_scored.loc[AwayTeam][j])
+        HomeTeamAggGoalConceded.append(agg_goals_conceded.loc[HomeTeam][j])
+        AwayTeamAggGoalConceded.append(agg_goals_conceded.loc[AwayTeam][j])
+
+        if ((match_ind + 1) % 10) == 0:
+            j = j + 1
+
+    season_matches['HomeTeamAggGoalScored'] = HomeTeamAggGoalScored
+    season_matches['AwayTeamAggGoalScored'] = AwayTeamAggGoalScored
+    season_matches['HomeTeamAggGoalConceded'] = HomeTeamAggGoalConceded
+    season_matches['AwayTeamAggGoalConceded'] = AwayTeamAggGoalConceded
+
+    return season_matches
 
 
 ### Reading the La Liga data files and concatenate the DFs:
@@ -190,4 +219,4 @@ X_La_Liga = laLiga0919FilteredML.drop(['FTR'], axis=1)
 y_La_Liga = laLiga0919FilteredML['FTR']
 # print(y_La_Liga.head())
 
-get_agg_goals_scored(la_liga_season_0910_filtered_ML)
+get_gss(la_liga_season_0910_filtered_ML)
