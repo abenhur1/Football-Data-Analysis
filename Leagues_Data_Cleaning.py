@@ -79,7 +79,6 @@ def get_agg_goals_scored(season_matches):
 
     # Create a dataframe for goals scored where rows are teams and cols are the matchweek's goals for the team. list breaks into columns.
     GoalsScoredByTeam = pd.DataFrame(data=teams, index=[index for index in range(1, 39)]).T  # Teams are rows again.
-    GoalsScoredByTeam[0] = 0  # This will become the aggregate goals scored
     # Aggregate to get until that point (df values turn into cumulative sum of former values):
     for match_week in range(2, 39):
         GoalsScoredByTeam[match_week] = GoalsScoredByTeam[match_week] + GoalsScoredByTeam[match_week - 1]
@@ -101,7 +100,6 @@ def get_agg_goals_conceded(season_matches):
         teams[season_matches.iloc[match_ind]['AwayTeam']].append(AwayTeamGoalsConceded)
 
     GoalsConcededByTeam = pd.DataFrame(data=teams, index=[index for index in range(1, 39)]).T
-    GoalsConcededByTeam[0] = 0  # Is that code line necessary
     for match_week in range(2, 39):
         GoalsConcededByTeam[match_week] = GoalsConcededByTeam[match_week] + GoalsConcededByTeam[match_week - 1]
 
@@ -113,7 +111,7 @@ def update_season_matches_with_agg_goals(season_matches):
     agg_goals_scored = get_agg_goals_scored(season_matches)
     agg_goals_conceded = get_agg_goals_conceded(season_matches)
 
-    match_week = 0
+    match_week = 1
     HTAggGoalScored = []
     ATAggGoalScored = []
     HTAggGoalConceded = []
@@ -132,6 +130,10 @@ def update_season_matches_with_agg_goals(season_matches):
         # overall in the AggGoal Dataframes). Meaning one value of match_week sweeps through all teams:
         if ((match_ind + 1) % 10) == 0:
             match_week = match_week + 1
+        if match_week == 38 and match_ind >= 377:
+            continue
+        if match_week == 39:
+            continue
 
     # Updates the season_matches df by creating new columns according to above lists:
     season_matches['HomeTeamAggGoalScored'] = HTAggGoalScored
