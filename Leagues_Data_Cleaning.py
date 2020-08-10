@@ -63,31 +63,50 @@ def rename_leagues_columns(league_df, dictionary):
     league_df.rename(columns=dictionary, inplace=True)
 
 
-# Gets the goals scored agg arranged by teams and matchweek
-def get_goals_scored(playing_stat):
+# Returns the goals scored agg arranged by teams and matchweek:
+def get_agg_goals_scored(season_matches):
+    num_of_games = len(season_matches)
     # Create a dictionary with team names as keys
     teams = {}
-    print(playing_stat.groupby('HomeTeam').mean().T)
-    for i in playing_stat.groupby('HomeTeam').mean().T.columns:
-        teams[i] = []
+    for team in season_matches.groupby('HomeTeam').median().T.columns:  # A way to turn the teams into the columns
+        teams[team] = []
 
-    # the value corresponding to keys is a list containing the match location.
-    for i in range(len(playing_stat)):
-        HTGS = playing_stat.iloc[i]['FTHG']
-        ATGS = playing_stat.iloc[i]['FTAG']
-        teams[playing_stat.iloc[i].HomeTeam].append(HTGS)
-        teams[playing_stat.iloc[i].AwayTeam].append(ATGS)
-        # print(teams)
+    for match_ind in range(num_of_games):
+        HomeTeamGoalsScored = season_matches.iloc[match_ind]['FTHG']
+        AwayTeamGoalsScored = season_matches.iloc[match_ind]['FTAG']
+        teams[season_matches.iloc[match_ind]['HomeTeam']].append(HomeTeamGoalsScored)  # Inserts on "teams" dictionary the team's goals
+        teams[season_matches.iloc[match_ind]['AwayTeam']].append(AwayTeamGoalsScored)  # Inserts on "teams" dictionary the team's goals
 
-    # Create a dataframe for goals scored where rows are teams and cols are matchweek.
-    GoalsScored = pd.DataFrame(data=teams, index=[i for i in range(1, 39)]).T
-    print(GoalsScored)
-    GoalsScored[0] = 0
-    # Aggregate to get until that point
-    for i in range(2, 39):
-        GoalsScored[i] = GoalsScored[i] + GoalsScored[i - 1]
-    print(GoalsScored)
-    return GoalsScored
+    # Create a dataframe for goals scored where rows are teams and cols are the matchweek's goals for the team. list breaks into columns.
+    GoalsScoredByTeam = pd.DataFrame(data=teams, index=[index for index in range(1, 39)]).T  # Teams are rows again. 
+    GoalsScoredByTeam[0] = 0
+    # Aggregate to get until that point (columns turns into cumulative sum of former columns).
+    for match_ind in range(2, 39):
+        GoalsScoredByTeam[match_ind] = GoalsScoredByTeam[match_ind] + GoalsScoredByTeam[match_ind - 1]
+
+    return GoalsScoredByTeam
+
+
+# Returns the goals conceded agg arranged by teams and matchweek (see former function
+def get_agg_goals_conceded(season_matches):
+    num_of_games = len(season_matches)
+    teams = {}
+    for team in season_matches.groupby('HomeTeam').median().T.columns:
+        teams[team] = []
+
+    for team in range(num_of_games):
+        HomeTeamGoalsConceded = season_matches.iloc[team]['FTHG']
+        AwayTeamGoalsConceded = season_matches.iloc[team]['FTAG']
+        teams[season_matches.iloc[team]['HomeTeam']].append(HomeTeamGoalsConceded)
+        teams[season_matches.iloc[team]['AwayTeam']].append(AwayTeamGoalsConceded)
+
+    GoalsConcededByTeam = pd.DataFrame(data=teams, index=[index for index in range(1, 39)]).T
+    GoalsConcededByTeam[0] = 0
+
+    for team in range(2, 39):
+        GoalsConcededByTeam[team] = GoalsConcededByTeam[team] + GoalsConcededByTeam[team - 1]
+
+    return GoalsConcededByTeam
 
 
 ### Reading the La Liga data files and concatenate the DFs:
@@ -142,26 +161,26 @@ for df in reset_index_list:
 
 #### ML Stage:
 ### La Liga df modification:
-season_0910_filtered = df_creator(la_liga_path, 'season-0910_csv.csv')[relevant_ML_cols].copy()
-season_1011_filtered = df_creator(la_liga_path, 'season-1011_csv.csv')[relevant_ML_cols].copy()
-season_1112_filtered = df_creator(la_liga_path, 'season-1112_csv.csv')[relevant_ML_cols].copy()
-season_1213_filtered = df_creator(la_liga_path, 'season-1213_csv.csv')[relevant_ML_cols].copy()
-season_1314_filtered = df_creator(la_liga_path, 'season-1314_csv.csv')[relevant_ML_cols].copy()
-season_1415_filtered = df_creator(la_liga_path, 'season-1415_csv.csv')[relevant_ML_cols].copy()
-season_1516_filtered = df_creator(la_liga_path, 'season-1516_csv.csv')[relevant_ML_cols].copy()
-season_1617_filtered = df_creator(la_liga_path, 'season-1617_csv.csv')[relevant_ML_cols].copy()
-season_1718_filtered = df_creator(la_liga_path, 'season-1718_csv.csv')[relevant_ML_cols].copy()
-season_1819_filtered = df_creator(la_liga_path, 'season-1819_csv.csv')[relevant_ML_cols].copy()
-laLigaLeaguesFilteredList = [season_0910_filtered,
-                             season_1011_filtered,
-                             season_1112_filtered,
-                             season_1213_filtered,
-                             season_1314_filtered,
-                             season_1415_filtered,
-                             season_1516_filtered,
-                             season_1617_filtered,
-                             season_1718_filtered,
-                             season_1819_filtered]
+la_liga_season_0910_filtered_ML = df_creator(la_liga_path, 'season-0910_csv.csv')[relevant_ML_cols].copy()
+la_liga_season_1011_filtered_ML = df_creator(la_liga_path, 'season-1011_csv.csv')[relevant_ML_cols].copy()
+la_liga_season_1112_filtered_ML = df_creator(la_liga_path, 'season-1112_csv.csv')[relevant_ML_cols].copy()
+la_liga_season_1213_filtered_ML = df_creator(la_liga_path, 'season-1213_csv.csv')[relevant_ML_cols].copy()
+la_liga_season_1314_filtered_ML = df_creator(la_liga_path, 'season-1314_csv.csv')[relevant_ML_cols].copy()
+la_liga_season_1415_filtered_ML = df_creator(la_liga_path, 'season-1415_csv.csv')[relevant_ML_cols].copy()
+la_liga_season_1516_filtered_ML = df_creator(la_liga_path, 'season-1516_csv.csv')[relevant_ML_cols].copy()
+la_liga_season_1617_filtered_ML = df_creator(la_liga_path, 'season-1617_csv.csv')[relevant_ML_cols].copy()
+la_liga_season_1718_filtered_ML = df_creator(la_liga_path, 'season-1718_csv.csv')[relevant_ML_cols].copy()
+la_liga_season_1819_filtered_ML = df_creator(la_liga_path, 'season-1819_csv.csv')[relevant_ML_cols].copy()
+laLigaLeaguesFilteredList = [la_liga_season_0910_filtered_ML,
+                             la_liga_season_1011_filtered_ML,
+                             la_liga_season_1112_filtered_ML,
+                             la_liga_season_1213_filtered_ML,
+                             la_liga_season_1314_filtered_ML,
+                             la_liga_season_1415_filtered_ML,
+                             la_liga_season_1516_filtered_ML,
+                             la_liga_season_1617_filtered_ML,
+                             la_liga_season_1718_filtered_ML,
+                             la_liga_season_1819_filtered_ML]
 
 laLiga0919FilteredML = pd.concat(file for file in laLigaLeaguesFilteredList)
 # print(laLiga0919FilteredML.columns)
@@ -171,4 +190,4 @@ X_La_Liga = laLiga0919FilteredML.drop(['FTR'], axis=1)
 y_La_Liga = laLiga0919FilteredML['FTR']
 # print(y_La_Liga.head())
 
-get_goals_scored(season_0910_filtered)
+get_agg_goals_scored(la_liga_season_0910_filtered_ML)
