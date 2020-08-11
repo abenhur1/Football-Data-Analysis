@@ -74,12 +74,12 @@ def get_agg_goals_scored(season_matches):
     for match_ind in range(num_of_matches):
         HomeTeamGoalsScored = season_matches.iloc[match_ind]['FTHG']
         AwayTeamGoalsScored = season_matches.iloc[match_ind]['FTAG']
-        teams[season_matches.iloc[match_ind]['HomeTeam']].append(HomeTeamGoalsScored)  # Inserts on "teams" dictionary the team's goals
-        teams[season_matches.iloc[match_ind]['AwayTeam']].append(AwayTeamGoalsScored)  # Inserts on "teams" dictionary the team's goals
+        teams[season_matches.iloc[match_ind]['HomeTeam']].append(HomeTeamGoalsScored)  # Inserts on "teams" dictionary the team's goals.
+        teams[season_matches.iloc[match_ind]['AwayTeam']].append(AwayTeamGoalsScored)  # Inserts on "teams" dictionary the team's goals.
 
-    # Create a dataframe for goals scored where rows are teams and cols are the matchweek's goals for the team. list breaks into columns.
+    # Create a dataframe for goals scored where rows are teams and cols are the matchweek's goals for the team. list breaks into columns:
     GoalsScoredByTeam = pd.DataFrame(data=teams, index=[index for index in range(1, 39)]).T  # Teams are rows again.
-    # Aggregate to get until that point (df values turn into cumulative sum of former values):
+    # Aggregate to get until that point (df values turn into cumulative sum of former values).
     for match_week in range(2, 39):
         GoalsScoredByTeam[match_week] = GoalsScoredByTeam[match_week] + GoalsScoredByTeam[match_week - 1]
 
@@ -106,7 +106,7 @@ def get_agg_goals_conceded(season_matches):
     return GoalsConcededByTeam
 
 
-def update_season_matches_with_agg_goals(season_matches):
+def update_season_matches_df_with_agg_goals_cols(season_matches):
     num_of_matches = len(season_matches)
     agg_goals_scored = get_agg_goals_scored(season_matches)
     agg_goals_conceded = get_agg_goals_conceded(season_matches)
@@ -117,7 +117,7 @@ def update_season_matches_with_agg_goals(season_matches):
     HTAggGoalConceded = []
     ATAggGoalConceded = []
 
-    # Updates the lists in accordance with
+    # Updates the lists with agg goals in accordance with matchweek:
     for match_ind in range(num_of_matches):
         HT = season_matches.iloc[match_ind]['HomeTeam']  # Home Team of current match
         AT = season_matches.iloc[match_ind]['AwayTeam']  # Away Team of current match
@@ -130,16 +130,32 @@ def update_season_matches_with_agg_goals(season_matches):
         # overall in the AggGoal Dataframes). Meaning one value of match_week sweeps through all teams:
         if ((match_ind + 1) % 10) == 0:
             match_week = match_week + 1
-        if match_week == 38 and match_ind >= 377:
-            continue
-        if match_week == 39:
-            continue
 
     # Updates the season_matches df by creating new columns according to above lists:
     season_matches['HomeTeamAggGoalScored'] = HTAggGoalScored
     season_matches['AwayTeamAggGoalScored'] = ATAggGoalScored
     season_matches['HomeTeamAggGoalConceded'] = HTAggGoalConceded
     season_matches['AwayTeamAggGoalConceded'] = ATAggGoalConceded
+
+    return season_matches
+
+
+def determine_points(result):
+    if result == 'W':
+        return 3
+    elif result == 'D':
+        return 1
+    else:
+        return 0
+
+
+# Creates a column of teams' points as of current match:
+def update_season_matches_df_with_teams_points_col(season_matches):
+    # Create a dictionary with team names as keys
+    teams = {}
+    for team in season_matches.groupby('HomeTeam').median().T.columns:
+        teams[team] = []
+
 
     return season_matches
 
@@ -206,7 +222,7 @@ la_liga_season_1516_filtered_ML = df_creator(la_liga_path, 'season-1516_csv.csv'
 la_liga_season_1617_filtered_ML = df_creator(la_liga_path, 'season-1617_csv.csv')[relevant_ML_cols].copy()
 la_liga_season_1718_filtered_ML = df_creator(la_liga_path, 'season-1718_csv.csv')[relevant_ML_cols].copy()
 la_liga_season_1819_filtered_ML = df_creator(la_liga_path, 'season-1819_csv.csv')[relevant_ML_cols].copy()
-laLigaLeaguesFilteredList = [la_liga_season_0910_filtered_ML,
+laLigaSeasonsFilteredList = [la_liga_season_0910_filtered_ML,
                              la_liga_season_1011_filtered_ML,
                              la_liga_season_1112_filtered_ML,
                              la_liga_season_1213_filtered_ML,
@@ -217,7 +233,10 @@ laLigaLeaguesFilteredList = [la_liga_season_0910_filtered_ML,
                              la_liga_season_1718_filtered_ML,
                              la_liga_season_1819_filtered_ML]
 
-laLiga0919FilteredML = pd.concat(file for file in laLigaLeaguesFilteredList)
+for la_Liga_season in laLigaSeasonsFilteredList:
+    update_season_matches_df_with_agg_goals_cols(la_Liga_season)
+
+laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
 # print(laLiga0919FilteredML.columns)
 
 X_La_Liga = laLiga0919FilteredML.drop(['FTR'], axis=1)
@@ -225,4 +244,6 @@ X_La_Liga = laLiga0919FilteredML.drop(['FTR'], axis=1)
 y_La_Liga = laLiga0919FilteredML['FTR']
 # print(y_La_Liga.head())
 
-update_season_matches_with_agg_goals(la_liga_season_0910_filtered_ML)
+print(get_agg_goals_scored(la_liga_season_0910_filtered_ML).head(15))
+print(get_agg_goals_conceded(la_liga_season_0910_filtered_ML).head(15))
+print(la_liga_season_0910_filtered_ML.head(15))
