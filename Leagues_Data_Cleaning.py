@@ -79,10 +79,11 @@ def get_agg_goals_scored(season_matches):
 
     # Create a dataframe for goals scored where rows are teams and cols are the matchweek's goals for the team. list breaks into columns:
     GoalsScoredByTeam = pd.DataFrame(data=teams, index=[index for index in range(1, 39)]).T  # Teams are rows again.
-    GoalsScoredByTeam[0] = 0  # Because before week 1, 0 goals were scored (current game always excluded since it is unknown yet).
-    # Aggregates to get scored goals UNTIL current game (excludes current since it is unknown yet).
-    # df values turn into cumulative sum of former values.
-    for match_week in range(2, 39):
+    GoalsScoredByTeam[0] = 0  # Because before week 1, 0 goals were scored (current game always excluded since it is unknown yet). it is
+                              # relevant to function "update_season_matches_df_with_agg_goals_cols" later
+    # Aggregates to get scored goals UNTIL current game (excludes current since it is unknown yet), df values
+    # turn into cumulative sum of former values:
+    for match_week in range(2, 39):  # (Remember that actually the first relevant GoalsConcededByTeam column=match_week is 1 and not 0)
         GoalsScoredByTeam[match_week] = GoalsScoredByTeam[match_week] + GoalsScoredByTeam[match_week - 1]
 
     return GoalsScoredByTeam
@@ -143,7 +144,7 @@ def update_season_matches_df_with_agg_goals_cols(season_matches):
     return season_matches
 
 
-# Returns a dictionary with teams' agg league points:
+# Returns a df with teams' agg league points:
 def get_agg_points(season_matches):
     num_of_matches = len(season_matches)
 
@@ -163,7 +164,14 @@ def get_agg_points(season_matches):
             teams[season_matches.iloc[match_ind]['HomeTeam']].append(1)
             teams[season_matches.iloc[match_ind]['AwayTeam']].append(1)
 
-    return teams
+    teams_league_points_df = pd.DataFrame(data=teams, index=[index for index in range(1, 39)]).T
+    teams_league_points_df[0] = 0
+    # Aggregates to get league points UNTIL current game (excludes current since it is unknown yet), df values
+    # turn into cumulative sum of former values:
+    for match_week in range(2, 39):
+        teams_league_points_df[match_week] = teams_league_points_df[match_week] + teams_league_points_df[match_week - 1]
+
+    return teams_league_points_df
 
 
 # Creates a column of teams' points as of current match:
@@ -171,18 +179,18 @@ def update_season_matches_df_with_teams_points_col(season_matches):
     teams = get_agg_points(season_matches)
     num_of_matches = len(season_matches)
     match_week = 0
-    HTAggLeaguePoints = []
-    ATAggLeaguePoints = []
+    HTAggLeaguePoints = []  # Really turns into aggregate list only at the end of the function.
+    ATAggLeaguePoints = []  # Really turns into aggregate list only at the end of the function.
 
     # Updates the lists with agg goals in accordance with matchweek:
     for match_ind in range(num_of_matches):
         HT = season_matches.iloc[match_ind]['HomeTeam']  # Home Team of current match
         AT = season_matches.iloc[match_ind]['AwayTeam']  # Away Team of current match
-        HTAggLeaguePoints.append(teams[HT][match_ind])  # Appends HT earned points only of current match
-        ATAggLeaguePoints.append(teams[AT][match_ind])  # Appends AT earned points only of current match
+        HTAggLeaguePoints.append(teams[HT][match_week])  # Appends HT earned points only of current match
+        ATAggLeaguePoints.append(teams[AT][match_week])  # Appends AT earned points only of current match
 
         # We move to next week=value-in-list after 10 matches have been played (notice that a match accounts for 2 teams and we have
-        # 20 rows=teams overall in the teams dictionary). Meaning one value of match_week sweeps through all teams:
+        # 20 teams overall in the teams dictionary). Meaning one value of match_week sweeps through all teams:
         if ((match_ind + 1) % 10) == 0:
             match_week = match_week + 1
 
