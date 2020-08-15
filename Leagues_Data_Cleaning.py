@@ -154,6 +154,7 @@ def get_agg_points(season_matches):
     for team in season_matches.groupby('HomeTeam').median().T.columns:
         teams[team] = []
 
+    # Fill the dictionary values (lists) with league points:
     for match_ind in range(num_of_matches):
         if season_matches.iloc[match_ind]['FTR'] == 'H':
             teams[season_matches.iloc[match_ind]['HomeTeam']].append(3)
@@ -275,10 +276,10 @@ laLigaSeasonsFilteredList = [la_liga_season_0910_filtered_ML,
                              la_liga_season_1718_filtered_ML,
                              la_liga_season_1819_filtered_ML]
 
-# Update DFs with new relevant data
-for la_Liga_season in laLigaSeasonsFilteredList:
-    update_season_matches_df_with_agg_goals_cols(la_Liga_season)
-    update_season_matches_df_with_teams_points_col(la_Liga_season)
+# # Update DFs with new relevant data
+# for la_Liga_season in laLigaSeasonsFilteredList:
+#     update_season_matches_df_with_agg_goals_cols(la_Liga_season)
+#     update_season_matches_df_with_teams_points_col(la_Liga_season)
 
 laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
 # print(laLiga0919FilteredML.columns)
