@@ -22,7 +22,8 @@ xlabel_HT_influence = "Leader's Status"
 xlabel_location_influence = "Winning teams/Draw"
 
 
-##### Data Analysis:
+## Data Analysis:
+# Bar plot's parameters of half time result's influence on final time result:
 def HT_influence_bar_plot_param(league_df):
     print(league_df.columns)
     num_of_games_that_have_lead_at_HT = len(league_df)
@@ -39,6 +40,7 @@ def HT_influence_bar_plot_param(league_df):
     return percentages
 
 
+# Bar plot's parameters of game's whereabouts' influence on final time result:
 def location_influence_bar_plot_param(league_df):
     league_df_1_Matches = len(league_df)
     H_Wins_Percents_1 = len(league_df[league_df['FTR'] == 'H']) / league_df_1_Matches
@@ -52,6 +54,7 @@ def location_influence_bar_plot_param(league_df):
     return percentages
 
 
+# Foundations for general two teams bar plot comparison:
 def two_leagues_bar_plot_comparison(league1_name, league2_name, graph_title, xlabel, xticklabels, x_bar_param_league1, x_bar_param_league2):
     ind = np.arange(3)  # the x locations for the groups
     width = 0.27  # the width of the bars
@@ -105,7 +108,7 @@ def two_leagues_bar_plot_comparison(league1_name, league2_name, graph_title, xla
     plt.show()
 
 
-##### Function Calls:
+## Function Calls:
 two_leagues_bar_plot_comparison(La_Liga_name, Premier_League_Name, Analysis_graph1_title, xlabel_HT_influence, xticklabels_HT_influence,
                                 HT_influence_bar_plot_param(laLiga0919Filtered2), HT_influence_bar_plot_param(premierLeague9518Filtered2))
 two_leagues_bar_plot_comparison(La_Liga_name, Premier_League_Name, Analysis_graph2_title, xlabel_HT_influence, xticklabels_HT_influence,

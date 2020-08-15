@@ -80,7 +80,7 @@ def get_agg_goals_scored(season_matches):
     # Create a dataframe for goals scored where rows are teams and cols are the matchweek's goals for the team. list breaks into columns:
     GoalsScoredByTeam = pd.DataFrame(data=teams, index=[index for index in range(1, 39)]).T  # Teams are rows again.
     GoalsScoredByTeam[0] = 0  # Because before week 1, 0 goals were scored (current game always excluded since it is unknown yet). it is
-                              # relevant to function "update_season_matches_df_with_agg_goals_cols" later
+    # relevant to function "update_season_matches_df_with_agg_goals_cols" later
     # Aggregates to get scored goals UNTIL current game (excludes current since it is unknown yet), df values
     # turn into cumulative sum of former values:
     for match_week in range(2, 39):  # (Remember that actually the first relevant GoalsConcededByTeam column=match_week is 1 and not 0)
@@ -181,15 +181,15 @@ def update_season_matches_df_with_teams_points_col(season_matches):
     teams_league_points_df = get_agg_points(season_matches)
     num_of_matches = len(season_matches)
     match_week = 0
-    HTAggLeaguePoints = []  # Really turns into aggregate list only at the end of the function.
-    ATAggLeaguePoints = []  # Really turns into aggregate list only at the end of the function.
+    HTAggLeaguePoints = []
+    ATAggLeaguePoints = []
 
     # Updates the lists with agg goals in accordance with matchweek:
     for match_ind in range(num_of_matches):
         HT = season_matches.iloc[match_ind]['HomeTeam']  # Home Team of current match
         AT = season_matches.iloc[match_ind]['AwayTeam']  # Away Team of current match
-        HTAggLeaguePoints.append(teams_league_points_df.loc[HT][match_week])  # Appends num of agg scored goals of HT UNTIL current match
-        ATAggLeaguePoints.append(teams_league_points_df.loc[AT][match_week])  # Appends num of agg scored goals of AT UNTIL current match
+        HTAggLeaguePoints.append(teams_league_points_df.loc[HT][match_week])  # Appends num of agg league points of HT UNTIL current match
+        ATAggLeaguePoints.append(teams_league_points_df.loc[AT][match_week])  # Appends num of agg league points of AT UNTIL current match
 
         # We move to next week=column after 10 matches have been played (notice that a match accounts for 2 teams and we have 20 rows=teams
         # overall in the AggGoal Dataframes). Meaning one value of match_week sweeps through all teams:
@@ -199,6 +199,77 @@ def update_season_matches_df_with_teams_points_col(season_matches):
     # Updates the season_matches df by creating new columns according to above lists:
     season_matches['HomeTeamAggLeaguePoints'] = HTAggLeaguePoints
     season_matches['AwayTeamAggLeaguePoints'] = ATAggLeaguePoints
+
+    return season_matches
+
+
+# Returns a df with teams' last three league FTRs specifically between the two:
+def get_agg_last_three_specific_matches_FTRs(season_matches):
+    num_of_matches = len(season_matches)
+
+    # Create a dictionary with team names as keys
+    teams = {}
+    for team in season_matches.groupby('HomeTeam').median().T.columns:
+        teams[team] = []
+
+    # Fill the dictionary values (lists) with league points:
+    for match_ind in range(num_of_matches):
+        if season_matches.iloc[match_ind]['FTR'] == 'H':
+            teams[season_matches.iloc[match_ind]['HomeTeam']].append(3)
+            teams[season_matches.iloc[match_ind]['AwayTeam']].append(0)
+        elif season_matches.iloc[match_ind]['FTR'] == 'A':
+            teams[season_matches.iloc[match_ind]['HomeTeam']].append(0)
+            teams[season_matches.iloc[match_ind]['AwayTeam']].append(3)
+        else:
+            teams[season_matches.iloc[match_ind]['HomeTeam']].append(1)
+            teams[season_matches.iloc[match_ind]['AwayTeam']].append(1)
+
+    teams_league_points_df = pd.DataFrame(data=teams, index=[index for index in range(1, 39)]).T
+    teams_league_points_df[0] = 0
+    # Aggregates to get league points UNTIL current game (excludes current since it is unknown yet), df values
+    # turn into cumulative sum of former values:
+    for match_week in range(2, 39):
+        teams_league_points_df[match_week] = teams_league_points_df[match_week] + teams_league_points_df[match_week - 1]
+
+    return teams_league_points_df
+
+
+# Creates a column of teams' number of wins on last 3 matches between the two:
+def update_season_matches_df_with_last_three_specific_matches_FTRs_col(season_matches):
+    return season_matches
+
+
+# Returns a df with teams' last three league FTRs:
+def get_agg_last_three_any_matches_FTRs(season_matches):
+    return None
+
+
+# Creates a column of teams' number of wins on last 3 matches:
+def update_season_matches_df_with_last_three_any_matches_FTRs_col(season_matches):
+    return season_matches
+
+
+# parameters of game's whereabouts' influence on final time result:
+def location_influence_bar_plot_param(league_df):
+    league_df_1_Matches = len(league_df)
+    H_Wins_Percents_1 = len(league_df[league_df['FTR'] == 'H']) / league_df_1_Matches
+    Draws_Percents_1 = len(league_df[league_df['FTR'] == 'D']) / league_df_1_Matches
+    A_Wins_Percents_1 = len(league_df[league_df['FTR'] == 'A']) / league_df_1_Matches
+
+    percentages = [H_Wins_Percents_1 * 100,
+                   Draws_Percents_1 * 100,
+                   A_Wins_Percents_1 * 100]
+
+    return percentages
+
+
+# Creates a column of match's whereabouts' influence on FTR (probability of winning)
+def update_season_matches_df_with_percent_of_wins_by_location(season_matches):
+    percentages_list = location_influence_bar_plot_param(season_matches)
+    season_matches['HT Chances'] = percentages_list[0]
+    season_matches['Draw Chances'] = percentages_list[1]
+    season_matches['AT Chances'] = percentages_list[2]
+    # (Allegedly function gives Data Leakage, though the assumption is that these are true more or less - always (at least for the past 20 years))
 
     return season_matches
 
@@ -276,13 +347,19 @@ laLigaSeasonsFilteredList = [la_liga_season_0910_filtered_ML,
                              la_liga_season_1718_filtered_ML,
                              la_liga_season_1819_filtered_ML]
 
-# # Update DFs with new relevant data
-# for la_Liga_season in laLigaSeasonsFilteredList:
-#     update_season_matches_df_with_agg_goals_cols(la_Liga_season)
-#     update_season_matches_df_with_teams_points_col(la_Liga_season)
+# Update DFs with new relevant data
+for la_Liga_season in laLigaSeasonsFilteredList:
+    update_season_matches_df_with_agg_goals_cols(la_Liga_season)
+    update_season_matches_df_with_teams_points_col(la_Liga_season)
 
 laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
-# print(laLiga0919FilteredML.columns)
+# get_agg_last_three_specific_matches_FTRs(laLiga0919FilteredML)
+# update_season_matches_df_with_last_three_specific_matches_FTRs_col(laLiga0919FilteredML)
+# get_agg_last_three_any_matches_FTRs(laLiga0919FilteredML)
+# update_season_matches_df_with_last_three_any_matches_FTRs_col(laLiga0919FilteredML)
+update_season_matches_df_with_percent_of_wins_by_location(laLiga0919FilteredML)
+print(laLiga0919FilteredML.head())
+
 
 X_La_Liga = laLiga0919FilteredML.drop(['FTR'], axis=1)
 # print(X_La_Liga.head())
@@ -292,5 +369,5 @@ y_La_Liga = laLiga0919FilteredML['FTR']
 # print(get_agg_goals_scored(la_liga_season_0910_filtered_ML).head(12))
 # print(get_agg_goals_conceded(la_liga_season_0910_filtered_ML).head(15))
 # print(la_liga_season_0910_filtered_ML.head(12))
-print(get_agg_points(la_liga_season_0910_filtered_ML))
-print(update_season_matches_df_with_teams_points_col(la_liga_season_0910_filtered_ML))
+# print(get_agg_points(la_liga_season_0910_filtered_ML))
+# print(update_season_matches_df_with_teams_points_col(la_liga_season_0910_filtered_ML))
