@@ -213,7 +213,6 @@ def update_season_matches_df_with_teams_points_col(season_matches):
 # Returns a df with teams' last three league FTRs specifically between the two:
 def get_agg_last_three_specific_matches_FTRs(season_matches):  # Notice that applies for CONCATENATED df
     num_of_matches = len(season_matches)
-
     # # Create a dictionary with team names as keys
     # teams = {}
     # for team in season_matches.groupby('HomeTeam').median().T.columns:
@@ -223,17 +222,16 @@ def get_agg_last_three_specific_matches_FTRs(season_matches):  # Notice that app
     season_matches['Number of past AwayTeam wins out of 3'] = 0
 
     # Fill the dictionary values (lists) with last three FTRs:
-    for general_match_ind in range(190, num_of_matches):
+    for general_match_ind in range(3799, num_of_matches):
         HT = season_matches.iloc[general_match_ind]['HomeTeam']  # Home Team of current match
         AT = season_matches.iloc[general_match_ind]['AwayTeam']
         HT_win_count = 0
         AT_win_count = 0
         history_monitor = 0  # Monitors whether we reached the three games we want to take into account
 
-        for match_ind_until_general in range(general_match_ind - 1, -2, -1):  # To iterate backwards and find last three relevant games. -2
-                                                                              # and at the bottom we have ==-1 (instead of -2 and ==0 at the
-                                                                              # bottom) - otherwise real and zaragoza don't append their 0s at
-                                                                              # beginning because they reach -1 there.
+        for match_ind_until_general in range(general_match_ind - 1, -1, -1):  # To iterate backwards and find last three relevant games. It
+                                                                              # happens so that it skips first game but it doesn't matter since
+                                                                              # both values are of course 0
             HT_past_match = season_matches.iloc[match_ind_until_general]['HomeTeam']  # Home Team of past match
             AT_past_match = season_matches.iloc[match_ind_until_general]['AwayTeam']
             FTR_past_match = season_matches.iloc[match_ind_until_general]['FTR']
@@ -244,9 +242,8 @@ def get_agg_last_three_specific_matches_FTRs(season_matches):  # Notice that app
                 elif FTR_past_match == 'A':
                     AT_win_count = AT_win_count + 1
                 history_monitor = history_monitor + 1
-                if history_monitor == 3:
-                    print(HT, AT)
-            if match_ind_until_general == -1 or history_monitor == 3:
+            if history_monitor == 3:
+                history_monitor = 0  # Monitors whether we reached the three games we want to take into account
                 break  # Stop when 3 games were taken into account or before that when we reached beginning of data
 
         season_matches.at[general_match_ind, 'Number of past HomeTeam wins out of 3'] = HT_win_count  # resets value in df
@@ -382,6 +379,7 @@ laLigaSeasonsFilteredList = [la_liga_season_0910_filtered_ML,
 #     update_season_matches_df_with_teams_points_col(la_Liga_season)
 
 laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
+reset_index_df(laLiga0919FilteredML)
 get_agg_last_three_specific_matches_FTRs(laLiga0919FilteredML)
 # update_season_matches_df_with_last_three_specific_matches_FTRs_col(laLiga0919FilteredML)
 # update_season_matches_df_with_last_three_any_matches_FTRs_col(laLiga0919FilteredML)
