@@ -210,19 +210,14 @@ def update_season_matches_df_with_teams_points_col(season_matches):
     return season_matches
 
 
-# Returns a df with teams' last three league FTRs specifically between the two:
-def get_agg_last_three_specific_matches_FTRs(season_matches):  # Notice that applies for CONCATENATED df
+# Creates a column of teams' number of wins on last 3 matches between the two:
+def update_season_matches_df_with_last_three_specific_matches_FTRs_col(season_matches):  # Notice that applies for CONCATENATED df
     num_of_matches = len(season_matches)
-    # # Create a dictionary with team names as keys
-    # teams = {}
-    # for team in season_matches.groupby('HomeTeam').median().T.columns:
-    #     teams[team] = None  # Each value will be list of lists. Inner list has three elements: the last three two-teams'-specific matches
-    # teams_last_three_games_df = pd.DataFrame(data=teams, index=[index for index in range(num_of_matches)]).T
     season_matches['Number of past HomeTeam wins out of 3'] = 0
     season_matches['Number of past AwayTeam wins out of 3'] = 0
 
     # Fill the dictionary values (lists) with last three FTRs:
-    for general_match_ind in range(3799, num_of_matches):
+    for general_match_ind in range(0, num_of_matches):
         HT = season_matches.iloc[general_match_ind]['HomeTeam']  # Home Team of current match
         AT = season_matches.iloc[general_match_ind]['AwayTeam']
         HT_win_count = 0
@@ -243,25 +238,16 @@ def get_agg_last_three_specific_matches_FTRs(season_matches):  # Notice that app
                     AT_win_count = AT_win_count + 1
                 history_monitor = history_monitor + 1
             if history_monitor == 3:
-                history_monitor = 0  # Monitors whether we reached the three games we want to take into account
                 break  # Stop when 3 games were taken into account or before that when we reached beginning of data
 
         season_matches.at[general_match_ind, 'Number of past HomeTeam wins out of 3'] = HT_win_count  # resets value in df
         season_matches.at[general_match_ind, 'Number of past AwayTeam wins out of 3'] = AT_win_count
 
-
-    # # Every list turns into the sum of its elements
-    # for key in teams:
-    #     value_sum = sum(teams[key])
-    #     teams[key] = value_sum
-
-
-
     return season_matches
 
 
-# Creates a column of teams' number of wins on last 3 matches between the two:
-def update_season_matches_df_with_last_three_specific_matches_FTRs_col(season_matches):
+
+def update_season_matches_df_with_last_three_specific_matches_FTRs_col1(season_matches):
     return season_matches
 
 
@@ -373,14 +359,17 @@ laLigaSeasonsFilteredList = [la_liga_season_0910_filtered_ML,
                              la_liga_season_1718_filtered_ML,
                              la_liga_season_1819_filtered_ML]
 
-# Update DFs with new relevant data
-# for la_Liga_season in laLigaSeasonsFilteredList:
-#     update_season_matches_df_with_agg_goals_cols(la_Liga_season)
-#     update_season_matches_df_with_teams_points_col(la_Liga_season)
 
+# Update DFs with new relevant data
+for la_Liga_season in laLigaSeasonsFilteredList:
+    update_season_matches_df_with_agg_goals_cols(la_Liga_season)
+    update_season_matches_df_with_teams_points_col(la_Liga_season)
+
+# experiment_list = [la_liga_season_0910_filtered_ML, la_liga_season_1011_filtered_ML]
 laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
+# laLiga0919FilteredML = pd.concat(file for file in experiment_list)
 reset_index_df(laLiga0919FilteredML)
-get_agg_last_three_specific_matches_FTRs(laLiga0919FilteredML)
+update_season_matches_df_with_last_three_specific_matches_FTRs_col(laLiga0919FilteredML)
 # update_season_matches_df_with_last_three_specific_matches_FTRs_col(laLiga0919FilteredML)
 # update_season_matches_df_with_last_three_any_matches_FTRs_col(laLiga0919FilteredML)
 # update_season_matches_df_with_percent_of_wins_by_location(laLiga0919FilteredML)
@@ -389,7 +378,7 @@ get_agg_last_three_specific_matches_FTRs(laLiga0919FilteredML)
 
 X_La_Liga = laLiga0919FilteredML.drop(['Date', 'FTHG', 'FTAG', 'FTR'], axis=1)
 # print(X_La_Liga.head())
-y_La_Liga = laLiga0919FilteredML['FTR']
+# y_La_Liga = laLiga0919FilteredML['FTR']
 # print(y_La_Liga.head())
 
 # print(get_agg_goals_scored(la_liga_season_0910_filtered_ML).head(12))
