@@ -5,6 +5,8 @@ import sqlite3
 pd.set_option('display.width', 320)
 pd.set_option('display.max_columns', 15)
 
+### WHAT'S NEXT? Check the team percentage of winning when it is at home and its chances of winning when it is away. Should be two new columns -
+### 'HTWinningChancesAtHome' and 'ATWinningChancesWhenAway'. Based on past games only of course.
 
 # import numpy as np
 
@@ -292,9 +294,9 @@ def location_influence_bar_plot_param(league_df):
     Draws_Percents_1 = len(league_df[league_df['FTR'] == 'D']) / league_df_1_Matches
     A_Wins_Percents_1 = len(league_df[league_df['FTR'] == 'A']) / league_df_1_Matches
 
-    percentages = [H_Wins_Percents_1 * 10,
-                   Draws_Percents_1 * 10,
-                   A_Wins_Percents_1 * 10]
+    percentages = [H_Wins_Percents_1 * 100,
+                   Draws_Percents_1 * 100,
+                   A_Wins_Percents_1 * 100]
     # percentages not multiplied by 100 so to keep them in the same area as other values (even if after we scale)
 
     return percentages
@@ -400,10 +402,10 @@ print(laLiga0919FilteredML.head(150))
 print(laLiga0919FilteredML.columns)
 
 
-X_La_Liga = laLiga0919FilteredML.drop(['Date', 'FTHG', 'FTAG', 'FTR'], axis=1)
-print(X_La_Liga.head())
+X_La_Liga = laLiga0919FilteredML.drop(['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR'], axis=1)
+# print(X_La_Liga.head())
 y_La_Liga = laLiga0919FilteredML['FTR']
-print(y_La_Liga.head())
+# print(y_La_Liga.head())
 
 # print(get_agg_goals_scored(la_liga_season_0910_filtered_ML).head(12))
 # print(get_agg_goals_conceded(la_liga_season_0910_filtered_ML).head(15))
