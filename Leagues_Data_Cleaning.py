@@ -222,30 +222,37 @@ def get_agg_last_three_specific_matches_FTRs(season_matches):  # Notice that app
     # Fill the dictionary values (lists) with last three FTRs:
     for general_match_ind in range(num_of_matches):
         HT = season_matches.iloc[general_match_ind]['HomeTeam']  # Home Team of current match
-        teams[HT].append([])  # for every game we have an inner list and its elements are the FTRs of last 3 games
+        # teams[HT].append([])  # for every game we have an inner list and its elements are the FTRs of last 3 games
         AT = season_matches.iloc[general_match_ind]['AwayTeam']
-        teams[AT].append([])
+        # teams[AT].append([])
+        HT_win_count = 0
+        AT_win_count = 0
+        history_monitor = 0  # Monitors whether we reached the three games we want to take into account
+
         for match_ind_until_general in range(general_match_ind - 1, -1, -1):  # To iterate backwards and find last three relevant games.
             HT_past_match = season_matches.iloc[match_ind_until_general]['HomeTeam']  # Home Team of past match
             AT_past_match = season_matches.iloc[match_ind_until_general]['AwayTeam']
-            if HT_past_match == HT and AT_past_match == AT:  # To stop at relevant game
+            FTR_past_match = season_matches.iloc[match_ind_until_general]['FTR']
+            if (HT in [HT_past_match, AT_past_match]) and (AT in [HT_past_match, AT_past_match]):  # To stop at relevant game
             # Above condition in order to find relevant past game
-                if season_matches.iloc[match_ind_until_general]['FTR'] == 'H':
-                    teams[HT_past_match][general_match_ind].append(1)  # Appends to the above relevant inner list.
-                    teams[AT_past_match][general_match_ind].append(0)
-                elif season_matches.iloc[match_ind_until_general]['FTR'] == 'A':
-                    teams[HT_past_match][general_match_ind].append(0)
-                    teams[AT_past_match][general_match_ind].append(1)
-                else:
-                    teams[HT_past_match][general_match_ind].append(0)
-                    teams[AT_past_match][general_match_ind].append(0)
-            if len(teams[season_matches.iloc[match_ind_until_general]['HomeTeam']]) == 3:
-                break  # Stop when length of past games' list is 3
+                if FTR_past_match == 'H':
+                    HT_win_count = HT_win_count + 1
+                elif FTR_past_match == 'A':
+                    AT_win_count = AT_win_count + 1
+                history_monitor = history_monitor + 1
+                if history_monitor == 3:
+                    print(HT, AT)
+            if history_monitor == 3 or match_ind_until_general == 0:
+                break  # Stop when 3 games were taken into account or before that when we reached beginning of data
 
-    # Every list turns into the sum of its elements
-    for key in teams:
-        value_sum = sum(teams[key])
-        teams[key] = value_sum
+        teams[HT].append(HT_win_count)  # Appends to the above relevant list.
+        teams[AT].append(AT_win_count)
+
+
+    # # Every list turns into the sum of its elements
+    # for key in teams:
+    #     value_sum = sum(teams[key])
+    #     teams[key] = value_sum
 
     teams_last_three_games_df = pd.DataFrame(data=teams, index=[index for index in range(1, 39)]).T
 
