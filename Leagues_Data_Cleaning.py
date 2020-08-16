@@ -213,8 +213,8 @@ def update_season_matches_df_with_teams_points_col(season_matches):
 # Creates a column of teams' number of wins on last 3 matches between the two:
 def update_season_matches_df_with_last_three_specific_matches_FTRs_col(season_matches):  # Notice that applies for CONCATENATED df
     num_of_matches = len(season_matches)
-    season_matches['Number of past HomeTeam wins out of 3'] = 0
-    season_matches['Number of past AwayTeam wins out of 3'] = 0
+    season_matches['Num of past HT wins out of 3 between the two'] = 0
+    season_matches['Num of past AT wins out of 3 between the two'] = 0
 
     # Fill the dictionary values (lists) with last three FTRs:
     for general_match_ind in range(0, num_of_matches):
@@ -240,24 +240,48 @@ def update_season_matches_df_with_last_three_specific_matches_FTRs_col(season_ma
             if history_monitor == 3:
                 break  # Stop when 3 games were taken into account or before that when we reached beginning of data
 
-        season_matches.at[general_match_ind, 'Number of past HomeTeam wins out of 3'] = HT_win_count  # resets value in df
-        season_matches.at[general_match_ind, 'Number of past AwayTeam wins out of 3'] = AT_win_count
+        season_matches.at[general_match_ind, 'Num of past HT wins out of 3 between the two'] = HT_win_count  # resets value in df
+        season_matches.at[general_match_ind, 'Num of past AT wins out of 3 between the two'] = AT_win_count
 
     return season_matches
 
 
-
-def update_season_matches_df_with_last_three_specific_matches_FTRs_col1(season_matches):
-    return season_matches
-
-
-# Returns a df with teams' last three league FTRs:
-def get_agg_last_three_any_matches_FTRs(season_matches):
-    return None
-
-
-# Creates a column of teams' number of wins on last 3 matches:
+# Creates a column of teams' number of wins on their last 3 matches:
 def update_season_matches_df_with_last_three_any_matches_FTRs_col(season_matches):
+    num_of_matches = len(season_matches)
+    season_matches['Num of past HT wins out of last 3 matches'] = 0
+    season_matches['Num of past AT wins out of last 3 matches'] = 0
+
+    # Fill the dictionary values (lists) with last three FTRs:
+    for general_match_ind in range(num_of_matches):
+        HT = season_matches.iloc[general_match_ind]['HomeTeam']  # Home Team of current match
+        AT = season_matches.iloc[general_match_ind]['AwayTeam']
+        HT_win_count = 0
+        AT_win_count = 0
+        HT_history_monitor = 0  # Monitors whether we reached the three games we want to take into account
+        AT_history_monitor = 0
+
+        for match_ind_until_general in range(general_match_ind - 1, -1, -1):  # To iterate backwards and find last three relevant games. It
+                                                                              # happens so that it skips first game but it doesn't matter since
+                                                                              # both values are of course 0
+            HT_past_match = season_matches.iloc[match_ind_until_general]['HomeTeam']  # Home Team of past match
+            AT_past_match = season_matches.iloc[match_ind_until_general]['AwayTeam']
+            FTR_past_match = season_matches.iloc[match_ind_until_general]['FTR']
+            if HT in [HT_past_match, AT_past_match]:  # To stop at relevant game
+                if (HT == HT_past_match and FTR_past_match == 'H') or (HT == AT_past_match and FTR_past_match == 'A'):
+                    HT_win_count = HT_win_count + 1
+                HT_history_monitor = HT_history_monitor + 1
+            if AT in [HT_past_match, AT_past_match]:  # Not elif because theoretically last game could be between both
+                if (AT == HT_past_match and FTR_past_match == 'H') or (AT == AT_past_match and FTR_past_match == 'A'):
+                    AT_win_count = AT_win_count + 1
+                AT_history_monitor = AT_history_monitor + 1
+
+            if HT_history_monitor == 3 and AT_history_monitor == 3:
+                break  # Stop when 3 games were taken into account or before that when we reached beginning of data
+
+        season_matches.at[general_match_ind, 'Num of past HT wins out of last 3 matches'] = HT_win_count  # resets value in df
+        season_matches.at[general_match_ind, 'Num of past AT wins out of last 3 matches'] = AT_win_count
+
     return season_matches
 
 
@@ -358,22 +382,21 @@ laLigaSeasonsFilteredList = [la_liga_season_0910_filtered_ML,
                              la_liga_season_1617_filtered_ML,
                              la_liga_season_1718_filtered_ML,
                              la_liga_season_1819_filtered_ML]
-
+experiment_list = [la_liga_season_0910_filtered_ML]
 
 # Update DFs with new relevant data
 for la_Liga_season in laLigaSeasonsFilteredList:
     update_season_matches_df_with_agg_goals_cols(la_Liga_season)
     update_season_matches_df_with_teams_points_col(la_Liga_season)
 
-# experiment_list = [la_liga_season_0910_filtered_ML, la_liga_season_1011_filtered_ML]
-laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
-# laLiga0919FilteredML = pd.concat(file for file in experiment_list)
+
+# laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
+laLiga0919FilteredML = pd.concat(file for file in experiment_list)
 reset_index_df(laLiga0919FilteredML)
-update_season_matches_df_with_last_three_specific_matches_FTRs_col(laLiga0919FilteredML)
 # update_season_matches_df_with_last_three_specific_matches_FTRs_col(laLiga0919FilteredML)
-# update_season_matches_df_with_last_three_any_matches_FTRs_col(laLiga0919FilteredML)
-# update_season_matches_df_with_percent_of_wins_by_location(laLiga0919FilteredML)
-# print(laLiga0919FilteredML.head())
+update_season_matches_df_with_last_three_any_matches_FTRs_col(laLiga0919FilteredML)
+update_season_matches_df_with_percent_of_wins_by_location(laLiga0919FilteredML)
+print(laLiga0919FilteredML.head())
 
 
 X_La_Liga = laLiga0919FilteredML.drop(['Date', 'FTHG', 'FTAG', 'FTR'], axis=1)
