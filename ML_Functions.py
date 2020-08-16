@@ -25,6 +25,7 @@ from Leagues_Data_Cleaning import X_La_Liga, y_La_Liga
 
 for col in X_La_Liga.columns:
     X_La_Liga[col] = scale(X_La_Liga[col])
+print(X_La_Liga.head())
 X_La_Liga_train, X_La_Liga_validation, y_La_Liga_train, y_La_Liga_validation = \
     train_test_split(X_La_Liga, y_La_Liga, test_size=0.20, random_state=1)
 

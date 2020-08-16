@@ -216,13 +216,13 @@ def update_season_matches_df_with_last_three_specific_matches_FTRs_col(season_ma
     season_matches['NumOfPastHTWinsOutOf3BetweenTheTwo'] = 0
     season_matches['NumOfPastATWinsOutOf3BetweenTheTwo'] = 0
 
-    # Fill the dictionary values (lists) with last three FTRs:
+    # Compute the relevant values and set them in the season_matches df:
     for general_match_ind in range(0, num_of_matches):
         HT = season_matches.iloc[general_match_ind]['HomeTeam']  # Home Team of current match
         AT = season_matches.iloc[general_match_ind]['AwayTeam']
         HT_win_count = 0
         AT_win_count = 0
-        history_monitor = 0  # Monitors whether we reached the three games we want to take into account
+        history_monitor = 0  # Monitors whether we reached the three past games we want to take into account
 
         for match_ind_until_general in range(general_match_ind - 1, -1, -1):  # To iterate backwards and find last three relevant games. It
                                                                               # happens so that it skips first game but it doesn't matter since
@@ -252,13 +252,13 @@ def update_season_matches_df_with_last_three_any_matches_FTRs_col(season_matches
     season_matches['NumOfPastHTWinsOutOfLast3Matches'] = 0
     season_matches['NumOfPastATWinsOutOfLast3Matches'] = 0
 
-    # Fill the dictionary values (lists) with last three FTRs:
+    # Compute the relevant values and set them in the season_matches df:
     for general_match_ind in range(num_of_matches):
         HT = season_matches.iloc[general_match_ind]['HomeTeam']  # Home Team of current match
         AT = season_matches.iloc[general_match_ind]['AwayTeam']
         HT_win_count = 0
         AT_win_count = 0
-        HT_history_monitor = 0  # Monitors whether we reached the three games we want to take into account
+        HT_history_monitor = 0  # Monitors whether we reached the three past games we want to take into account
         AT_history_monitor = 0
 
         for match_ind_until_general in range(general_match_ind - 1, -1, -1):  # To iterate backwards and find last three relevant games. It
@@ -285,16 +285,17 @@ def update_season_matches_df_with_last_three_any_matches_FTRs_col(season_matches
     return season_matches
 
 
-# parameters of game's whereabouts' influence on final time result:
+# Parameters of game's whereabouts' influence on final time result:
 def location_influence_bar_plot_param(league_df):
     league_df_1_Matches = len(league_df)
     H_Wins_Percents_1 = len(league_df[league_df['FTR'] == 'H']) / league_df_1_Matches
     Draws_Percents_1 = len(league_df[league_df['FTR'] == 'D']) / league_df_1_Matches
     A_Wins_Percents_1 = len(league_df[league_df['FTR'] == 'A']) / league_df_1_Matches
 
-    percentages = [H_Wins_Percents_1 * 100,
-                   Draws_Percents_1 * 100,
-                   A_Wins_Percents_1 * 100]
+    percentages = [H_Wins_Percents_1 * 10,
+                   Draws_Percents_1 * 10,
+                   A_Wins_Percents_1 * 10]
+    # percentages not multiplied by 100 so to keep them in the same area as other values (even if after we scale)
 
     return percentages
 
@@ -382,7 +383,7 @@ laLigaSeasonsFilteredList = [la_liga_season_0910_filtered_ML,
                              la_liga_season_1617_filtered_ML,
                              la_liga_season_1718_filtered_ML,
                              la_liga_season_1819_filtered_ML]
-experiment_list = [la_liga_season_0910_filtered_ML, la_liga_season_1011_filtered_ML]
+experiment_list = [la_liga_season_0910_filtered_ML]
 
 # Update DFs with new relevant data (not on concatenated since it is per league)
 for la_Liga_season in laLigaSeasonsFilteredList:
@@ -395,14 +396,14 @@ reset_index_df(laLiga0919FilteredML)
 update_season_matches_df_with_last_three_specific_matches_FTRs_col(laLiga0919FilteredML)
 update_season_matches_df_with_last_three_any_matches_FTRs_col(laLiga0919FilteredML)
 update_season_matches_df_with_percent_of_wins_by_location(laLiga0919FilteredML)
-print(laLiga0919FilteredML)
+print(laLiga0919FilteredML.head(150))
 print(laLiga0919FilteredML.columns)
 
 
-# X_La_Liga = laLiga0919FilteredML.drop(['Date', 'FTHG', 'FTAG', 'FTR'], axis=1)
-# print(X_La_Liga.head())
-# y_La_Liga = laLiga0919FilteredML['FTR']
-# print(y_La_Liga.head())
+X_La_Liga = laLiga0919FilteredML.drop(['Date', 'FTHG', 'FTAG', 'FTR'], axis=1)
+print(X_La_Liga.head())
+y_La_Liga = laLiga0919FilteredML['FTR']
+print(y_La_Liga.head())
 
 # print(get_agg_goals_scored(la_liga_season_0910_filtered_ML).head(12))
 # print(get_agg_goals_conceded(la_liga_season_0910_filtered_ML).head(15))

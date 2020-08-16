@@ -25,7 +25,6 @@ xlabel_location_influence = "Winning teams/Draw"
 ## Data Analysis:
 # Bar plot's parameters of half time result's influence on final time result:
 def HT_influence_bar_plot_param(league_df):
-    print(league_df.columns)
     num_of_games_that_have_lead_at_HT = len(league_df)
     num_of_games_that_leader_wins_at_FT = len(league_df[league_df['FTR'] == league_df['HTR']])
     num_of_games_that_draw_at_FT = len(league_df[league_df['FTR'] == 'D'])
