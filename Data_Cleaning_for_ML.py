@@ -306,8 +306,7 @@ def update_concat_df_with_team_location_influence(seasons_matches):
 
     groupByHTdf = seasons_matches.groupby('HomeTeam')
     groupByATdf = seasons_matches.groupby('AwayTeam')
-    # numOfTeamGamesPlayed = len(groupByHTdf.get_group((list(groupByHTdf.groups)[0])))  # length of team's matches. It is always the same - for each
-    #                                                                                   # team and when Home or Away...
+    # numOfTeamGamesPlayed = len(groupByHTdf.get_group((list(groupByHTdf.groups)[0])))
 
     for key, item in groupByHTdf:
         HTCol = seasons_matches['HomeTeam']
@@ -379,8 +378,8 @@ for la_Liga_season in laLigaSeasonsFilteredList:
 laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
 # laLiga0919FilteredML = pd.concat(file for file in experiment_list)
 reset_index_df(laLiga0919FilteredML)
-# update_concat_df_with_last_3_specific_FTRs_cols(laLiga0919FilteredML)
-# update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredML)
+update_concat_df_with_last_3_specific_FTRs_cols(laLiga0919FilteredML)
+update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredML)
 update_concat_df_with_team_location_influence(laLiga0919FilteredML)
 print(laLiga0919FilteredML)
 print(laLiga0919FilteredML.columns)
