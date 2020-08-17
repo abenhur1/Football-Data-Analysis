@@ -204,15 +204,15 @@ def update_season_df_with_teams_points_col(season_matches):
 
 
 # Creates a column of teams' number of wins on last 3 matches between the two:
-def update_concat_df_with_last_3_specific_FTRs_cols(season_matches):  # Notice that applies for CONCATENATED df
-    num_of_matches = len(season_matches)
-    season_matches['NumOfPastHTSpecificWinsOutOf3'] = 0
-    season_matches['NumOfPastATSpecificWinsOutOf3'] = 0
+def update_concat_df_with_last_3_specific_FTRs_cols(seasons_matches):  # Notice that applies for CONCATENATED df
+    num_of_matches = len(seasons_matches)
+    seasons_matches['NumOfPastHTSpecificWinsOutOf3'] = 0
+    seasons_matches['NumOfPastATSpecificWinsOutOf3'] = 0
 
     # Compute the relevant values and set them in the season_matches df:
     for general_match_ind in range(0, num_of_matches):
-        HT = season_matches.iloc[general_match_ind]['HomeTeam']  # Home Team of current match
-        AT = season_matches.iloc[general_match_ind]['AwayTeam']
+        HT = seasons_matches.iloc[general_match_ind]['HomeTeam']  # Home Team of current match
+        AT = seasons_matches.iloc[general_match_ind]['AwayTeam']
         HT_win_count = 0
         AT_win_count = 0
         history_monitor = 0  # Monitors whether we reached the three past games we want to take into account
@@ -220,9 +220,9 @@ def update_concat_df_with_last_3_specific_FTRs_cols(season_matches):  # Notice t
         for match_ind_until_general in range(general_match_ind - 1, -1, -1):  # To iterate backwards and find last three relevant games. It
                                                                               # happens so that it skips first game but it doesn't matter since
                                                                               # both values are of course 0
-            HT_past_match = season_matches.iloc[match_ind_until_general]['HomeTeam']  # Home Team of past match
-            AT_past_match = season_matches.iloc[match_ind_until_general]['AwayTeam']
-            FTR_past_match = season_matches.iloc[match_ind_until_general]['FTR']
+            HT_past_match = seasons_matches.iloc[match_ind_until_general]['HomeTeam']  # Home Team of past match
+            AT_past_match = seasons_matches.iloc[match_ind_until_general]['AwayTeam']
+            FTR_past_match = seasons_matches.iloc[match_ind_until_general]['FTR']
             if (HT in [HT_past_match, AT_past_match]) and (AT in [HT_past_match, AT_past_match]):  # To stop at relevant game
             # Above condition in order to find relevant past game
                 if FTR_past_match == 'H':
@@ -233,22 +233,22 @@ def update_concat_df_with_last_3_specific_FTRs_cols(season_matches):  # Notice t
             if history_monitor == 3:
                 break  # Stop when 3 games were taken into account or before that when we reached beginning of data
 
-        season_matches.at[general_match_ind, 'NumOfPastHTSpecificWinsOutOf3'] = HT_win_count  # resets value in df
-        season_matches.at[general_match_ind, 'NumOfPastATSpecificWinsOutOf3'] = AT_win_count
+        seasons_matches.at[general_match_ind, 'NumOfPastHTSpecificWinsOutOf3'] = HT_win_count  # resets value in df
+        seasons_matches.at[general_match_ind, 'NumOfPastATSpecificWinsOutOf3'] = AT_win_count
 
-    return season_matches
+    return seasons_matches
 
 
 # Creates a column of teams' number of wins on their last 3 matches:
-def update_concat_df_with_last_3_any_FTRs_cols(season_matches):
-    num_of_matches = len(season_matches)
-    season_matches['NumOfPastHTWinsOutOfLast3Matches'] = 0
-    season_matches['NumOfPastATWinsOutOfLast3Matches'] = 0
+def update_concat_df_with_last_3_any_FTRs_cols(seasons_matches):
+    num_of_matches = len(seasons_matches)
+    seasons_matches['NumOfPastHTWinsOutOfLast3Matches'] = 0
+    seasons_matches['NumOfPastATWinsOutOfLast3Matches'] = 0
 
     # Compute the relevant values and set them in the season_matches df:
     for general_match_ind in range(num_of_matches):
-        HT = season_matches.iloc[general_match_ind]['HomeTeam']  # Home Team of current match
-        AT = season_matches.iloc[general_match_ind]['AwayTeam']
+        HT = seasons_matches.iloc[general_match_ind]['HomeTeam']  # Home Team of current match
+        AT = seasons_matches.iloc[general_match_ind]['AwayTeam']
         HT_win_count = 0
         AT_win_count = 0
         HT_history_monitor = 0  # Monitors whether we reached the three past games we want to take into account
@@ -257,9 +257,9 @@ def update_concat_df_with_last_3_any_FTRs_cols(season_matches):
         for match_ind_until_general in range(general_match_ind - 1, -1, -1):  # To iterate backwards and find last three relevant games. It
                                                                               # happens so that it skips first game but it doesn't matter since
                                                                               # both values are of course 0
-            HT_past_match = season_matches.iloc[match_ind_until_general]['HomeTeam']  # Home Team of past match
-            AT_past_match = season_matches.iloc[match_ind_until_general]['AwayTeam']
-            FTR_past_match = season_matches.iloc[match_ind_until_general]['FTR']
+            HT_past_match = seasons_matches.iloc[match_ind_until_general]['HomeTeam']  # Home Team of past match
+            AT_past_match = seasons_matches.iloc[match_ind_until_general]['AwayTeam']
+            FTR_past_match = seasons_matches.iloc[match_ind_until_general]['FTR']
             if HT in [HT_past_match, AT_past_match]:  # To stop at relevant game
                 if (HT == HT_past_match and FTR_past_match == 'H') or (HT == AT_past_match and FTR_past_match == 'A'):
                     HT_win_count = HT_win_count + 1
@@ -272,10 +272,10 @@ def update_concat_df_with_last_3_any_FTRs_cols(season_matches):
             if HT_history_monitor == 3 and AT_history_monitor == 3:
                 break  # Stop when 3 games were taken into account or before that when we reached beginning of data
 
-        season_matches.at[general_match_ind, 'NumOfPastHTWinsOutOfLast3Matches'] = HT_win_count  # resets value in df
-        season_matches.at[general_match_ind, 'NumOfPastATWinsOutOfLast3Matches'] = AT_win_count
+        seasons_matches.at[general_match_ind, 'NumOfPastHTWinsOutOfLast3Matches'] = HT_win_count  # resets value in df
+        seasons_matches.at[general_match_ind, 'NumOfPastATWinsOutOfLast3Matches'] = AT_win_count
 
-    return season_matches
+    return seasons_matches
 
 
 # Parameters of game's whereabouts' influence on final time result:
@@ -294,54 +294,37 @@ def location_influence_bar_plot_param(league_df):
 
 
 # Creates a column of match's whereabouts' influence on FTR (probability of winning)
-def update_concat_df_with_percent_of_wins_by_location(season_matches):
-    percentages_list = location_influence_bar_plot_param(season_matches)
-    season_matches['HT %'] = percentages_list[0]
-    season_matches['Draw %'] = percentages_list[1]
-    season_matches['AT %'] = percentages_list[2]
+def update_concat_df_with_percent_of_wins_by_location(seasons_matches):
+    percentages_list = location_influence_bar_plot_param(seasons_matches)
+    seasons_matches['HT %'] = percentages_list[0]
+    seasons_matches['Draw %'] = percentages_list[1]
+    seasons_matches['AT %'] = percentages_list[2]
     # (Allegedly function gives Data Leakage, though the assumption is that these are true more or less - always (at least for the past 20 years))
 
-    return season_matches
+    return seasons_matches
 
 
-### WHAT'S NEXT? Check the team percentage of winning when it is at home and its chances of winning when it is away. Should be two new columns -
-### 'HTWinningChancesAtHome' and 'ATWinningChancesWhenAway'. Based on past games only of course. Because it takes into account all games,
-### allegedly function gives Data Leakage, though the assumption is that these are true more or less - always (at least for the past 20 years).
-### function update_concat_df_with_percent_of_wins_by_location will be redundant.
-# Creates a column of match's whereabouts' influence on FTR (probability of winning)
-def update_concat_df_with_team_location_influence(season_matches):
-    num_of_matches = len(season_matches)
-    # Create a dictionary with team names as keys
-    teams = {}
-    for team in season_matches.groupby('HomeTeam').median().T.columns:  # A way to turn the teams into the columns
-        teams[team] = []
+# Creates columns of match's whereabouts' influence on FTR. If team x is at home then HTWinningChancesAtHome column's value is its num of games won
+# at home divided by num of its games played at home.
+# Allegedly function gives Data Leakage, though the assumption is that these are true more or less - always (at least for the past 20 years).
+# function update_concat_df_with_percent_of_wins_by_location will be redundant.
+def update_concat_df_with_team_location_influence(seasons_matches):
+    seasons_matches['HTWinningChancesAtHome'] = 0
+    seasons_matches['ATWinningChancesWhenAway'] = 0
+    groupByHTdf = seasons_matches.groupby('HomeTeam')
+    groupByATdf = seasons_matches.groupby('AwayTeam')
 
-    percentages_list = location_influence_bar_plot_param(season_matches)
-    season_matches['HT %'] = percentages_list[0]
-    season_matches['Draw %'] = percentages_list[1]
-    season_matches['AT %'] = percentages_list[2]
-    # (Allegedly function gives Data Leakage, though the assumption is that these are true more or less - always (at least for the past 20 years))
+    for key, item in groupByHTdf:
+        numOfHTGamesPlayedAtHome = len(item)
+        numOfHTGamesWonAtHome = len(item['FTR'] == 'H')
+        seasons_matches.loc['HomeTeam'][key].at['HTWinningChancesAtHome'] = numOfHTGamesWonAtHome/numOfHTGamesPlayedAtHome
+        print('0')
 
-    return season_matches
+    return seasons_matches
 
 
 ### Reading the La Liga data files and concatenate the DFs:
 la_liga_path = "C:/Users/User/PycharmProjects/Football-Data-Analysis/"
-files_list = ['season-0910_csv.csv',
-              'season-1011_csv.csv',
-              'season-1112_csv.csv',
-              'season-1213_csv.csv',
-              'season-1314_csv.csv',
-              'season-1415_csv.csv',
-              'season-1516_csv.csv',
-              'season-1617_csv.csv',
-              'season-1718_csv.csv',
-              'season-1819_csv.csv']
-laLiga0919Concat = pd.concat([df_creator(la_liga_path, file) for file in files_list])
-laLiga_cols_renaming = {'HS': 'Home Shots', 'AS': 'Away Shots', 'HST': 'Home Shots on Target', 'AST': 'Away Shots on Target',
-                        'HF': 'Home Fouls Committed', 'AF': 'Away Fouls Committed', 'HC': 'Home Corners', 'AC': 'Away Corners',
-                        'HY': 'Home Yellows', 'AY': 'Away Yellows', 'HR': 'Home Reds', 'AR': 'Away Reds'}
-rename_leagues_columns(laLiga0919Concat, laLiga_cols_renaming)
 relevant_ML_cols = ['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR']
 
 ### Master Premier League df extracted:
