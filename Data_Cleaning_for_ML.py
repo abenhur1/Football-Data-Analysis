@@ -278,47 +278,31 @@ def update_concat_df_with_last_3_any_FTRs_cols(seasons_matches):
     return seasons_matches
 
 
-# Parameters of game's whereabouts' influence on final time result:
-def location_influence_bar_plot_param(league_df):
-    league_df_1_Matches = len(league_df)
-    H_Wins_Percents_1 = len(league_df[league_df['FTR'] == 'H']) / league_df_1_Matches
-    Draws_Percents_1 = len(league_df[league_df['FTR'] == 'D']) / league_df_1_Matches
-    A_Wins_Percents_1 = len(league_df[league_df['FTR'] == 'A']) / league_df_1_Matches
-
-    percentages = [H_Wins_Percents_1 * 100,
-                   Draws_Percents_1 * 100,
-                   A_Wins_Percents_1 * 100]
-    # percentages not multiplied by 100 so to keep them in the same area as other values (even if after we scale)
-
-    return percentages
-
-
-# Creates a column of match's whereabouts' influence on FTR (probability of winning)
-def update_concat_df_with_percent_of_wins_by_location(seasons_matches):
-    percentages_list = location_influence_bar_plot_param(seasons_matches)
-    seasons_matches['HT %'] = percentages_list[0]
-    seasons_matches['Draw %'] = percentages_list[1]
-    seasons_matches['AT %'] = percentages_list[2]
-    # (Allegedly function gives Data Leakage, though the assumption is that these are true more or less - always (at least for the past 20 years))
-
-    return seasons_matches
-
-
 # Creates columns of match's whereabouts' influence on FTR. If team x is at home then HTWinningChancesAtHome column's value is its num of games won
-# at home divided by num of its games played at home.
-# Allegedly function gives Data Leakage, though the assumption is that these are true more or less - always (at least for the past 20 years).
+# at home divided by num of its games played at home. Similarly for that HT team, we have columns HTLosingChancesAtHome and HTDrawChancesAtHome
 # function update_concat_df_with_percent_of_wins_by_location will be redundant.
 def update_concat_df_with_team_location_influence(seasons_matches):
     seasons_matches['HTWinningChancesAtHome'] = 0
-    seasons_matches['ATWinningChancesWhenAway'] = 0
+    seasons_matches['HTLosingChancesAtHome'] = 0
+    seasons_matches['HTDrawChancesAtHome'] = 0
     groupByHTdf = seasons_matches.groupby('HomeTeam')
-    groupByATdf = seasons_matches.groupby('AwayTeam')
-
     for key, item in groupByHTdf:
         numOfHTGamesPlayedAtHome = len(item)
-        numOfHTGamesWonAtHome = len(item['FTR'] == 'H')
-        seasons_matches.loc['HomeTeam'][key].at['HTWinningChancesAtHome'] = numOfHTGamesWonAtHome/numOfHTGamesPlayedAtHome
-        print('0')
+        numOfHTGamesWonAtHome = item[item['FTR'] == 'H'].shape[0]
+        numOfHTGamesLostAtHome = item[item['FTR'] == 'A'].shape[0]
+        numOfHTGamesDrawnAtHome = item[item['FTR'] == 'D'].shape[0]
+        seasons_matches.loc[seasons_matches['HomeTeam'] == key, 'HTWinningChancesAtHome'] = numOfHTGamesWonAtHome/numOfHTGamesPlayedAtHome
+        seasons_matches.loc[seasons_matches['HomeTeam'] == key, 'HTLosingChancesAtHome'] = numOfHTGamesLostAtHome / numOfHTGamesPlayedAtHome
+        seasons_matches.loc[seasons_matches['HomeTeam'] == key, 'HTLosingChancesAtHome'] = numOfHTGamesDrawnAtHome / numOfHTGamesPlayedAtHome
+
+    seasons_matches['ATWinningChancesWhenAway'] = 0
+    seasons_matches['ATLosingChancesWhenAway'] = 0
+    seasons_matches['ATDrawChancesWhenAway'] = 0
+    groupByATdf = seasons_matches.groupby('AwayTeam')
+    for key, item in groupByATdf:
+        numOfATGamesPlayedWhenAway = len(item)
+        numOfATGamesWonWhenAway = item[item['FTR'] == 'A'].shape[0]
+        seasons_matches.loc[seasons_matches['AwayTeam'] == key, 'ATWinningChancesWhenAway'] = numOfATGamesWonWhenAway / numOfATGamesPlayedWhenAway
 
     return seasons_matches
 
