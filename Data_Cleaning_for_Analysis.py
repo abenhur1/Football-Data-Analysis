@@ -224,13 +224,13 @@ def update_concat_df_with_last_3_specific_FTRs_cols(season_matches):  # Notice t
         history_monitor = 0  # Monitors whether we reached the three past games we want to take into account
 
         for match_ind_until_general in range(general_match_ind - 1, -1, -1):  # To iterate backwards and find last three relevant games. It
-                                                                              # happens so that it skips first game but it doesn't matter since
-                                                                              # both values are of course 0
+            # happens so that it skips first game but it doesn't matter since
+            # both values are of course 0
             HT_past_match = season_matches.iloc[match_ind_until_general]['HomeTeam']  # Home Team of past match
             AT_past_match = season_matches.iloc[match_ind_until_general]['AwayTeam']
             FTR_past_match = season_matches.iloc[match_ind_until_general]['FTR']
             if (HT in [HT_past_match, AT_past_match]) and (AT in [HT_past_match, AT_past_match]):  # To stop at relevant game
-            # Above condition in order to find relevant past game
+                # Above condition in order to find relevant past game
                 if FTR_past_match == 'H':
                     HT_win_count = HT_win_count + 1
                 elif FTR_past_match == 'A':
@@ -261,8 +261,8 @@ def update_concat_df_with_last_3_any_FTRs_cols(season_matches):
         AT_history_monitor = 0
 
         for match_ind_until_general in range(general_match_ind - 1, -1, -1):  # To iterate backwards and find last three relevant games. It
-                                                                              # happens so that it skips first game but it doesn't matter since
-                                                                              # both values are of course 0
+            # happens so that it skips first game but it doesn't matter since
+            # both values are of course 0
             HT_past_match = season_matches.iloc[match_ind_until_general]['HomeTeam']  # Home Team of past match
             AT_past_match = season_matches.iloc[match_ind_until_general]['AwayTeam']
             FTR_past_match = season_matches.iloc[match_ind_until_general]['FTR']
@@ -419,7 +419,6 @@ reset_index_df(laLiga0919FilteredML)
 update_concat_df_with_team_location_influence(laLiga0919FilteredML)
 print(laLiga0919FilteredML.head())
 print(laLiga0919FilteredML.columns)
-
 
 X_La_Liga = laLiga0919FilteredML.drop(['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR'], axis=1)
 # print(X_La_Liga.head())
