@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import matplotlib.transforms
 import warnings  # current version of seaborn generates a bunch of warnings that we'll ignore
 
-from Data_Cleaning_for_ML import laLiga0919Filtered, laLiga0919Filtered2, laLiga0919Filtered3, laLiga0919Filtered4
-from Data_Cleaning_for_ML import premierLeague9518Filtered, premierLeague9518Filtered2, premierLeague9518Filtered3, premierLeague9518Filtered4
+from Data_Cleaning_for_Analysis import laLiga0919Filtered, laLiga0919Filtered2, laLiga0919Filtered3, laLiga0919Filtered4
+from Data_Cleaning_for_Analysis import premierLeague9518Filtered, premierLeague9518Filtered2, premierLeague9518Filtered3, premierLeague9518Filtered4
 
 warnings.filterwarnings("ignore")
 
