@@ -306,25 +306,27 @@ def update_concat_df_with_team_location_influence(seasons_matches):
 
     groupByHTdf = seasons_matches.groupby('HomeTeam')
     groupByATdf = seasons_matches.groupby('AwayTeam')
-    numOfTeamGamesPlayed = len(groupByHTdf.get_group((list(groupByHTdf.groups)[0])))  # length of team's matches. It is always the same - for each
-                                                                                      # team and when Home or Away...
+    # numOfTeamGamesPlayed = len(groupByHTdf.get_group((list(groupByHTdf.groups)[0])))  # length of team's matches. It is always the same - for each
+    #                                                                                   # team and when Home or Away...
 
     for key, item in groupByHTdf:
         HTCol = seasons_matches['HomeTeam']
+        numOfHTTeamGamesPlayedOverall = len(item)
         numOfHTGamesWonAtHome = item[item['FTR'] == 'H'].shape[0]
         # numOfHTGamesLostAtHome = item[item['FTR'] == 'A'].shape[0]
         # numOfHTGamesDrawnAtHome = item[item['FTR'] == 'D'].shape[0]
-        seasons_matches.loc[HTCol == key, 'HTWinningChancesAtHome'] = numOfHTGamesWonAtHome / numOfTeamGamesPlayed
+        seasons_matches.loc[HTCol == key, 'HTWinningChancesAtHome'] = numOfHTGamesWonAtHome / numOfHTTeamGamesPlayedOverall
         # seasons_matches.loc[HTCol == key, 'HTLosingChancesAtHome'] = numOfHTGamesLostAtHome / numOfTeamGamesPlayed
         # seasons_matches.loc[HTCol == key, 'HTDrawChancesAtHome'] = numOfHTGamesDrawnAtHome / numOfTeamGamesPlayed
 
 
     for key, item in groupByATdf:
         ATCol = seasons_matches['AwayTeam']
+        numOfATTeamGamesPlayedOverall = len(item)
         numOfATGamesWonWhenAway = item[item['FTR'] == 'A'].shape[0]
         # numOfATGamesLostWhenAway = item[item['FTR'] == 'H'].shape[0]
         # numOfATGamesDrawnWhenAway = item[item['FTR'] == 'D'].shape[0]
-        seasons_matches.loc[ATCol == key, 'ATWinningChancesWhenAway'] = numOfATGamesWonWhenAway / numOfTeamGamesPlayed
+        seasons_matches.loc[ATCol == key, 'ATWinningChancesWhenAway'] = numOfATGamesWonWhenAway / numOfATTeamGamesPlayedOverall
         # seasons_matches.loc[ATCol == key, 'ATLosingChancesWhenAway'] = numOfATGamesLostWhenAway / numOfTeamGamesPlayed
         # seasons_matches.loc[ATCol == key, 'ATDrawChancesWhenAway'] = numOfATGamesDrawnWhenAway / numOfTeamGamesPlayed
 
@@ -377,10 +379,10 @@ for la_Liga_season in laLigaSeasonsFilteredList:
 laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
 # laLiga0919FilteredML = pd.concat(file for file in experiment_list)
 reset_index_df(laLiga0919FilteredML)
-update_concat_df_with_last_3_specific_FTRs_cols(laLiga0919FilteredML)
-update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredML)
+# update_concat_df_with_last_3_specific_FTRs_cols(laLiga0919FilteredML)
+# update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredML)
 update_concat_df_with_team_location_influence(laLiga0919FilteredML)
-print(laLiga0919FilteredML.head(105))
+print(laLiga0919FilteredML)
 print(laLiga0919FilteredML.columns)
 
 

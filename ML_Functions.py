@@ -32,7 +32,7 @@ X_La_Liga_train, X_La_Liga_validation, y_La_Liga_train, y_La_Liga_validation = \
 ## Evaluate each model in turn and compare algorithms:
 models = [('LogReg', LogisticRegression(solver='liblinear', multi_class='ovr')), ('LinDiscAnal', LinearDiscriminantAnalysis()),
           ('KNN', KNeighborsClassifier()), ('DeciTree', DecisionTreeClassifier()), ('GaussianNB', GaussianNB()),
-          ('SVM (kernel=rbf', SVC(kernel='rbf', gamma='auto')), ('XGB', xgb.XGBClassifier())]
+          ('SVM (kernel=rbf)', SVC(kernel='rbf', gamma='auto')), ('XGB', xgb.XGBClassifier())]
 results = []
 names = []
 for name, model in models:
