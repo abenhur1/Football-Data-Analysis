@@ -138,6 +138,10 @@ def update_season_df_with_agg_goals_cols(season_matches):
     season_matches['ATAggGoalScored'] = ATAggGoalScored
     season_matches['HTAggGoalConceded'] = HTAggGoalConceded
     season_matches['ATAggGoalConceded'] = ATAggGoalConceded
+    season_matches['AggGoalScoredDiff'] = season_matches['HTAggGoalScored'] - season_matches['ATAggGoalScored']  # Positive value is in favour of HT
+    season_matches['AggGoalConcededDiff'] = season_matches['ATAggGoalConceded'] - season_matches['HTAggGoalConceded']  # Positive value is in favour
+                                                                                                                       # of HT
+    season_matches.drop(['HTAggGoalScored', 'ATAggGoalScored', 'HTAggGoalConceded', 'ATAggGoalConceded'], inplace=True, axis=1)
 
     return season_matches
 
@@ -199,6 +203,9 @@ def update_season_df_with_teams_points_col(season_matches):
     # Updates the season_matches df by creating new columns according to above lists:
     season_matches['HTAggLeaguePoints'] = HTAggLeaguePoints
     season_matches['ATAggLeaguePoints'] = ATAggLeaguePoints
+    season_matches['AggLeaguePointsDiff'] = season_matches['HTAggLeaguePoints'] - season_matches['ATAggLeaguePoints']  # Positive value is in favour
+                                                                                                                       # of HT
+    season_matches.drop(['HTAggLeaguePoints', 'ATAggLeaguePoints'], inplace=True, axis=1)
 
     return season_matches
 
@@ -235,6 +242,10 @@ def update_concat_df_with_last_3_specific_FTRs_cols(seasons_matches):  # Notice 
 
         seasons_matches.at[general_match_ind, 'NumOfPastHTSpecificWinsOutOf3'] = HT_win_count  # resets value in df
         seasons_matches.at[general_match_ind, 'NumOfPastATSpecificWinsOutOf3'] = AT_win_count
+
+    seasons_matches['NumOfPastSpecificWinsOutOf3Diff'] = seasons_matches['NumOfPastHTSpecificWinsOutOf3'] - \
+                                                           seasons_matches['NumOfPastATSpecificWinsOutOf3']  # Positive value is in favour of HT
+    seasons_matches.drop(['NumOfPastHTSpecificWinsOutOf3', 'NumOfPastATSpecificWinsOutOf3'], inplace=True, axis=1)
 
     return seasons_matches
 
@@ -275,6 +286,10 @@ def update_concat_df_with_last_3_any_FTRs_cols(seasons_matches):
         seasons_matches.at[general_match_ind, 'NumOfPastHTWinsOutOfLast3Matches'] = HT_win_count  # resets value in df
         seasons_matches.at[general_match_ind, 'NumOfPastATWinsOutOfLast3Matches'] = AT_win_count
 
+    seasons_matches['NumOfPastWinsOutOfLast3MatchesDiff'] = seasons_matches['NumOfPastHTWinsOutOfLast3Matches'] - \
+                                                           seasons_matches['NumOfPastATWinsOutOfLast3Matches']  # Positive value is in favour of HT
+    seasons_matches.drop(['NumOfPastHTWinsOutOfLast3Matches', 'NumOfPastATWinsOutOfLast3Matches'], inplace=True, axis=1)
+
     return seasons_matches
 
 
@@ -291,26 +306,27 @@ def update_concat_df_with_team_location_influence(seasons_matches):
 
     groupByHTdf = seasons_matches.groupby('HomeTeam')
     groupByATdf = seasons_matches.groupby('AwayTeam')
-    numOfTeamGamesPlayed = len(groupByHTdf.get_group((list(groupByHTdf.groups)[0])))  # Always the same - for each team and when Home or Away...
+    numOfTeamGamesPlayed = len(groupByHTdf.get_group((list(groupByHTdf.groups)[0])))  # length of team's matches. It is always the same - for each
+                                                                                      # team and when Home or Away...
 
     for key, item in groupByHTdf:
-        # numOfHTGamesPlayedAtHome = len(item)
+        HTCol = seasons_matches['HomeTeam']
         numOfHTGamesWonAtHome = item[item['FTR'] == 'H'].shape[0]
         numOfHTGamesLostAtHome = item[item['FTR'] == 'A'].shape[0]
         numOfHTGamesDrawnAtHome = item[item['FTR'] == 'D'].shape[0]
-        seasons_matches.loc[seasons_matches['HomeTeam'] == key, 'HTWinningChancesAtHome'] = numOfHTGamesWonAtHome/numOfTeamGamesPlayed
-        seasons_matches.loc[seasons_matches['HomeTeam'] == key, 'HTLosingChancesAtHome'] = numOfHTGamesLostAtHome / numOfTeamGamesPlayed
-        seasons_matches.loc[seasons_matches['HomeTeam'] == key, 'HTDrawChancesAtHome'] = numOfHTGamesDrawnAtHome / numOfTeamGamesPlayed
+        seasons_matches.loc[HTCol == key, 'HTWinningChancesAtHome'] = numOfHTGamesWonAtHome / numOfTeamGamesPlayed
+        seasons_matches.loc[HTCol == key, 'HTLosingChancesAtHome'] = numOfHTGamesLostAtHome / numOfTeamGamesPlayed
+        seasons_matches.loc[HTCol == key, 'HTDrawChancesAtHome'] = numOfHTGamesDrawnAtHome / numOfTeamGamesPlayed
 
 
     for key, item in groupByATdf:
-        # numOfATGamesPlayedWhenAway = len(item)
+        ATCol = seasons_matches['AwayTeam']
         numOfATGamesWonWhenAway = item[item['FTR'] == 'A'].shape[0]
         numOfATGamesLostWhenAway = item[item['FTR'] == 'H'].shape[0]
         numOfATGamesDrawnWhenAway = item[item['FTR'] == 'D'].shape[0]
-        seasons_matches.loc[seasons_matches['AwayTeam'] == key, 'ATWinningChancesWhenAway'] = numOfATGamesWonWhenAway / numOfTeamGamesPlayed
-        seasons_matches.loc[seasons_matches['AwayTeam'] == key, 'ATLosingChancesWhenAway'] = numOfATGamesLostWhenAway / numOfTeamGamesPlayed
-        seasons_matches.loc[seasons_matches['AwayTeam'] == key, 'ATDrawChancesWhenAway'] = numOfATGamesDrawnWhenAway / numOfTeamGamesPlayed
+        seasons_matches.loc[ATCol == key, 'ATWinningChancesWhenAway'] = numOfATGamesWonWhenAway / numOfTeamGamesPlayed
+        seasons_matches.loc[ATCol == key, 'ATLosingChancesWhenAway'] = numOfATGamesLostWhenAway / numOfTeamGamesPlayed
+        seasons_matches.loc[ATCol == key, 'ATDrawChancesWhenAway'] = numOfATGamesDrawnWhenAway / numOfTeamGamesPlayed
 
     return seasons_matches
 
@@ -356,11 +372,10 @@ for la_Liga_season in laLigaSeasonsFilteredList:
 # laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
 laLiga0919FilteredML = pd.concat(file for file in experiment_list)
 reset_index_df(laLiga0919FilteredML)
-# update_concat_df_with_last_3_specific_FTRs_cols(laLiga0919FilteredML)
-# update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredML)
-# update_concat_df_with_percent_of_wins_by_location(laLiga0919FilteredML)
+update_concat_df_with_last_3_specific_FTRs_cols(laLiga0919FilteredML)
+update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredML)
 update_concat_df_with_team_location_influence(laLiga0919FilteredML)
-print(laLiga0919FilteredML.head())
+print(laLiga0919FilteredML.head(100))
 print(laLiga0919FilteredML.columns)
 
 
