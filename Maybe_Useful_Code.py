@@ -40,30 +40,30 @@
 ### ML Stage:
 # Home_Away_Merger(laLiga0919FilteredML)
 
-# Parameters of game's whereabouts' influence on final time result:
-def location_influence_bar_plot_param(league_df):
-    league_df_1_Matches = len(league_df)
-    H_Wins_Percents_1 = len(league_df[league_df['FTR'] == 'H']) / league_df_1_Matches
-    Draws_Percents_1 = len(league_df[league_df['FTR'] == 'D']) / league_df_1_Matches
-    A_Wins_Percents_1 = len(league_df[league_df['FTR'] == 'A']) / league_df_1_Matches
-
-    percentages = [H_Wins_Percents_1 * 100,
-                   Draws_Percents_1 * 100,
-                   A_Wins_Percents_1 * 100]
-    # percentages not multiplied by 100 so to keep them in the same area as other values (even if after we scale)
-
-    return percentages
-
-
-# Creates a column of match's whereabouts' influence on FTR (probability of winning)
-def update_concat_df_with_percent_of_wins_by_location(seasons_matches):
-    percentages_list = location_influence_bar_plot_param(seasons_matches)
-    seasons_matches['HT %'] = percentages_list[0]
-    seasons_matches['Draw %'] = percentages_list[1]
-    seasons_matches['AT %'] = percentages_list[2]
-    # (Allegedly function gives Data Leakage, though the assumption is that these are true more or less - always (at least for the past 20 years))
-
-    return seasons_matches
+# # Parameters of game's whereabouts' influence on final time result:
+# def location_influence_bar_plot_param(league_df):
+#     league_df_1_Matches = len(league_df)
+#     H_Wins_Percents_1 = len(league_df[league_df['FTR'] == 'H']) / league_df_1_Matches
+#     Draws_Percents_1 = len(league_df[league_df['FTR'] == 'D']) / league_df_1_Matches
+#     A_Wins_Percents_1 = len(league_df[league_df['FTR'] == 'A']) / league_df_1_Matches
+#
+#     percentages = [H_Wins_Percents_1 * 100,
+#                    Draws_Percents_1 * 100,
+#                    A_Wins_Percents_1 * 100]
+#     # percentages not multiplied by 100 so to keep them in the same area as other values (even if after we scale)
+#
+#     return percentages
+#
+#
+# # Creates a column of match's whereabouts' influence on FTR (probability of winning)
+# def update_concat_df_with_percent_of_wins_by_location(seasons_matches):
+#     percentages_list = location_influence_bar_plot_param(seasons_matches)
+#     seasons_matches['HT %'] = percentages_list[0]
+#     seasons_matches['Draw %'] = percentages_list[1]
+#     seasons_matches['AT %'] = percentages_list[2]
+#     # (Allegedly function gives Data Leakage, though the assumption is that these are true more or less - always (at least for the past 20 years))
+#
+#     return seasons_matches
 
 
 #### Analysis_Functions:

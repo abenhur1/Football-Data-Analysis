@@ -285,24 +285,32 @@ def update_concat_df_with_team_location_influence(seasons_matches):
     seasons_matches['HTWinningChancesAtHome'] = 0
     seasons_matches['HTLosingChancesAtHome'] = 0
     seasons_matches['HTDrawChancesAtHome'] = 0
-    groupByHTdf = seasons_matches.groupby('HomeTeam')
-    for key, item in groupByHTdf:
-        numOfHTGamesPlayedAtHome = len(item)
-        numOfHTGamesWonAtHome = item[item['FTR'] == 'H'].shape[0]
-        numOfHTGamesLostAtHome = item[item['FTR'] == 'A'].shape[0]
-        numOfHTGamesDrawnAtHome = item[item['FTR'] == 'D'].shape[0]
-        seasons_matches.loc[seasons_matches['HomeTeam'] == key, 'HTWinningChancesAtHome'] = numOfHTGamesWonAtHome/numOfHTGamesPlayedAtHome
-        seasons_matches.loc[seasons_matches['HomeTeam'] == key, 'HTLosingChancesAtHome'] = numOfHTGamesLostAtHome / numOfHTGamesPlayedAtHome
-        seasons_matches.loc[seasons_matches['HomeTeam'] == key, 'HTLosingChancesAtHome'] = numOfHTGamesDrawnAtHome / numOfHTGamesPlayedAtHome
-
     seasons_matches['ATWinningChancesWhenAway'] = 0
     seasons_matches['ATLosingChancesWhenAway'] = 0
     seasons_matches['ATDrawChancesWhenAway'] = 0
+
+    groupByHTdf = seasons_matches.groupby('HomeTeam')
     groupByATdf = seasons_matches.groupby('AwayTeam')
+    numOfTeamGamesPlayed = len(groupByHTdf.get_group((list(groupByHTdf.groups)[0])))  # Always the same - for each team and when Home or Away...
+
+    for key, item in groupByHTdf:
+        # numOfHTGamesPlayedAtHome = len(item)
+        numOfHTGamesWonAtHome = item[item['FTR'] == 'H'].shape[0]
+        numOfHTGamesLostAtHome = item[item['FTR'] == 'A'].shape[0]
+        numOfHTGamesDrawnAtHome = item[item['FTR'] == 'D'].shape[0]
+        seasons_matches.loc[seasons_matches['HomeTeam'] == key, 'HTWinningChancesAtHome'] = numOfHTGamesWonAtHome/numOfTeamGamesPlayed
+        seasons_matches.loc[seasons_matches['HomeTeam'] == key, 'HTLosingChancesAtHome'] = numOfHTGamesLostAtHome / numOfTeamGamesPlayed
+        seasons_matches.loc[seasons_matches['HomeTeam'] == key, 'HTDrawChancesAtHome'] = numOfHTGamesDrawnAtHome / numOfTeamGamesPlayed
+
+
     for key, item in groupByATdf:
-        numOfATGamesPlayedWhenAway = len(item)
+        # numOfATGamesPlayedWhenAway = len(item)
         numOfATGamesWonWhenAway = item[item['FTR'] == 'A'].shape[0]
-        seasons_matches.loc[seasons_matches['AwayTeam'] == key, 'ATWinningChancesWhenAway'] = numOfATGamesWonWhenAway / numOfATGamesPlayedWhenAway
+        numOfATGamesLostWhenAway = item[item['FTR'] == 'H'].shape[0]
+        numOfATGamesDrawnWhenAway = item[item['FTR'] == 'D'].shape[0]
+        seasons_matches.loc[seasons_matches['AwayTeam'] == key, 'ATWinningChancesWhenAway'] = numOfATGamesWonWhenAway / numOfTeamGamesPlayed
+        seasons_matches.loc[seasons_matches['AwayTeam'] == key, 'ATLosingChancesWhenAway'] = numOfATGamesLostWhenAway / numOfTeamGamesPlayed
+        seasons_matches.loc[seasons_matches['AwayTeam'] == key, 'ATDrawChancesWhenAway'] = numOfATGamesDrawnWhenAway / numOfTeamGamesPlayed
 
     return seasons_matches
 
