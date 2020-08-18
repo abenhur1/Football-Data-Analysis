@@ -235,15 +235,15 @@ def update_concat_df_with_last_3_any_FTRs_cols(seasons_matches):
             AT_past_match = seasons_matches.iloc[match_ind_until_general]['AwayTeam']
             FTR_past_match = seasons_matches.iloc[match_ind_until_general]['FTR']
             if HT in [HT_past_match, AT_past_match]:  # To stop at relevant game
-                if (HT == HT_past_match and FTR_past_match == 'H') or (HT == AT_past_match and FTR_past_match == 'A'):
+                if ((HT == HT_past_match and FTR_past_match == 'H') or (HT == AT_past_match and FTR_past_match == 'A')) and HT_history_monitor < 3:
                     HT_win_count = HT_win_count + 1
                 HT_history_monitor = HT_history_monitor + 1
             if AT in [HT_past_match, AT_past_match]:  # Not elif because theoretically last game could be between both
-                if (AT == HT_past_match and FTR_past_match == 'H') or (AT == AT_past_match and FTR_past_match == 'A'):
+                if ((AT == HT_past_match and FTR_past_match == 'H') or (AT == AT_past_match and FTR_past_match == 'A')) and AT_history_monitor < 3:
                     AT_win_count = AT_win_count + 1
                 AT_history_monitor = AT_history_monitor + 1
 
-            if HT_history_monitor == 3 and AT_history_monitor == 3:
+            if HT_history_monitor >= 3 and AT_history_monitor >= 3:
                 break  # Stop when 3 games were taken into account or before that when we reached beginning of data
 
         seasons_matches.at[general_match_ind, 'NumOfPastHTWinsOutOfLast3Matches'] = HT_win_count  # resets value in df
@@ -331,15 +331,15 @@ laLigaSeasonsFilteredList = [la_liga_season_0910_filtered_ML,
                              la_liga_season_1617_filtered_ML,
                              la_liga_season_1718_filtered_ML,
                              la_liga_season_1819_filtered_ML]
-experiment_list = [la_liga_season_0910_filtered_ML, la_liga_season_1011_filtered_ML]
+experiment_list = [la_liga_season_0910_filtered_ML, la_liga_season_1011_filtered_ML, la_liga_season_1112_filtered_ML]
 
 # Update DFs with new relevant data (not on concatenated since it is per league)
 for la_Liga_season in laLigaSeasonsFilteredList:
     update_season_df_with_agg_goals_cols(la_Liga_season)
     update_season_df_with_teams_points_col(la_Liga_season)
 
-laLiga0919FilteredML = pd.concat(file for file in experiment_list)
-# laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
+# laLiga0919FilteredML = pd.concat(file for file in experiment_list)
+laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
 reset_index_df(laLiga0919FilteredML)
 update_concat_df_with_last_3_specific_FTRs_cols(laLiga0919FilteredML)
 update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredML)
