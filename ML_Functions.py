@@ -5,8 +5,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import StratifiedKFold
 from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
@@ -36,8 +34,7 @@ X_La_Liga_train, X_La_Liga_validation, y_La_Liga_train, y_La_Liga_validation = \
 
 ## Evaluate each model in turn and compare algorithms:
 models = [('LogReg', LogisticRegression(solver='liblinear', multi_class='ovr')), ('LinDiscAnal', LinearDiscriminantAnalysis()),
-          ('KNN', KNeighborsClassifier()), ('DeciTree', DecisionTreeClassifier()), ('GaussianNB', GaussianNB()),
-          ('SVM (kernel=rbf)', SVC(kernel='rbf', gamma='auto')), ('XGB', xgb.XGBClassifier())]
+          ('GaussianNB', GaussianNB()), ('SVM (kernel=rbf)', SVC(kernel='rbf', gamma='auto', random_state=1)), ('XGB', xgb.XGBClassifier(seed=2))]
 results = []
 names = []
 for name, model in models:

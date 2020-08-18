@@ -138,10 +138,10 @@ def update_season_df_with_agg_goals_cols(season_matches):
     season_matches['ATAggGoalScored'] = ATAggGoalScored
     season_matches['HTAggGoalConceded'] = HTAggGoalConceded
     season_matches['ATAggGoalConceded'] = ATAggGoalConceded
-    season_matches['AggGoalScoredDiff'] = season_matches['HTAggGoalScored'] - season_matches['ATAggGoalScored']  # Positive value is in favour of HT
-    season_matches['AggGoalConcededDiff'] = season_matches['ATAggGoalConceded'] - season_matches['HTAggGoalConceded']  # Positive value is in favour
-                                                                                                                       # of HT
-    season_matches.drop(['HTAggGoalScored', 'ATAggGoalScored', 'HTAggGoalConceded', 'ATAggGoalConceded'], inplace=True, axis=1)
+    # season_matches['AggGoalScoredDiff'] = season_matches['HTAggGoalScored'] - season_matches['ATAggGoalScored']  # Positive value is in favour of HT
+    # season_matches['AggGoalConcededDiff'] = season_matches['ATAggGoalConceded'] - season_matches['HTAggGoalConceded']  # Positive value is in favour
+    #                                                                                                                    # of HT
+    # season_matches.drop(['HTAggGoalScored', 'ATAggGoalScored', 'HTAggGoalConceded', 'ATAggGoalConceded'], inplace=True, axis=1)
 
     return season_matches
 
@@ -203,9 +203,9 @@ def update_season_df_with_teams_points_col(season_matches):
     # Updates the season_matches df by creating new columns according to above lists:
     season_matches['HTAggLeaguePoints'] = HTAggLeaguePoints
     season_matches['ATAggLeaguePoints'] = ATAggLeaguePoints
-    season_matches['AggLeaguePointsDiff'] = season_matches['HTAggLeaguePoints'] - season_matches['ATAggLeaguePoints']  # Positive value is in favour
-                                                                                                                       # of HT
-    season_matches.drop(['HTAggLeaguePoints', 'ATAggLeaguePoints'], inplace=True, axis=1)
+    # season_matches['AggLeaguePointsDiff'] = season_matches['HTAggLeaguePoints'] - season_matches['ATAggLeaguePoints']  # Positive value is in favour
+    #                                                                                                                    # of HT
+    # season_matches.drop(['HTAggLeaguePoints', 'ATAggLeaguePoints'], inplace=True, axis=1)
 
     return season_matches
 
@@ -243,9 +243,9 @@ def update_concat_df_with_last_3_specific_FTRs_cols(seasons_matches):  # Notice 
         seasons_matches.at[general_match_ind, 'NumOfPastHTSpecificWinsOutOf3'] = HT_win_count  # resets value in df
         seasons_matches.at[general_match_ind, 'NumOfPastATSpecificWinsOutOf3'] = AT_win_count
 
-    seasons_matches['NumOfPastSpecificWinsOutOf3Diff'] = seasons_matches['NumOfPastHTSpecificWinsOutOf3'] - \
-                                                           seasons_matches['NumOfPastATSpecificWinsOutOf3']  # Positive value is in favour of HT
-    seasons_matches.drop(['NumOfPastHTSpecificWinsOutOf3', 'NumOfPastATSpecificWinsOutOf3'], inplace=True, axis=1)
+    # seasons_matches['NumOfPastSpecificWinsOutOf3Diff'] = seasons_matches['NumOfPastHTSpecificWinsOutOf3'] - \
+    #                                                        seasons_matches['NumOfPastATSpecificWinsOutOf3']  # Positive value is in favour of HT
+    # seasons_matches.drop(['NumOfPastHTSpecificWinsOutOf3', 'NumOfPastATSpecificWinsOutOf3'], inplace=True, axis=1)
 
     return seasons_matches
 
@@ -286,9 +286,9 @@ def update_concat_df_with_last_3_any_FTRs_cols(seasons_matches):
         seasons_matches.at[general_match_ind, 'NumOfPastHTWinsOutOfLast3Matches'] = HT_win_count  # resets value in df
         seasons_matches.at[general_match_ind, 'NumOfPastATWinsOutOfLast3Matches'] = AT_win_count
 
-    seasons_matches['NumOfPastWinsOutOfLast3MatchesDiff'] = seasons_matches['NumOfPastHTWinsOutOfLast3Matches'] - \
-                                                           seasons_matches['NumOfPastATWinsOutOfLast3Matches']  # Positive value is in favour of HT
-    seasons_matches.drop(['NumOfPastHTWinsOutOfLast3Matches', 'NumOfPastATWinsOutOfLast3Matches'], inplace=True, axis=1)
+    # seasons_matches['NumOfPastWinsOutOfLast3MatchesDiff'] = seasons_matches['NumOfPastHTWinsOutOfLast3Matches'] - \
+    #                                                        seasons_matches['NumOfPastATWinsOutOfLast3Matches']  # Positive value is in favour of HT
+    # seasons_matches.drop(['NumOfPastHTWinsOutOfLast3Matches', 'NumOfPastATWinsOutOfLast3Matches'], inplace=True, axis=1)
 
     return seasons_matches
 
@@ -368,7 +368,7 @@ laLigaSeasonsFilteredList = [la_liga_season_0910_filtered_ML,
                              la_liga_season_1617_filtered_ML,
                              la_liga_season_1718_filtered_ML,
                              la_liga_season_1819_filtered_ML]
-experiment_list = [la_liga_season_0910_filtered_ML]
+experiment_list = [la_liga_season_0910_filtered_ML, la_liga_season_1011_filtered_ML, la_liga_season_1112_filtered_ML]
 
 # Update DFs with new relevant data (not on concatenated since it is per league)
 for la_Liga_season in laLigaSeasonsFilteredList:
