@@ -11,18 +11,22 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
 import xgboost as xgb
-
-# from pandas.plotting import scatter_matrix
+from pandas.plotting import scatter_matrix
 # from sklearn.metrics import classification_report
 # from sklearn.metrics import confusion_matrix
 # from sklearn.metrics import accuracy_score
 # from sklearn.model_selection import GridSearchCV
 # from sklearn.metrics import make_scorer, f1_score
 
-from Data_Cleaning_for_ML import X_La_Liga, y_La_Liga
+from Data_Cleaning_for_ML import laLiga0919FilteredML
 
 pd.set_option('display.width', 400)
 pd.set_option('display.max_columns', 16)
+
+X_La_Liga = laLiga0919FilteredML.drop(['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR'], axis=1)
+# print(X_La_Liga.head())
+y_La_Liga = laLiga0919FilteredML['FTR']
+# print(y_La_Liga.head())
 
 for col in X_La_Liga.columns:
     X_La_Liga[col] = scale(X_La_Liga[col])
@@ -42,6 +46,8 @@ for name, model in models:
     results.append(cv_results)
     names.append(name)
     print('%s: %f (%f)' % (name, cv_results.mean(), cv_results.std()))
+scatter_matrix(X_La_Liga[['AggGoalScoredDiff', 'AggGoalConcededDiff', 'AggLeaguePointsDiff', 'NumOfPastSpecificWinsOutOf3Diff',
+                          'NumOfPastWinsOutOfLast3MatchesDiff', 'WinningChancesDiff']], figsize=(10, 10))
 plt.boxplot(results, labels=names)
 plt.title('Algorithm Comparison')
 plt.show()

@@ -383,9 +383,3 @@ update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredML)
 update_concat_df_with_team_location_influence(laLiga0919FilteredML)
 print(laLiga0919FilteredML)
 print(laLiga0919FilteredML.columns)
-
-
-X_La_Liga = laLiga0919FilteredML.drop(['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR'], axis=1)
-# print(X_La_Liga.head())
-y_La_Liga = laLiga0919FilteredML['FTR']
-# print(y_La_Liga.head())
