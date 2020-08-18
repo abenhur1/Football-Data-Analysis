@@ -73,9 +73,9 @@ def train_predict(clf, X_train, y_train, X_test, y_test):
     print("F1 score and accuracy score for test set: {:.4f} , {:.4f}.".format(f1, acc))
 
 
-X_La_Liga = laLiga0919FilteredML.drop(['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR'], axis=1)
+X_La_Liga = laLiga0919FilteredML.drop(['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR'], axis=1).copy()
 print(X_La_Liga.head())
-y_La_Liga = laLiga0919FilteredML['FTR']
+y_La_Liga = laLiga0919FilteredML['FTR'].copy()
 print(y_La_Liga.head())
 
 scatter_matrix(X_La_Liga[['HTAggGoalScored', 'ATAggGoalScored', 'HTAggGoalConceded', 'ATAggGoalConceded', 'HTAggLeaguePoints', 'ATAggLeaguePoints',
@@ -89,6 +89,7 @@ X_test_scaled = scaler.transform(X_tested)
 # for col in X_La_Liga.columns:
 #     X_La_Liga[col] = scale(X_La_Liga[col])
 print(X_La_Liga.head())
+print(X_trained)
 # X_La_Liga_train, X_La_Liga_validation, y_La_Liga_train, y_La_Liga_validation = \
 #     train_test_split(X_La_Liga, y_La_Liga, test_size=0.20, random_state=1)
 
@@ -106,7 +107,3 @@ train_predict(clf_B, scaler.fit_transform(X_trained), y_trained, scaler.transfor
 print('')
 train_predict(clf_C, scaler.fit_transform(X_trained), y_trained, scaler.transform(X_tested), y_tested)
 print('')
-
-# kfold = StratifiedKFold(n_splits=10, random_state=1, shuffle=True)
-# cv_results = cross_val_score(xgb.XGBClassifier(), X_La_Liga_train, y_La_Liga_train, cv=kfold, scoring='accuracy')
-# print('%s: mean:%f (mean:%f)' % ('XGB', cv_results.mean(), cv_results.std()))
