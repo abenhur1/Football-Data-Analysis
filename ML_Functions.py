@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
@@ -10,8 +11,11 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import make_scorer
 # from pandas.plotting import scatter_matrix
 # import matplotlib.pyplot as plt
+import warnings
 
 from Data_Cleaning_for_ML import laLiga0919FilteredML
+
+warnings.filterwarnings('always')  # "error", "ignore", "always", "default", "module" or "once"
 
 pd.set_option('display.width', 400)
 pd.set_option('display.max_columns', 16)
@@ -21,7 +25,7 @@ pd.set_option('display.max_columns', 16)
 def predict_labels(classifier, features, target):
     y_pred = classifier.predict(features)
 
-    return f1_score(target, y_pred, average='weighted'), sum(target == y_pred) / float(len(y_pred))
+    return f1_score(target, y_pred, average='weighted', labels=np.unique(y_pred)), sum(target == y_pred) / float(len(y_pred))
 
 
 # Train and predict using a classifer based on F1 score:
@@ -70,16 +74,8 @@ for clf in clf_list:
     print('')
 
 # Create the parameters list you wish to tune
-parameters = {'learning_rate': [0.1],
-              'n_estimators': [40],
-              'max_depth': [3],
-              'min_child_weight': [3],
-              'gamma': [0.4],
-              'subsample': [0.8],
-              'colsample_bytree': [0.8],
-              'scale_pos_weight': [1],
-              'reg_alpha': [1e-5]
-              }
+parameters = {'learning_rate': [0.1], 'n_estimators': [40], 'max_depth': [3], 'min_child_weight': [3], 'gamma': [0.4], 'subsample': [0.8],
+              'colsample_bytree': [0.8], 'scale_pos_weight': [1], 'reg_alpha': [1e-5]}
 
 # Initialize the classifier
 clf = xgb.XGBClassifier(seed=2)
