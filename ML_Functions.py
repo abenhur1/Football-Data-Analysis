@@ -1,11 +1,11 @@
 import pandas as pd
 import numpy as np
+import xgboost as xgb
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-import xgboost as xgb
 from sklearn.metrics import f1_score, precision_score, recall_score
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import make_scorer

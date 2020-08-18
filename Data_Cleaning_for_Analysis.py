@@ -1,47 +1,8 @@
 import pandas as pd
-from pandas import to_numeric
 import sqlite3
 
 pd.set_option('display.width', 400)
 pd.set_option('display.max_columns', 15)
-
-
-### notes on files: http://www.football-data.co.uk/notes.txt:
-# Div = League Division
-# Date = Match Date (dd/mm/yy)
-# Time = Time of match kick off
-# HomeTeam = Home Team
-# AwayTeam = Away Team
-# FTHG and HG = Full Time Home Team Goals
-# FTAG and AG = Full Time Away Team Goals
-# FTR and Res = Full Time Result (H=Home Win, D=Draw, A=Away Win)
-# HTHG = Half Time Home Team Goals
-# HTAG = Half Time Away Team Goals
-# HTR = Half Time Result (H=Home Win, D=Draw, A=Away Win)
-#
-# Match Statistics (where available)
-# Attendance = Crowd Attendance
-# Referee = Match Referee
-# HS = Home Team Shots
-# AS = Away Team Shots
-# HST = Home Team Shots on Target
-# AST = Away Team Shots on Target
-# HHW = Home Team Hit Woodwork
-# AHW = Away Team Hit Woodwork
-# HC = Home Team Corners
-# AC = Away Team Corners
-# HF = Home Team Fouls Committed
-# AF = Away Team Fouls Committed
-# HFKC = Home Team Free Kicks Conceded
-# AFKC = Away Team Free Kicks Conceded
-# HO = Home Team Offsides
-# AO = Away Team Offsides
-# HY = Home Team Yellow Cards
-# AY = Away Team Yellow Cards
-# HR = Home Team Red Cards
-# AR = Away Team Red Cards
-# HBP = Home Team Bookings Points (10 = yellow, 25 = red)
-# ABP = Away Team Bookings Points (10 = yellow, 25 = red)
 
 
 ### Functions:
@@ -51,7 +12,7 @@ def df_creator(path, file):
 
 
 def abs_goal_diff_calc(df_league):
-    return abs(to_numeric(df_league['HTHG']) - to_numeric(df_league['HTAG']))
+    return abs(pd.to_numeric(df_league['HTHG']) - pd.to_numeric(df_league['HTAG']))
 
 
 def reset_index_df(dataframe):
@@ -90,7 +51,7 @@ dfRawTable = pd.read_sql_query("SELECT * FROM EPL", con)
 ## Leave relevant columns:
 laLiga0919Filtered = laLiga0919Concat[relevant_analysis_cols].copy()
 ## Filter out games that draw at HT:
-laLiga0919Filtered2 = laLiga0919Filtered[((laLiga0919Filtered['HTR'] == 'H') | (laLiga0919Filtered['HTR'] == 'A'))].copy()  # No Draws
+laLiga0919Filtered2 = laLiga0919Filtered[((laLiga0919Filtered['HTR'] == 'H') | (laLiga0919Filtered['HTR'] == 'A'))].copy()  # No Draws at HT
 ## Filter out games that draw at HT and leader leads by exactly 1:
 laLiga0919Filtered3 = laLiga0919Filtered2[abs_goal_diff_calc(laLiga0919Filtered2) == 1].copy()  # Leader leads by exactly 1
 ## Filter out games that draw at HT and leader leads by more than 1:

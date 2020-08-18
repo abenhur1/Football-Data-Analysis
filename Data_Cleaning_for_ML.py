@@ -4,43 +4,6 @@ import sqlite3
 pd.set_option('display.width', 400)
 pd.set_option('display.max_columns', 16)
 
-### notes on files: http://www.football-data.co.uk/notes.txt:
-# Div = League Division
-# Date = Match Date (dd/mm/yy)
-# Time = Time of match kick off
-# HomeTeam = Home Team
-# AwayTeam = Away Team
-# FTHG and HG = Full Time Home Team Goals
-# FTAG and AG = Full Time Away Team Goals
-# FTR and Res = Full Time Result (H=Home Win, D=Draw, A=Away Win)
-# HTHG = Half Time Home Team Goals
-# HTAG = Half Time Away Team Goals
-# HTR = Half Time Result (H=Home Win, D=Draw, A=Away Win)
-#
-# Match Statistics (where available)
-# Attendance = Crowd Attendance
-# Referee = Match Referee
-# HS = Home Team Shots
-# AS = Away Team Shots
-# HST = Home Team Shots on Target
-# AST = Away Team Shots on Target
-# HHW = Home Team Hit Woodwork
-# AHW = Away Team Hit Woodwork
-# HC = Home Team Corners
-# AC = Away Team Corners
-# HF = Home Team Fouls Committed
-# AF = Away Team Fouls Committed
-# HFKC = Home Team Free Kicks Conceded
-# AFKC = Away Team Free Kicks Conceded
-# HO = Home Team Offsides
-# AO = Away Team Offsides
-# HY = Home Team Yellow Cards
-# AY = Away Team Yellow Cards
-# HR = Home Team Red Cards
-# AR = Away Team Red Cards
-# HBP = Home Team Bookings Points (10 = yellow, 25 = red)
-# ABP = Away Team Bookings Points (10 = yellow, 25 = red)
-
 
 ### Functions:
 def df_creator(path, file):
@@ -368,18 +331,18 @@ laLigaSeasonsFilteredList = [la_liga_season_0910_filtered_ML,
                              la_liga_season_1617_filtered_ML,
                              la_liga_season_1718_filtered_ML,
                              la_liga_season_1819_filtered_ML]
-experiment_list = [la_liga_season_0910_filtered_ML, la_liga_season_1011_filtered_ML, la_liga_season_1112_filtered_ML, la_liga_season_1213_filtered_ML]
+experiment_list = [la_liga_season_0910_filtered_ML, la_liga_season_1011_filtered_ML]
 
 # Update DFs with new relevant data (not on concatenated since it is per league)
 for la_Liga_season in laLigaSeasonsFilteredList:
     update_season_df_with_agg_goals_cols(la_Liga_season)
     update_season_df_with_teams_points_col(la_Liga_season)
 
-# laLiga0919FilteredML = pd.concat(file for file in experiment_list)
-laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
+laLiga0919FilteredML = pd.concat(file for file in experiment_list)
+# laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
 reset_index_df(laLiga0919FilteredML)
 update_concat_df_with_last_3_specific_FTRs_cols(laLiga0919FilteredML)
 update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredML)
 update_concat_df_with_team_location_influence(laLiga0919FilteredML)
-# print(laLiga0919FilteredML)
-# print(laLiga0919FilteredML.columns)
+print(laLiga0919FilteredML)
+print(laLiga0919FilteredML.columns)
