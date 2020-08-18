@@ -11,11 +11,8 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import make_scorer
 # from pandas.plotting import scatter_matrix
 # import matplotlib.pyplot as plt
-import warnings
 
 from Data_Cleaning_for_ML import laLiga0919FilteredML
-
-warnings.filterwarnings('always')  # "error", "ignore", "always", "default", "module" or "once"
 
 pd.set_option('display.width', 400)
 pd.set_option('display.max_columns', 16)
@@ -45,9 +42,7 @@ def train_predict(classifier, X_train, y_train, X_test, y_test):
 
 
 X_La_Liga = laLiga0919FilteredML.drop(['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR'], axis=1).copy()
-# print('X_La_Liga head:', X_La_Liga.head())
 y_La_Liga = laLiga0919FilteredML['FTR'].copy()
-# print('y_La_Liga head:', y_La_Liga.head())
 
 # scatter = scatter_matrix(X_La_Liga[['HTAggGoalScored', 'ATAggGoalScored', 'HTAggGoalConceded', 'ATAggGoalConceded',
 #                                                 'HTAggLeaguePoints', 'ATAggLeaguePoints', 'NumOfPastHTSpecificWinsOutOf3',
@@ -59,13 +54,10 @@ X_trained, X_tested, y_trained, y_tested = train_test_split(X_La_Liga, y_La_Liga
 scaler = MinMaxScaler()
 X_train_scaled = scaler.fit_transform(X_trained)
 X_test_scaled = scaler.transform(X_tested)
-# for col in X_La_Liga.columns:
-#     X_La_Liga[col] = scale(X_La_Liga[col])
 
-
-clf_SVC = SVC(random_state=0, kernel='rbf')
-clf_LogReg = LogisticRegression(random_state=0)
-clf_XGB = xgb.XGBClassifier(seed=0)
+clf_SVC = SVC(random_state=912, kernel='rbf')
+clf_LogReg = LogisticRegression(random_state=42)
+clf_XGB = xgb.XGBClassifier(seed=82)
 clf_LinDiscriminantAnalysis = LinearDiscriminantAnalysis()
 clf_list = [clf_SVC, clf_LogReg, clf_LinDiscriminantAnalysis, clf_XGB]
 
@@ -76,11 +68,9 @@ for clf in clf_list:
 # Create the parameters list you wish to tune
 parameters = {'learning_rate': [0.1], 'n_estimators': [40], 'max_depth': [3], 'min_child_weight': [3], 'gamma': [0.4], 'subsample': [0.8],
               'colsample_bytree': [0.8], 'scale_pos_weight': [1], 'reg_alpha': [1e-5]}
-
-# Initialize the classifier
 clf = xgb.XGBClassifier(seed=2)
 
-# Make an f1 scoring function using 'make_scorer'
+# Make an f1 scoring function using 'make_scorer':
 precision_scorer = make_scorer(precision_score, average='weighted')
 recall_scorer = make_scorer(recall_score, average='weighted')
 f1_scorer = make_scorer(f1_score, average='weighted')
@@ -91,8 +81,7 @@ for scorer in [precision_scorer, recall_scorer, f1_scorer]:
     # Fit the grid search object to the training data and find the optimal parameters
     grid_obj = grid_obj.fit(scaler.fit_transform(X_trained), y_trained)
 
-    # Get the best estimator
-    clf = grid_obj.best_estimator_
+    clf = grid_obj.best_estimator_  # Get the best estimator
     print(str(scorer) + ': {}'.format(clf))
 
 # Final F1 score for training and testing after GridSearch:

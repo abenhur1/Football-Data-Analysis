@@ -375,8 +375,8 @@ for la_Liga_season in laLigaSeasonsFilteredList:
     update_season_df_with_agg_goals_cols(la_Liga_season)
     update_season_df_with_teams_points_col(la_Liga_season)
 
-laLiga0919FilteredML = pd.concat(file for file in experiment_list)
-# laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
+# laLiga0919FilteredML = pd.concat(file for file in experiment_list)
+laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
 reset_index_df(laLiga0919FilteredML)
 update_concat_df_with_last_3_specific_FTRs_cols(laLiga0919FilteredML)
 update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredML)
