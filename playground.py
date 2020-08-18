@@ -74,13 +74,13 @@ def train_predict(clf, X_train, y_train, X_test, y_test):
 
 
 X_La_Liga = laLiga0919FilteredML.drop(['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR'], axis=1).copy()
-print('X_La_Liga head:', X_La_Liga.head())
+# print('X_La_Liga head:', X_La_Liga.head())
 y_La_Liga = laLiga0919FilteredML['FTR'].copy()
-print('y_La_Liga head:', y_La_Liga.head())
+# print('y_La_Liga head:', y_La_Liga.head())
 
 scatter_matrix(X_La_Liga[['HTAggGoalScored', 'ATAggGoalScored', 'HTAggGoalConceded', 'ATAggGoalConceded', 'HTAggLeaguePoints', 'ATAggLeaguePoints',
                           'NumOfPastHTSpecificWinsOutOf3', 'NumOfPastATSpecificWinsOutOf3', 'NumOfPastHTWinsOutOfLast3Matches',
-                          'NumOfPastATWinsOutOfLast3Matches', 'HTWinningChancesAtHome', 'ATWinningChancesWhenAway']], figsize=(10, 10))
+                          'NumOfPastATWinsOutOfLast3Matches', 'HTWinningChancesAtHome', 'ATWinningChancesWhenAway']])
 
 X_trained, X_tested, y_trained, y_tested = train_test_split(X_La_Liga, y_La_Liga, random_state=0)
 scaler = MinMaxScaler()
