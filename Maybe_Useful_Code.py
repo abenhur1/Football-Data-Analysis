@@ -33,11 +33,11 @@
 #     match_index = league_df_match_index - 1
 
 
-### Analysis Stage:
+### Data_Cleaning_for_Analysis:
 # la_liga_0919_df['Year'] = pd.DatetimeIndex(la_liga_0919_df['Date']).year  # year column.
 # premierLeague9518Filtered['Year'] = pd.DatetimeIndex(la_liga_0919_df['Date']).year  # year column.
 
-### ML Stage:
+### Data_Cleaning_for_ML:
 # Home_Away_Merger(laLiga0919FilteredML)
 
 # # Parameters of game's whereabouts' influence on final time result:
@@ -64,6 +64,15 @@
 #     # (Allegedly function gives Data Leakage, though the assumption is that these are true more or less - always (at least for the past 20 years))
 #
 #     return seasons_matches
+
+# # Creates a column of teams' scored goals UNTIL current match:
+# def update_season_df_with_agg_goals_scored_cols(season_matches):
+#     season_matches['HTAggGoalScored'] = 0
+#     season_matches['ATAggGoalScored'] = 0
+#
+#     for team in season_matches.groupby('HomeTeam').median().T.columns:
+#         season_matches[season_matches['HomeTeam'] == team].
+#     return None
 
 
 #### Analysis_Functions:
