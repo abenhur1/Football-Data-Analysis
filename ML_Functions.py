@@ -42,7 +42,9 @@ def train_predict(classifier, X_train, y_train, X_test, y_test):
 
 
 X_La_Liga = laLiga0919FilteredML.drop(['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR'], axis=1).copy()
+print(X_La_Liga.columns)
 y_La_Liga = laLiga0919FilteredML['FTR'].copy()
+print(y_La_Liga.columns)
 
 # scatter = scatter_matrix(X_La_Liga[['HTAggGoalScored', 'ATAggGoalScored', 'HTAggGoalConceded', 'ATAggGoalConceded',
 #                                                 'HTAggLeaguePoints', 'ATAggLeaguePoints', 'NumOfPastHTSpecificWinsOutOf3',
@@ -53,7 +55,7 @@ y_La_Liga = laLiga0919FilteredML['FTR'].copy()
 X_trained, X_tested, y_trained, y_tested = train_test_split(X_La_Liga, y_La_Liga, random_state=0)
 scaler = MinMaxScaler()
 X_train_scaled = scaler.fit_transform(X_trained)
-X_test_scaled = scaler.transform(X_tested)
+X_test_scaled = scaler.fit_transform(X_tested)
 
 clf_SVC = SVC(random_state=912, kernel='rbf')
 clf_LogReg = LogisticRegression(random_state=42)
@@ -62,7 +64,7 @@ clf_LinDiscriminantAnalysis = LinearDiscriminantAnalysis()
 clf_list = [clf_SVC, clf_LogReg, clf_LinDiscriminantAnalysis, clf_XGB]
 
 for clf in clf_list:
-    train_predict(clf, scaler.fit_transform(X_trained), y_trained, scaler.transform(X_tested), y_tested)
+    train_predict(clf, X_train_scaled, y_trained, X_test_scaled, y_tested)
     print('')
 
 # Create the parameters list you wish to tune
@@ -79,13 +81,13 @@ f1_scorer = make_scorer(f1_score, average='weighted')
 for scorer in [precision_scorer, recall_scorer, f1_scorer]:
     grid_obj = GridSearchCV(estimator=clf, param_grid=parameters, scoring=scorer, cv=5)
     # Fit the grid search object to the training data and find the optimal parameters
-    grid_obj = grid_obj.fit(scaler.fit_transform(X_trained), y_trained)
+    grid_obj = grid_obj.fit(X_train_scaled, y_trained)
 
     clf = grid_obj.best_estimator_  # Get the best estimator
     print(str(scorer) + ': {}'.format(clf))
 
 # Final F1 score for training and testing after GridSearch:
-f1Score, accuracy = predict_labels(clf, scaler.fit_transform(X_trained), y_trained)
+f1Score, accuracy = predict_labels(clf, X_train_scaled, y_trained)
 print("F1 score and accuracy score for training set: {:.4f} , {:.4f}.".format(f1Score, accuracy))
-f1Score, accuracy = predict_labels(clf, scaler.fit_transform(X_tested), y_tested)
+f1Score, accuracy = predict_labels(clf, X_test_scaled, y_tested)
 print("F1 score and accuracy score for test set: {:.4f} , {:.4f}.".format(f1Score, accuracy))
