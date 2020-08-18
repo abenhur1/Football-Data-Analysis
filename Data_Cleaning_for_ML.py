@@ -368,7 +368,7 @@ laLigaSeasonsFilteredList = [la_liga_season_0910_filtered_ML,
                              la_liga_season_1617_filtered_ML,
                              la_liga_season_1718_filtered_ML,
                              la_liga_season_1819_filtered_ML]
-experiment_list = [la_liga_season_0910_filtered_ML]
+experiment_list = [la_liga_season_0910_filtered_ML, la_liga_season_1011_filtered_ML, la_liga_season_1112_filtered_ML, la_liga_season_1213_filtered_ML]
 
 # Update DFs with new relevant data (not on concatenated since it is per league)
 for la_Liga_season in laLigaSeasonsFilteredList:

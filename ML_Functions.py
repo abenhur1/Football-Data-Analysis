@@ -44,7 +44,6 @@ def train_predict(classifier, X_train, y_train, X_test, y_test):
 X_La_Liga = laLiga0919FilteredML.drop(['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR'], axis=1).copy()
 print(X_La_Liga.columns)
 y_La_Liga = laLiga0919FilteredML['FTR'].copy()
-print(y_La_Liga.columns)
 
 # scatter = scatter_matrix(X_La_Liga[['HTAggGoalScored', 'ATAggGoalScored', 'HTAggGoalConceded', 'ATAggGoalConceded',
 #                                                 'HTAggLeaguePoints', 'ATAggLeaguePoints', 'NumOfPastHTSpecificWinsOutOf3',
