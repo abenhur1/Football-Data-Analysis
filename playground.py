@@ -74,9 +74,9 @@ def train_predict(clf, X_train, y_train, X_test, y_test):
 
 
 X_La_Liga = laLiga0919FilteredML.drop(['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR'], axis=1).copy()
-print(X_La_Liga.head())
+print('X_La_Liga head:', X_La_Liga.head())
 y_La_Liga = laLiga0919FilteredML['FTR'].copy()
-print(y_La_Liga.head())
+print('y_La_Liga head:', y_La_Liga.head())
 
 scatter_matrix(X_La_Liga[['HTAggGoalScored', 'ATAggGoalScored', 'HTAggGoalConceded', 'ATAggGoalConceded', 'HTAggLeaguePoints', 'ATAggLeaguePoints',
                           'NumOfPastHTSpecificWinsOutOf3', 'NumOfPastATSpecificWinsOutOf3', 'NumOfPastHTWinsOutOfLast3Matches',
@@ -90,8 +90,6 @@ X_test_scaled = scaler.transform(X_tested)
 #     X_La_Liga[col] = scale(X_La_Liga[col])
 print(X_La_Liga.head())
 print(X_trained)
-# X_La_Liga_train, X_La_Liga_validation, y_La_Liga_train, y_La_Liga_validation = \
-#     train_test_split(X_La_Liga, y_La_Liga, test_size=0.20, random_state=1)
 
 
 # Initialize the three models (XGBoost is initialized later)

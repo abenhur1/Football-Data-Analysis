@@ -1,8 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import scale
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import StratifiedKFold
@@ -12,6 +10,8 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
 import xgboost as xgb
 from pandas.plotting import scatter_matrix
+# from sklearn.preprocessing import scale
+# from sklearn.preprocessing import StandardScaler
 # from sklearn.metrics import classification_report
 # from sklearn.metrics import confusion_matrix
 # from sklearn.metrics import accuracy_score
@@ -28,15 +28,15 @@ X_La_Liga = laLiga0919FilteredML.drop(['Date', 'HomeTeam', 'AwayTeam', 'FTHG', '
 print(X_La_Liga.head())
 y_La_Liga = laLiga0919FilteredML['FTR']
 # print(y_La_Liga.head())
-X_train, X_test, y_train, y_test = train_test_split(X_La_Liga, y_La_Liga, random_state = 0)
+X_train, X_test, y_train, y_test = train_test_split(X_La_Liga, y_La_Liga, random_state=0)
 scaler = MinMaxScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 # for col in X_La_Liga.columns:
 #     X_La_Liga[col] = scale(X_La_Liga[col])
 print(X_La_Liga.head())
-# X_La_Liga_train, X_La_Liga_validation, y_La_Liga_train, y_La_Liga_validation = \
-#     train_test_split(X_La_Liga, y_La_Liga, test_size=0.20, random_state=1)
+X_La_Liga_train, X_La_Liga_validation, y_La_Liga_train, y_La_Liga_validation = \
+    train_test_split(X_La_Liga, y_La_Liga, test_size=0.20, random_state=1)
 
 ## Evaluate each model in turn and compare algorithms:
 models = [('LogReg', LogisticRegression(solver='liblinear', multi_class='ovr')), ('LinDiscAnal', LinearDiscriminantAnalysis()),
@@ -57,6 +57,6 @@ plt.boxplot(results, labels=names)
 plt.title('Algorithm Comparison')
 plt.show()
 
-# kfold = StratifiedKFold(n_splits=10, random_state=1, shuffle=True)
-# cv_results = cross_val_score(xgb.XGBClassifier(), X_La_Liga_train, y_La_Liga_train, cv=kfold, scoring='accuracy')
-# print('%s: mean:%f (mean:%f)' % ('XGB', cv_results.mean(), cv_results.std()))
+kfold = StratifiedKFold(n_splits=10, random_state=1, shuffle=True)
+cv_results = cross_val_score(xgb.XGBClassifier(), X_La_Liga_train, y_La_Liga_train, cv=kfold, scoring='accuracy')
+print('%s: mean:%f (mean:%f)' % ('XGB', cv_results.mean(), cv_results.std()))
