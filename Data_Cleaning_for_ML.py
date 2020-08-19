@@ -39,9 +39,9 @@ def drop_unnecessary_cols(seasons_matches):
 def update_season_df_with_agg_goals_cols(season_matches):
     # New columns initialized.
     season_matches['HTAggGoalScoredMean'] = 0
-    season_matches['HTAggGoalConcededMean'] = 0
+    # season_matches['HTAggGoalConcededMean'] = 0
     season_matches['ATAggGoalScoredMean'] = 0
-    season_matches['ATAggGoalConcededMean'] = 0
+    # season_matches['ATAggGoalConcededMean'] = 0
 
     for team in season_matches.groupby('HomeTeam').median().T.columns:  # A way to iterate over teams
         # Iterated by team, now we mask original df for aggregating its goals. A new column is created for these values for each team. After loop,
@@ -53,35 +53,35 @@ def update_season_df_with_agg_goals_cols(season_matches):
                                                    season_matches_of_team_when_home['FTHG']) / \
                                                    season_matches_of_team_when_home['game_serial_num']  # minus FTHG values because of data leakage
 
-        season_matches_of_team_when_home = season_matches[season_matches['HomeTeam'] == team].copy()
-        season_matches_of_team_when_home['game_serial_num'] = range(1, 20)
-        season_matches[team + 'asHTConcededMean'] = season_matches_of_team_when_home['FTAG'].cumsum() - \
-                                                    season_matches_of_team_when_home['FTAG'] / \
-                                                    season_matches_of_team_when_home['game_serial_num']
+        # season_matches_of_team_when_home = season_matches[season_matches['HomeTeam'] == team].copy()
+        # season_matches_of_team_when_home['game_serial_num'] = range(1, 20)
+        # season_matches[team + 'asHTConcededMean'] = season_matches_of_team_when_home['FTAG'].cumsum() - \
+        #                                             season_matches_of_team_when_home['FTAG'] / \
+        #                                             season_matches_of_team_when_home['game_serial_num']
 
         season_matches_of_team_when_away = season_matches[season_matches['AwayTeam'] == team].copy()
         season_matches_of_team_when_away['game_serial_num'] = range(1, 20)
         season_matches[team + 'asATScoredMean'] = (season_matches_of_team_when_away['FTAG'].cumsum() -
                                                    season_matches_of_team_when_away['FTAG']) / \
-                                                  (season_matches_of_team_when_away['game_serial_num'])
+                                                  season_matches_of_team_when_away['game_serial_num']
 
-        season_matches_of_team_when_away = season_matches[season_matches['AwayTeam'] == team].copy()
-        season_matches_of_team_when_away['game_serial_num'] = range(1, 20)
-        season_matches[team + 'asATConcededMean'] = season_matches_of_team_when_away['FTHG'].cumsum() - \
-                                                    season_matches_of_team_when_away['FTHG'] / \
-                                                    (season_matches_of_team_when_away['game_serial_num'])
+        # season_matches_of_team_when_away = season_matches[season_matches['AwayTeam'] == team].copy()
+        # season_matches_of_team_when_away['game_serial_num'] = range(1, 20)
+        # season_matches[team + 'asATConcededMean'] = season_matches_of_team_when_away['FTHG'].cumsum() - \
+        #                                             season_matches_of_team_when_away['FTHG'] / \
+        #                                             season_matches_of_team_when_away['game_serial_num']
 
-    season_matches.replace(np.NaN, 0)
+    season_matches.fillna(0, inplace=True)
 
     for col in season_matches.columns:
         if 'asHTScoredMean' in col:
             season_matches['HTAggGoalScoredMean'] += season_matches[col]
-        elif 'asHTConcededMean' in col:
-            season_matches['HTAggGoalConcededMean'] += season_matches[col]
+        # elif 'asHTConcededMean' in col:
+        #     season_matches['HTAggGoalConcededMean'] += season_matches[col]
         elif 'asATScoredMean' in col:
             season_matches['ATAggGoalScoredMean'] += season_matches[col]
-        elif 'asATConcededMean' in col:
-            season_matches['ATAggGoalConcededMean'] += season_matches[col]
+        # elif 'asATConcededMean' in col:
+        #     season_matches['ATAggGoalConcededMean'] += season_matches[col]
 
     return season_matches
 
@@ -282,19 +282,19 @@ laLigaSeasonsFilteredList = [la_liga_season_0910_filtered_ML,
                              la_liga_season_1617_filtered_ML,
                              la_liga_season_1718_filtered_ML,
                              la_liga_season_1819_filtered_ML]
-experiment_list = [la_liga_season_0910_filtered_ML, la_liga_season_1011_filtered_ML]
+experiment_list = [la_liga_season_0910_filtered_ML, la_liga_season_1011_filtered_ML, la_liga_season_1112_filtered_ML, la_liga_season_1213_filtered_ML]
 
 # Update DFs with new relevant data (not on concatenated since it is per league)
 for la_Liga_season in laLigaSeasonsFilteredList:
     update_season_df_with_agg_goals_cols(la_Liga_season)
     update_season_df_with_teams_points_col(la_Liga_season)
 
-# laLiga0919FilteredML = pd.concat(file for file in experiment_list)
-laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
+laLiga0919FilteredML = pd.concat(file for file in experiment_list)
+# laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
 reset_index_df(laLiga0919FilteredML)
 update_concat_df_with_last_3_specific_FTRs_cols(laLiga0919FilteredML)
 update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredML)
 update_concat_df_with_team_location_influence(laLiga0919FilteredML)
 laLiga0919FilteredML = drop_unnecessary_cols(laLiga0919FilteredML)
 print(laLiga0919FilteredML)
-# print(laLiga0919FilteredML.columns)
+print(laLiga0919FilteredML.columns)
