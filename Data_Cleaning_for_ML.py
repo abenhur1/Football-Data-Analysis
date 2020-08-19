@@ -19,98 +19,8 @@ def rename_leagues_columns(league_df, dictionary):
     league_df.rename(columns=dictionary, inplace=True)
 
 
-# Returns a dataframe of the agg goals scored, arranged by teams (rows) and matchweek (columns):
-def get_agg_goals_scored(season_matches):
-    num_of_matches = len(season_matches)
-    # Create a dictionary with team names as keys
-    teams = {}
-    for team in season_matches.groupby('HomeTeam').median().T.columns:  # A way to turn the teams into the columns
-        teams[team] = []
-
-    for match_ind in range(num_of_matches):
-        HT = season_matches.iloc[match_ind]['HomeTeam']  # Home Team of current match
-        AT = season_matches.iloc[match_ind]['AwayTeam']
-        HomeTeamGoalsScored = season_matches.iloc[match_ind]['FTHG']
-        AwayTeamGoalsScored = season_matches.iloc[match_ind]['FTAG']
-        teams[HT].append(HomeTeamGoalsScored)  # Inserts on "teams" dictionary the team's goals.
-        teams[AT].append(AwayTeamGoalsScored)  # Inserts on "teams" dictionary the team's goals.
-
-    # Create a dataframe for goals scored where rows are teams and cols are the matchweek's goals for the team. list breaks into columns:
-    GoalsScoredByTeam = pd.DataFrame(data=teams, index=[index for index in range(1, 39)]).T  # Teams are rows again.
-    GoalsScoredByTeam[0] = 0  # Because before week 1, 0 goals were scored (current game always excluded since it is unknown yet). it is
-    # relevant to function "update_season_matches_df_with_agg_goals_cols" later
-    # Aggregates to get scored goals UNTIL current game (excludes current since it is unknown yet), df values
-    # turn into cumulative sum of former values:
-    for match_week in range(2, 39):  # (Remember that actually the first relevant GoalsScoredByTeam column=match_week is 1 and not 0)
-        GoalsScoredByTeam[match_week] = GoalsScoredByTeam[match_week] + GoalsScoredByTeam[match_week - 1]
-
-    return GoalsScoredByTeam
-
-
-# Returns a dataframe of the agg goals conceded, arranged by teams (rows) and matchweek (columns), see agg scored func for documentations:
-def get_agg_goals_conceded(season_matches):
-    num_of_matches = len(season_matches)
-    teams = {}
-    for team in season_matches.groupby('HomeTeam').median().T.columns:
-        teams[team] = []
-
-    for match_ind in range(num_of_matches):
-        HT = season_matches.iloc[match_ind]['HomeTeam']  # Home Team of current match
-        AT = season_matches.iloc[match_ind]['AwayTeam']
-        HomeTeamGoalsConceded = season_matches.iloc[match_ind]['FTAG']  # (There's no mistake here of course)
-        AwayTeamGoalsConceded = season_matches.iloc[match_ind]['FTHG']
-        teams[HT].append(HomeTeamGoalsConceded)
-        teams[AT].append(AwayTeamGoalsConceded)
-
-    GoalsConcededByTeam = pd.DataFrame(data=teams, index=[index for index in range(1, 39)]).T
-    GoalsConcededByTeam[0] = 0
-    for match_week in range(2, 39):
-        GoalsConcededByTeam[match_week] = GoalsConcededByTeam[match_week] + GoalsConcededByTeam[match_week - 1]
-
-    return GoalsConcededByTeam
-
-
 # Creates a column of teams' scored/conceded goals UNTIL current match:
 def update_season_df_with_agg_goals_cols(season_matches):
-    num_of_matches = len(season_matches)
-    agg_goals_scored = get_agg_goals_scored(season_matches)
-    agg_goals_conceded = get_agg_goals_conceded(season_matches)
-
-    match_week = 0
-    HTAggGoalScored = []
-    ATAggGoalScored = []
-    HTAggGoalConceded = []
-    ATAggGoalConceded = []
-
-    # Updates the lists with agg goals in accordance with matchweek:
-    for match_ind in range(num_of_matches):
-        HT = season_matches.iloc[match_ind]['HomeTeam']  # Home Team of current match
-        AT = season_matches.iloc[match_ind]['AwayTeam']  # Away Team of current match
-        HTAggGoalScored.append(agg_goals_scored.loc[HT][match_week])  # Appends num of agg scored goals of HT UNTIL current match
-        ATAggGoalScored.append(agg_goals_scored.loc[AT][match_week])  # Appends num of agg scored goals of AT UNTIL current match
-        HTAggGoalConceded.append(agg_goals_conceded.loc[HT][match_week])  # Appends num of agg conceded goals of HT UNTIL current match
-        ATAggGoalConceded.append(agg_goals_conceded.loc[AT][match_week])  # Appends num of agg conceded goals of AT UNTIL current match
-
-        # We move to next week=column after 10 matches have been played (notice that a match accounts for 2 teams and we have 20 rows=teams
-        # overall in the AggGoal Dataframes). Meaning one value of match_week sweeps through all teams:
-        if ((match_ind + 1) % 10) == 0:
-            match_week = match_week + 1
-
-    # Updates the season_matches df by creating new columns according to above lists:
-    season_matches['HTAggGoalScored'] = HTAggGoalScored
-    season_matches['ATAggGoalScored'] = ATAggGoalScored
-    season_matches['HTAggGoalConceded'] = HTAggGoalConceded
-    season_matches['ATAggGoalConceded'] = ATAggGoalConceded
-    # season_matches['AggGoalScoredDiff'] = season_matches['HTAggGoalScored'] - season_matches['ATAggGoalScored']  # Positive value is in favour of HT
-    # season_matches['AggGoalConcededDiff'] = season_matches['ATAggGoalConceded'] - season_matches['HTAggGoalConceded']  # Positive value is in favour
-    #                                                                                                                    # of HT
-    # season_matches.drop(['HTAggGoalScored', 'ATAggGoalScored', 'HTAggGoalConceded', 'ATAggGoalConceded'], inplace=True, axis=1)
-
-    return season_matches
-
-
-# Creates a column of teams' scored/conceded goals UNTIL current match:
-def update_season_df_with_agg_goals_cols1(season_matches):
     # New columns initialized.
     season_matches['HTAggGoalScored'] = 0
     season_matches['HTAggGoalConceded'] = 0
@@ -128,6 +38,8 @@ def update_season_df_with_agg_goals_cols1(season_matches):
         season_matches[team + 'asATScored'] = season_matches_current_team['FTAG'].cumsum()
         season_matches[team + 'asATConceded'] = season_matches_current_team['FTHG'].cumsum()
 
+    season_matches.fillna(0, inplace=True)
+
     for col in season_matches.columns:
         if 'asHTScored' in col:
             season_matches['HTAggGoalScored'] += season_matches[col]
@@ -138,7 +50,33 @@ def update_season_df_with_agg_goals_cols1(season_matches):
         elif 'asATConceded' in col:
             season_matches['ATAggGoalConceded'] += season_matches[col]
 
+    # Drop unnecessary columns:
+    for col in season_matches.columns:
+        for team in season_matches.groupby('HomeTeam').median().T.columns:
+            if team in col:  # the moment we encounter a column that is specific for a team, we get rid of it
+                season_matches = season_matches.drop([col, ], axis=1)
+                break
+
     return season_matches
+
+
+# give points according to result:
+def league_points_setter(season_matches, teams_dict):
+    num_of_matches = len(season_matches)
+
+    for match_ind in range(num_of_matches):
+        HomeTeam = season_matches.iloc[match_ind]['HomeTeam']  # Home Team of current match
+        AwayTeam = season_matches.iloc[match_ind]['AwayTeam']
+
+        if season_matches.iloc[match_ind]['FTR'] == 'H':
+            teams_dict[HomeTeam].append(3)
+            teams_dict[AwayTeam].append(0)
+        elif season_matches.iloc[match_ind]['FTR'] == 'A':
+            teams_dict[HomeTeam].append(0)
+            teams_dict[AwayTeam].append(3)
+        else:
+            teams_dict[HomeTeam].append(1)
+            teams_dict[AwayTeam].append(1)
 
 
 # Returns a df with teams' agg league points:
@@ -150,20 +88,7 @@ def get_agg_points(season_matches):
     for team in season_matches.groupby('HomeTeam').median().T.columns:
         teams[team] = []
 
-    # Fill the dictionary values (lists) with league points:
-    for match_ind in range(num_of_matches):
-        HT = season_matches.iloc[match_ind]['HomeTeam']  # Home Team of current match
-        AT = season_matches.iloc[match_ind]['AwayTeam']
-
-        if season_matches.iloc[match_ind]['FTR'] == 'H':
-            teams[HT].append(3)
-            teams[AT].append(0)
-        elif season_matches.iloc[match_ind]['FTR'] == 'A':
-            teams[HT].append(0)
-            teams[AT].append(3)
-        else:
-            teams[HT].append(1)
-            teams[AT].append(1)
+    league_points_setter(season_matches, teams)
 
     teams_league_points_df = pd.DataFrame(data=teams, index=[index for index in range(1, 39)]).T
     teams_league_points_df[0] = 0
@@ -367,7 +292,7 @@ experiment_list = [la_liga_season_0910_filtered_ML, la_liga_season_1011_filtered
 
 # Update DFs with new relevant data (not on concatenated since it is per league)
 for la_Liga_season in laLigaSeasonsFilteredList:
-    update_season_df_with_agg_goals_cols1(la_Liga_season)
+    update_season_df_with_agg_goals_cols(la_Liga_season)
     update_season_df_with_teams_points_col(la_Liga_season)
 
 laLiga0919FilteredML = pd.concat(file for file in experiment_list)
