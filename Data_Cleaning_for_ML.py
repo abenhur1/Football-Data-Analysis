@@ -37,10 +37,10 @@ def drop_unnecessary_cols(seasons_matches):
 # Creates a column of teams' scored/conceded goals UNTIL current match:
 def update_season_df_with_agg_goals_cols(season_matches):
     # New columns initialized.
-    season_matches['HTAggGoalScored'] = 0
-    season_matches['HTAggGoalConceded'] = 0
-    season_matches['ATAggGoalScored'] = 0
-    season_matches['ATAggGoalConceded'] = 0
+    season_matches['HTAggGoalScoredMean'] = 0
+    season_matches['HTAggGoalConcededMean'] = 0
+    season_matches['ATAggGoalScoredMean'] = 0
+    season_matches['ATAggGoalConcededMean'] = 0
 
     for team in season_matches.groupby('HomeTeam').median().T.columns:  # A way to iterate over teams
         # Iterated by team, now we mask original df for aggregating desired goals. A new column is created for these values for each team. After loop,
@@ -61,22 +61,26 @@ def update_season_df_with_agg_goals_cols(season_matches):
         season_matches[team + 'asHTConceded'] -= season_matches['FTHG']
 
         for match_ind in range(team_num_games):
-            season_matches[team + 'asHTScoredMean'] = season_matches.iloc[match_ind, team + 'asHTScored'] / match_ind
-            season_matches[team + 'asHTConcededMean'] = season_matches.iloc[match_ind, 'asHTConceded'] / match_ind
-            season_matches[team + 'asATScoredMean'] = season_matches.iloc[match_ind, 'asATScored'] / match_ind
-            season_matches[team + 'asATConcededMean'] = season_matches.iloc[match_ind, 'asATConceded'] / match_ind
+            season_matches[team + 'asHTScoredMean'] = 0
+            season_matches.iloc[match_ind][team + 'asHTScoredMean'] = season_matches.iloc[match_ind][team + 'asHTScored'] / match_ind
+            season_matches[team + 'asHTConcededMean'] = 0
+            season_matches.iloc[match_ind][team + 'asHTConcededMean'] = season_matches.iloc[match_ind][team + 'asHTConceded'] / match_ind
+            season_matches[team + 'asATScoredMean'] = 0
+            season_matches.iloc[match_ind][team + 'asATScoredMean'] = season_matches.iloc[match_ind][team + 'asATScored'] / match_ind
+            season_matches[team + 'asATConcededMean'] = 0
+            season_matches.iloc[match_ind][team + 'asATConcededMean'] = season_matches.iloc[match_ind][team + 'asATConceded'] / match_ind
 
     season_matches.fillna(0, inplace=True)
 
     for col in season_matches.columns:
         if 'asHTScoredMean' in col:
-            season_matches['HTAggGoalScored'] += season_matches[col]
+            season_matches['HTAggGoalScoredMean'] += season_matches[col]
         elif 'asHTConcededMean' in col:
-            season_matches['HTAggGoalConceded'] += season_matches[col]
+            season_matches['HTAggGoalConcededMean'] += season_matches[col]
         elif 'asATScoredMean' in col:
-            season_matches['ATAggGoalScored'] += season_matches[col]
+            season_matches['ATAggGoalScoredMean'] += season_matches[col]
         elif 'asATConcededMean' in col:
-            season_matches['ATAggGoalConceded'] += season_matches[col]
+            season_matches['ATAggGoalConcededMean'] += season_matches[col]
 
     return season_matches
 
