@@ -109,6 +109,38 @@ def update_season_df_with_agg_goals_cols(season_matches):
     return season_matches
 
 
+# Creates a column of teams' scored/conceded goals UNTIL current match:
+def update_season_df_with_agg_goals_cols1(season_matches):
+    # New columns initialized.
+    season_matches['HTAggGoalScored'] = 0
+    season_matches['HTAggGoalConceded'] = 0
+    season_matches['ATAggGoalScored'] = 0
+    season_matches['ATAggGoalConceded'] = 0
+
+    for team in season_matches.groupby('HomeTeam').median().T.columns:  # A way to iterate over teams
+        # Iterated by team, now we mask original df for aggregating desired goals. A new column is created for these values for each team. After loop,
+        # we set these value to original df by making a new column as sum of all these columns.
+        season_matches_current_team = season_matches[season_matches['HomeTeam'] == team]
+        season_matches[team + 'asHTScored'] = season_matches_current_team['FTHG'].cumsum()
+        season_matches[team + 'asHTConceded'] = season_matches_current_team['FTAG'].cumsum()
+
+        season_matches_current_team = season_matches[season_matches['AwayTeam'] == team]
+        season_matches[team + 'asATScored'] = season_matches_current_team['FTAG'].cumsum()
+        season_matches[team + 'asATConceded'] = season_matches_current_team['FTHG'].cumsum()
+
+    for col in season_matches.columns:
+        if 'asHTScored' in col:
+            season_matches['HTAggGoalScored'] += season_matches[col]
+        elif 'asHTConceded' in col:
+            season_matches['HTAggGoalConceded'] += season_matches[col]
+        elif 'asATScored' in col:
+            season_matches['ATAggGoalScored'] += season_matches[col]
+        elif 'asATConceded' in col:
+            season_matches['ATAggGoalConceded'] += season_matches[col]
+
+    return season_matches
+
+
 # Returns a df with teams' agg league points:
 def get_agg_points(season_matches):
     num_of_matches = len(season_matches)
@@ -335,11 +367,11 @@ experiment_list = [la_liga_season_0910_filtered_ML, la_liga_season_1011_filtered
 
 # Update DFs with new relevant data (not on concatenated since it is per league)
 for la_Liga_season in laLigaSeasonsFilteredList:
-    update_season_df_with_agg_goals_cols(la_Liga_season)
+    update_season_df_with_agg_goals_cols1(la_Liga_season)
     update_season_df_with_teams_points_col(la_Liga_season)
 
-# laLiga0919FilteredML = pd.concat(file for file in experiment_list)
-laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
+laLiga0919FilteredML = pd.concat(file for file in experiment_list)
+# laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
 reset_index_df(laLiga0919FilteredML)
 update_concat_df_with_last_3_specific_FTRs_cols(laLiga0919FilteredML)
 update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredML)
