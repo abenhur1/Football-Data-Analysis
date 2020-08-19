@@ -46,30 +46,37 @@ def update_season_df_with_agg_goals_cols(season_matches):
         # Iterated by team, now we mask original df for aggregating desired goals. A new column is created for these values for each team. After loop,
         # we set these value to original df by making a new column as sum of all these columns.
         season_matches_current_team = season_matches[season_matches['HomeTeam'] == team]
+
+        team_num_games = len(season_matches_current_team)
         season_matches[team + 'asHTScored'] = season_matches_current_team['FTHG'].cumsum()
-        season_matches[team + 'asHTScoredMean'] = season_matches[team + 'asHTScored'].rolling(window=3).mean()
         season_matches[team + 'asHTConceded'] = season_matches_current_team['FTAG'].cumsum()
 
         season_matches_current_team = season_matches[season_matches['AwayTeam'] == team]
         season_matches[team + 'asATScored'] = season_matches_current_team['FTAG'].cumsum()
         season_matches[team + 'asATConceded'] = season_matches_current_team['FTHG'].cumsum()
 
+        season_matches[team + 'asHTScored'] -= season_matches['FTHG']  # minus this value because agg should not include data from present
+        season_matches[team + 'asHTConceded'] -= season_matches['FTAG']
+        season_matches[team + 'asATScored'] -= season_matches['FTAG']
+        season_matches[team + 'asHTConceded'] -= season_matches['FTHG']
+
+        for match_ind in range(team_num_games):
+            season_matches[team + 'asHTScoredMean'] = season_matches.iloc[match_ind, team + 'asHTScored'] / match_ind
+            season_matches[team + 'asHTConcededMean'] = season_matches.iloc[match_ind, 'asHTConceded'] / match_ind
+            season_matches[team + 'asATScoredMean'] = season_matches.iloc[match_ind, 'asATScored'] / match_ind
+            season_matches[team + 'asATConcededMean'] = season_matches.iloc[match_ind, 'asATConceded'] / match_ind
+
     season_matches.fillna(0, inplace=True)
 
     for col in season_matches.columns:
         if 'asHTScoredMean' in col:
             season_matches['HTAggGoalScored'] += season_matches[col]
-        elif 'asHTConceded' in col:
+        elif 'asHTConcededMean' in col:
             season_matches['HTAggGoalConceded'] += season_matches[col]
-        elif 'asATScored' in col:
+        elif 'asATScoredMean' in col:
             season_matches['ATAggGoalScored'] += season_matches[col]
-        elif 'asATConceded' in col:
+        elif 'asATConcededMean' in col:
             season_matches['ATAggGoalConceded'] += season_matches[col]
-
-    season_matches['HTAggGoalScored'] -= season_matches['FTHG']  # minus this value because agg should not include data from present
-    season_matches['HTAggGoalConceded'] -= season_matches['FTAG']
-    season_matches['ATAggGoalScored'] -= season_matches['FTAG']
-    season_matches['ATAggGoalConceded'] -= season_matches['FTHG']
 
     return season_matches
 
@@ -280,8 +287,8 @@ for la_Liga_season in laLigaSeasonsFilteredList:
     update_season_df_with_agg_goals_cols(la_Liga_season)
     update_season_df_with_teams_points_col(la_Liga_season)
 
-laLiga0919FilteredML = pd.concat(file for file in experiment_list)
-# laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
+# laLiga0919FilteredML = pd.concat(file for file in experiment_list)
+laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
 reset_index_df(laLiga0919FilteredML)
 update_concat_df_with_last_3_specific_FTRs_cols(laLiga0919FilteredML)
 update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredML)
