@@ -3,6 +3,7 @@
 # גולים מצטברים - מתחילת העונה בהכרח?
 
 import pandas as pd
+import numpy as np
 import sqlite3
 
 pd.set_option('display.width', 400)
@@ -43,34 +44,34 @@ def update_season_df_with_agg_goals_cols(season_matches):
     season_matches['ATAggGoalConcededMean'] = 0
 
     for team in season_matches.groupby('HomeTeam').median().T.columns:  # A way to iterate over teams
-        # Iterated by team, now we mask original df for aggregating desired goals. A new column is created for these values for each team. After loop,
-        # we set these value to original df by making a new column as sum of all these columns.
-        season_matches_current_team = season_matches[season_matches['HomeTeam'] == team]
+        # Iterated by team, now we mask original df for aggregating its goals. A new column is created for these values for each team. After loop,
+        # we set these value to original df by making a new column as sum of all these columns. On the way we actually compute compute and insert their
+        # means.
+        season_matches_of_team_when_home = season_matches[season_matches['HomeTeam'] == team].copy()
+        season_matches_of_team_when_home['game_serial_num'] = range(1, 20)
+        season_matches[team + 'asHTScoredMean'] = (season_matches_of_team_when_home['FTHG'].cumsum() -
+                                                   season_matches_of_team_when_home['FTHG']) / \
+                                                   season_matches_of_team_when_home['game_serial_num']  # minus FTHG values because of data leakage
 
-        team_num_games = len(season_matches_current_team)
-        season_matches[team + 'asHTScored'] = season_matches_current_team['FTHG'].cumsum()
-        season_matches[team + 'asHTConceded'] = season_matches_current_team['FTAG'].cumsum()
+        season_matches_of_team_when_home = season_matches[season_matches['HomeTeam'] == team].copy()
+        season_matches_of_team_when_home['game_serial_num'] = range(1, 20)
+        season_matches[team + 'asHTConcededMean'] = season_matches_of_team_when_home['FTAG'].cumsum() - \
+                                                    season_matches_of_team_when_home['FTAG'] / \
+                                                    season_matches_of_team_when_home['game_serial_num']
 
-        season_matches_current_team = season_matches[season_matches['AwayTeam'] == team]
-        season_matches[team + 'asATScored'] = season_matches_current_team['FTAG'].cumsum()
-        season_matches[team + 'asATConceded'] = season_matches_current_team['FTHG'].cumsum()
+        season_matches_of_team_when_away = season_matches[season_matches['AwayTeam'] == team].copy()
+        season_matches_of_team_when_away['game_serial_num'] = range(1, 20)
+        season_matches[team + 'asATScoredMean'] = (season_matches_of_team_when_away['FTAG'].cumsum() -
+                                                   season_matches_of_team_when_away['FTAG']) / \
+                                                  (season_matches_of_team_when_away['game_serial_num'])
 
-        season_matches[team + 'asHTScored'] -= season_matches['FTHG']  # minus this value because agg should not include data from present
-        season_matches[team + 'asHTConceded'] -= season_matches['FTAG']
-        season_matches[team + 'asATScored'] -= season_matches['FTAG']
-        season_matches[team + 'asHTConceded'] -= season_matches['FTHG']
+        season_matches_of_team_when_away = season_matches[season_matches['AwayTeam'] == team].copy()
+        season_matches_of_team_when_away['game_serial_num'] = range(1, 20)
+        season_matches[team + 'asATConcededMean'] = season_matches_of_team_when_away['FTHG'].cumsum() - \
+                                                    season_matches_of_team_when_away['FTHG'] / \
+                                                    (season_matches_of_team_when_away['game_serial_num'])
 
-        for match_ind in range(team_num_games):
-            season_matches[team + 'asHTScoredMean'] = 0
-            season_matches.iloc[match_ind][team + 'asHTScoredMean'] = season_matches.iloc[match_ind][team + 'asHTScored'] / match_ind
-            season_matches[team + 'asHTConcededMean'] = 0
-            season_matches.iloc[match_ind][team + 'asHTConcededMean'] = season_matches.iloc[match_ind][team + 'asHTConceded'] / match_ind
-            season_matches[team + 'asATScoredMean'] = 0
-            season_matches.iloc[match_ind][team + 'asATScoredMean'] = season_matches.iloc[match_ind][team + 'asATScored'] / match_ind
-            season_matches[team + 'asATConcededMean'] = 0
-            season_matches.iloc[match_ind][team + 'asATConcededMean'] = season_matches.iloc[match_ind][team + 'asATConceded'] / match_ind
-
-    season_matches.fillna(0, inplace=True)
+    season_matches.replace(np.NaN, 0)
 
     for col in season_matches.columns:
         if 'asHTScoredMean' in col:
@@ -106,8 +107,6 @@ def league_points_setter(season_matches, teams_dict):
 
 # Returns a df with teams' agg league points:
 def get_agg_points(season_matches):
-    num_of_matches = len(season_matches)
-
     # Create a dictionary with team names as keys
     teams = {}
     for team in season_matches.groupby('HomeTeam').median().T.columns:
@@ -167,13 +166,13 @@ def update_concat_df_with_last_3_specific_FTRs_cols(seasons_matches):  # Notice 
         history_monitor = 0  # Monitors whether we reached the three past games we want to take into account
 
         for match_ind_until_general in range(general_match_ind - 1, -1, -1):  # To iterate backwards and find last three relevant games. It
-                                                                              # happens so that it skips first game but it doesn't matter since
-                                                                              # both values are of course 0
+            # happens so that it skips first game but it doesn't matter since
+            # both values are of course 0
             HT_past_match = seasons_matches.iloc[match_ind_until_general]['HomeTeam']  # Home Team of past match
             AT_past_match = seasons_matches.iloc[match_ind_until_general]['AwayTeam']
             FTR_past_match = seasons_matches.iloc[match_ind_until_general]['FTR']
             if (HT in [HT_past_match, AT_past_match]) and (AT in [HT_past_match, AT_past_match]):  # To stop at relevant game
-            # Above condition in order to find relevant past game
+                # Above condition in order to find relevant past game
                 if FTR_past_match == 'H':
                     HT_win_count = HT_win_count + 1
                 elif FTR_past_match == 'A':
@@ -204,8 +203,8 @@ def update_concat_df_with_last_3_any_FTRs_cols(seasons_matches):
         AT_history_monitor = 0
 
         for match_ind_until_general in range(general_match_ind - 1, -1, -1):  # To iterate backwards and find last three relevant games. It
-                                                                              # happens so that it skips first game but it doesn't matter since
-                                                                              # both values are of course 0
+            # happens so that it skips first game but it doesn't matter since
+            # both values are of course 0
             HT_past_match = seasons_matches.iloc[match_ind_until_general]['HomeTeam']  # Home Team of past match
             AT_past_match = seasons_matches.iloc[match_ind_until_general]['AwayTeam']
             FTR_past_match = seasons_matches.iloc[match_ind_until_general]['FTR']
@@ -261,10 +260,9 @@ relevant_ML_cols = ['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR']
 con = sqlite3.connect("C:/Users/User/PycharmProjects/Football-Data-Analysis/EPL_Seasons_1993-2017_RAW_Table.sqlite")
 dfRawTable = pd.read_sql_query("SELECT * FROM EPL", con)
 
-
 ### La Liga df modification:
 la_liga_season_0910_filtered_ML = df_creator(la_liga_path, 'season-0910_csv.csv')[relevant_ML_cols].copy()  # Every file separately because some
-                                                                                                            # functions are per league.
+# functions are per league.
 la_liga_season_1011_filtered_ML = df_creator(la_liga_path, 'season-1011_csv.csv')[relevant_ML_cols].copy()
 la_liga_season_1112_filtered_ML = df_creator(la_liga_path, 'season-1112_csv.csv')[relevant_ML_cols].copy()
 la_liga_season_1213_filtered_ML = df_creator(la_liga_path, 'season-1213_csv.csv')[relevant_ML_cols].copy()
