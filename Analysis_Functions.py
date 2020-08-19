@@ -3,26 +3,30 @@ import matplotlib.pyplot as plt
 import matplotlib.transforms
 import warnings  # current version of seaborn generates a bunch of warnings that we'll ignore
 
-from Data_Cleaning_for_Analysis import laLiga0919Filtered, laLiga0919Filtered2, laLiga0919Filtered3, laLiga0919Filtered4
-from Data_Cleaning_for_Analysis import premierLeague9518Filtered, premierLeague9518Filtered2, premierLeague9518Filtered3, premierLeague9518Filtered4
+from Data_Cleaning_for_Analysis import la_Liga_Dict
+from Data_Cleaning_for_Analysis import PL_Dict
 
 warnings.filterwarnings("ignore")
 
 plt.style.use(['seaborn-white', 'bmh'])
 
-Analysis_graph1_title = "Half-Time-Leader's result at Final-Time"
-Analysis_graph2_title = "Half-Time-Leader's result at Final-Time (leads by exactly 1)"
-Analysis_graph3_title = "Half-Time-Leader's result at Final-Time (leads by 2 or more)"
-Analysis_graph4_title = "Effect of Match Location on Winning"
-La_Liga_name = "La Liga"
-Premier_League_Name = "Premier League"
-xticklabels_HT_influence = np.array(["Leader Won", "Draw", "Leader Lost"])
-xticklabels_location_influence = np.array(["Home Team Won", "Draw", "Away Team Won"])
-xlabel_HT_influence = "Leader's Status"
-xlabel_location_influence = "Winning teams/Draw"
+
+## Parameters:
+anal_graphs_title_dict = {'Half Time Influence Graph': "Half-Time-Leader's result at Final-Time",
+                          'Half Time Influence Graph (leader by 1)': "Half-Time-Leader's result at Final-Time (leads by exactly 1)",
+                          'Half Time Influence Graph (leader by more than 2)': "Half-Time-Leader's result at Final-Time (leads by 2 or more)",
+                          'Location Influence Graph': "Effect of Match Location on Winning"}
+
+anal_graphs_leagues_names_dict = {'La Liga Name': 'La Liga', 'Premier League Name': 'Premier League'}
+
+anal_graphs_xticklabels_dict = {'Half Time Influence Graph': np.array(["Leader Won", "Draw", "Leader Lost"]),
+                                'Location Influence Graph': np.array(["Home Team Won", "Draw", "Away Team Won"])}
+
+anal_graphs_xlabel_dict = {'Half Time Influence Graph': "Leader's Status",
+                           'Location Influence Graph': "Winning teams/Draw"}
 
 
-## Data Analysis:
+## Plots and Helpers:
 # Bar plot's parameters of half time result's influence on final time result:
 def HT_influence_bar_plot_param(league_df):
     num_of_games_that_have_lead_at_HT = len(league_df)
@@ -54,21 +58,21 @@ def location_influence_bar_plot_param(league_df):
 
 
 # Foundations for general two teams bar plot comparison:
-def two_leagues_bar_plot_comparison(league1_name, league2_name, graph_title, xlabel, xticklabels, x_bar_param_league1, x_bar_param_league2):
+def two_leagues_bar_compare(league1_name, league2_name, title, xlabel, xticklabels, x_bar_param_league1, x_bar_param_league2, ylabel='Winning Chances'):
     ind = np.arange(3)  # the x locations for the groups
     width = 0.27  # the width of the bars
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    rects1 = ax.bar(ind, x_bar_param_league1, width, color='#07a64c')
-    rects2 = ax.bar(ind + width * 1.1, x_bar_param_league2, width, color='#b7040e')
+    rects1 = ax.bar(ind, x_bar_param_league1, width, alpha=0.8, color='#07a64c')
+    rects2 = ax.bar(ind + width * 1.05, x_bar_param_league2, width, alpha=0.8, color='#b7040e')
 
     ### Title, Labels, Legend
     ## Title
-    plt.title(graph_title)
+    plt.title(title)
 
     ## y label
-    ax.set_ylabel("Percents")
+    ax.set_ylabel(ylabel)
 
     ## x label
     plt.xlabel(xlabel)
@@ -98,7 +102,7 @@ def two_leagues_bar_plot_comparison(league1_name, league2_name, graph_title, xla
         for rect in rects:
             rectHeight = rect.get_height()
             rectWidth = rect.get_width()
-            ax.text(rect.get_x() + rectWidth / 2., 1.005 * rectHeight, '%g' % round(float(rectHeight), 2), ha='center', va='bottom')
+            ax.text(rect.get_x() + rectWidth / 2., 1.005 * rectHeight, str('%g' % round(float(rectHeight), 2)) + '%', ha='center', va='bottom')
 
     autolabel(rects1)
     autolabel(rects2)
@@ -108,11 +112,34 @@ def two_leagues_bar_plot_comparison(league1_name, league2_name, graph_title, xla
 
 
 ## Function Calls:
-two_leagues_bar_plot_comparison(La_Liga_name, Premier_League_Name, Analysis_graph1_title, xlabel_HT_influence, xticklabels_HT_influence,
-                                HT_influence_bar_plot_param(laLiga0919Filtered2), HT_influence_bar_plot_param(premierLeague9518Filtered2))
-two_leagues_bar_plot_comparison(La_Liga_name, Premier_League_Name, Analysis_graph2_title, xlabel_HT_influence, xticklabels_HT_influence,
-                                HT_influence_bar_plot_param(laLiga0919Filtered3), HT_influence_bar_plot_param(premierLeague9518Filtered3))
-two_leagues_bar_plot_comparison(La_Liga_name, Premier_League_Name, Analysis_graph3_title, xlabel_HT_influence, xticklabels_HT_influence,
-                                HT_influence_bar_plot_param(laLiga0919Filtered4), HT_influence_bar_plot_param(premierLeague9518Filtered4))
-two_leagues_bar_plot_comparison(La_Liga_name, Premier_League_Name, Analysis_graph4_title, xlabel_location_influence, xticklabels_location_influence,
-                                location_influence_bar_plot_param(laLiga0919Filtered), location_influence_bar_plot_param(premierLeague9518Filtered))
+two_leagues_bar_compare(anal_graphs_leagues_names_dict['La Liga Name'],
+                        anal_graphs_leagues_names_dict['Premier League Name'],
+                        anal_graphs_title_dict['Location Influence Graph'],
+                        anal_graphs_xlabel_dict['Location Influence Graph'],
+                        anal_graphs_xticklabels_dict['Location Influence Graph'],
+                        location_influence_bar_plot_param(la_Liga_Dict['laLiga0919Filtered']),
+                        location_influence_bar_plot_param(PL_Dict['PL0919Filtered']))
+
+two_leagues_bar_compare(anal_graphs_leagues_names_dict['La Liga Name'],
+                        anal_graphs_leagues_names_dict['Premier League Name'],
+                        anal_graphs_title_dict['Half Time Influence Graph'],
+                        anal_graphs_xlabel_dict['Half Time Influence Graph'],
+                        anal_graphs_xticklabels_dict['Half Time Influence Graph'],
+                        HT_influence_bar_plot_param(la_Liga_Dict['laLiga0919Filtered_no_Draws']),
+                        HT_influence_bar_plot_param(PL_Dict['PL0919Filtered_no_Draws']))
+
+two_leagues_bar_compare(anal_graphs_leagues_names_dict['La Liga Name'],
+                        anal_graphs_leagues_names_dict['Premier League Name'],
+                        anal_graphs_title_dict['Half Time Influence Graph (leader by 1)'],
+                        anal_graphs_xlabel_dict['Half Time Influence Graph'],
+                        anal_graphs_xticklabels_dict['Half Time Influence Graph'],
+                        HT_influence_bar_plot_param(la_Liga_Dict['laLiga0919Filtered_leader_by1']),
+                        HT_influence_bar_plot_param(PL_Dict['PL0919Filtered_leader_by1']))
+
+two_leagues_bar_compare(anal_graphs_leagues_names_dict['La Liga Name'],
+                        anal_graphs_leagues_names_dict['Premier League Name'],
+                        anal_graphs_title_dict['Half Time Influence Graph (leader by more than 2)'],
+                        anal_graphs_xlabel_dict['Half Time Influence Graph'],
+                        anal_graphs_xticklabels_dict['Half Time Influence Graph'],
+                        HT_influence_bar_plot_param(la_Liga_Dict['laLiga0919Filtered_leader_2']),
+                        HT_influence_bar_plot_param(PL_Dict['PL0919Filtered_leader_2']))
