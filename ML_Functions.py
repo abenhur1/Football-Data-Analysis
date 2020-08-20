@@ -12,7 +12,7 @@ from sklearn.metrics import make_scorer
 # from pandas.plotting import scatter_matrix
 # import matplotlib.pyplot as plt
 
-laLiga0919FilteredML = pd.read_pickle('laLiga0919FilteredML.pkl')
+laLiga0919FilteredML = pd.read_pickle('laLiga0919ML.pkl')
 
 pd.set_option('display.width', 400)
 pd.set_option('display.max_columns', 20)

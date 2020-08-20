@@ -155,37 +155,31 @@ def update_season_df_with_teams_points_col(season_matches):
 def update_concat_df_with_last_3_specific_FTRs_cols1(seasons_matches):  # Notice that applies for CONCATENATED df
     # New columns initialized and remapping dictionaries initialized.
     seasons_matches['HTLast3SpecificMatches'] = 0
-    HomeTeam_dict = {'H': 3, 'D': 1, 'A': 0}
+    HomeTeam_dict = {'H': 1, 'D': 0, 'A': 0}
 
     seasons_matches['ATLast3SpecificMatches'] = 0
-    AwayTeam_dict = {'A': 3, 'D': 1, 'H': 0}
+    AwayTeam_dict = {'A': 1, 'D': 0, 'H': 0}
 
     for team in seasons_matches.groupby('HomeTeam').median().T.columns:  # A way to iterate over teams
         # Iterated by team, now we mask original df for aggregating league points. A new column is created for these values for each team. After loop,
         # we set these value to original df by making a new column as sum of all these columns. On the way we actually compute and insert their means.
         season_matches_of_team_when_home = seasons_matches[seasons_matches['HomeTeam'] == team].copy()
-        season_matches_of_team_when_home[team + 'AsHTPointReceived'] = season_matches_of_team_when_home['FTR']  # Duplicating column to remap it.
-        season_matches_of_team_when_home[team + 'AsHTPointReceived'] = season_matches_of_team_when_home[team + 'AsHTPointReceived'].map(HomeTeam_dict)
-        season_matches_of_team_when_home['game_serial_num'] = range(0, 19)
-        seasons_matches[team + 'AsHTAggPointReceivedMean'] = (season_matches_of_team_when_home[team + 'AsHTPointReceived'].cumsum() -
-                                                             season_matches_of_team_when_home[team + 'AsHTPointReceived']) / \
-                                                            season_matches_of_team_when_home['game_serial_num']  # minus FTHG values because data leakage
+        season_matches_of_team_when_home[team + 'AsHTSpecPastResults'] = season_matches_of_team_when_home['FTR']  # Duplicating column to remap it.
+        season_matches_of_team_when_home[team + 'AsHTSpecPastResults'] = season_matches_of_team_when_home[team + 'AsHTSpecPastResults'].map(HomeTeam_dict)
+        seasons_matches[team + 'AsHTSpec3PastResults'] = season_matches_of_team_when_home[team + 'AsHTSpecPastResults'].rolling(3).sum()
 
-        season_matches_of_team_when_away = seasons_matches[seasons_matches['AwayTeam'] == team].copy()
-        season_matches_of_team_when_away[team + 'AsATPointReceived'] = season_matches_of_team_when_away['FTR']
-        season_matches_of_team_when_away[team + 'AsATPointReceived'] = season_matches_of_team_when_away[team + 'AsATPointReceived'].map(AwayTeam_dict)
-        season_matches_of_team_when_away['game_serial_num'] = range(0, 19)
-        seasons_matches[team + 'AsATAggPointReceivedMean'] = (season_matches_of_team_when_away[team + 'AsATPointReceived'].cumsum() -
-                                                             season_matches_of_team_when_away[team + 'AsATPointReceived']) / \
-                                                            season_matches_of_team_when_away['game_serial_num']
+        season_matches_of_team_when_home = seasons_matches[seasons_matches['AwayTeam'] == team].copy()
+        season_matches_of_team_when_home[team + 'AsATSpecPastResults'] = season_matches_of_team_when_home['FTR']  # Duplicating column to remap it.
+        season_matches_of_team_when_home[team + 'AsATSpecPastResults'] = season_matches_of_team_when_home[team + 'AsATSpecPastResults'].map(HomeTeam_dict)
+        seasons_matches[team + 'AsATSpec3PastResults'] = season_matches_of_team_when_home[team + 'AsATSpecPastResults'].rolling(3).sum()
 
     seasons_matches.fillna(0, inplace=True)
 
     for col in seasons_matches.columns:
-        if 'AsHTAggPointReceivedMean' in col:
-            seasons_matches['HTAggLeaguePointsMean'] += seasons_matches[col]
-        elif 'AsATAggPointReceivedMean' in col:
-            seasons_matches['ATAggLeaguePointsMean'] += seasons_matches[col]
+        if 'AsHTSpec3PastResults' in col:
+            seasons_matches['HTLast3SpecificMatches'] += seasons_matches[col]
+        elif 'AsATSpec3PastResults' in col:
+            seasons_matches['ATLast3SpecificMatches'] += seasons_matches[col]
 
     return seasons_matches
 
