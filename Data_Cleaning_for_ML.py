@@ -6,8 +6,8 @@ import pandas as pd
 import sqlite3
 
 pd.set_option('display.width', 400)
-pd.set_option('display.max_columns', 16)
-pd.set_option('display.max_rows', 150)
+pd.set_option('display.max_columns', 20)
+pd.set_option('display.max_rows', 250)
 
 
 ### Functions:
@@ -144,9 +144,6 @@ def update_concat_df_with_last_3_specific_FTRs_cols(seasons_matches):  # Notice 
             HT_past_match = seasons_matches.iloc[match_ind_until_general]['HomeTeam']  # Home Team of past match
             AT_past_match = seasons_matches.iloc[match_ind_until_general]['AwayTeam']
             FTR_past_match = seasons_matches.iloc[match_ind_until_general]['FTR']
-            if general_match_ind == 370:
-                if match_ind_until_general == 185:
-                    print('now')
             if (HT in [HT_past_match, AT_past_match]) and (AT in [HT_past_match, AT_past_match]):  # To stop at relevant game
                 # Above condition in order to find relevant past game
                 if FTR_past_match == 'H':
@@ -261,21 +258,22 @@ laLigaSeasonsFilteredList = [la_liga_season_0910_filtered_ML,
 
 experiment_list = [la_liga_season_0910_filtered_ML]
 
-# Update DFs with new relevant data (not on concatenated since it is per league)
-for la_Liga_season in laLigaSeasonsFilteredList:
-    update_season_df_with_teams_points_col(la_Liga_season)
-    update_season_df_with_agg_goals_cols(la_Liga_season)
-
-# Get rid of non informative rows:
-for la_Liga_season in laLigaSeasonsFilteredList:
-    la_Liga_season = drop_first_rows(la_Liga_season)
+# # Update DFs with new relevant data (not on concatenated since it is per league)
+# for la_Liga_season in laLigaSeasonsFilteredList:
+#     update_season_df_with_teams_points_col(la_Liga_season)
+#     update_season_df_with_agg_goals_cols(la_Liga_season)
+#
+# # Get rid of non informative rows:
+# for la_Liga_season in laLigaSeasonsFilteredList:
+#     la_Liga_season = drop_first_rows(la_Liga_season)
 
 # laLiga0919FilteredML = pd.concat(file for file in experiment_list)
 laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
 reset_index_df(laLiga0919FilteredML)
 update_concat_df_with_last_3_specific_FTRs_cols(laLiga0919FilteredML)
-update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredML)
-update_concat_df_with_team_location_influence(laLiga0919FilteredML)
+# update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredML)
+# update_concat_df_with_team_location_influence(laLiga0919FilteredML)
 laLiga0919FilteredML = drop_unnecessary_cols(laLiga0919FilteredML)
-print(laLiga0919FilteredML.head(190))
-print(laLiga0919FilteredML.columns)
+
+print(laLiga0919FilteredML.head(250))
+laLiga0919FilteredML.to_pickle('laLiga0919FilteredML.pkl')

@@ -12,10 +12,11 @@ from sklearn.metrics import make_scorer
 # from pandas.plotting import scatter_matrix
 # import matplotlib.pyplot as plt
 
-from Data_Cleaning_for_ML import laLiga0919FilteredML
+laLiga0919FilteredML = pd.read_pickle('laLiga0919FilteredML.pkl')
 
 pd.set_option('display.width', 400)
-pd.set_option('display.max_columns', 16)
+pd.set_option('display.max_columns', 20)
+pd.set_option('display.max_rows', 200)
 
 
 # Makes predictions using a fit classifier based on F1 score:
