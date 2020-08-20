@@ -7,7 +7,7 @@ import sqlite3
 
 pd.set_option('display.width', 400)
 pd.set_option('display.max_columns', 16)
-pd.set_option('display.max_rows', 150)
+pd.set_option('display.max_rows', 250)
 
 
 ### Functions:
@@ -168,10 +168,10 @@ def update_concat_df_with_last_3_specific_FTRs_cols1(seasons_matches):  # Notice
         season_matches_of_team_when_home[team + 'AsHTSpecPastResults'] = season_matches_of_team_when_home[team + 'AsHTSpecPastResults'].map(HomeTeam_dict)
         seasons_matches[team + 'AsHTSpec3PastResults'] = season_matches_of_team_when_home[team + 'AsHTSpecPastResults'].rolling(3).sum()
 
-        season_matches_of_team_when_home = seasons_matches[seasons_matches['AwayTeam'] == team].copy()
-        season_matches_of_team_when_home[team + 'AsATSpecPastResults'] = season_matches_of_team_when_home['FTR']  # Duplicating column to remap it.
-        season_matches_of_team_when_home[team + 'AsATSpecPastResults'] = season_matches_of_team_when_home[team + 'AsATSpecPastResults'].map(HomeTeam_dict)
-        seasons_matches[team + 'AsATSpec3PastResults'] = season_matches_of_team_when_home[team + 'AsATSpecPastResults'].rolling(3).sum()
+        season_matches_of_team_when_away = seasons_matches[seasons_matches['AwayTeam'] == team].copy()
+        season_matches_of_team_when_away[team + 'AsATSpecPastResults'] = season_matches_of_team_when_away['FTR']  # Duplicating column to remap it.
+        season_matches_of_team_when_away[team + 'AsATSpecPastResults'] = season_matches_of_team_when_away[team + 'AsATSpecPastResults'].map(AwayTeam_dict)
+        seasons_matches[team + 'AsATSpec3PastResults'] = season_matches_of_team_when_away[team + 'AsATSpecPastResults'].rolling(3).sum()
 
     seasons_matches.fillna(0, inplace=True)
 
@@ -216,6 +216,39 @@ def update_concat_df_with_last_3_specific_FTRs_cols(seasons_matches):  # Notice 
 
         seasons_matches.at[general_match_ind, 'NumOfPastHTSpecificWinsOutOf3'] = HT_win_count  # resets value in df
         seasons_matches.at[general_match_ind, 'NumOfPastATSpecificWinsOutOf3'] = AT_win_count
+
+    return seasons_matches
+
+
+# Creates a column of teams' number of wins on their last 3 matches:
+def update_concat_df_with_last_3_any_FTRs_cols1(seasons_matches):  # Notice that applies for CONCATENATED df
+    # New columns initialized and remapping dictionaries initialized.
+    seasons_matches['HTLast3AnyMatches'] = 0
+    HomeTeam_dict = {'H': 1, 'D': 0, 'A': 0}
+
+    seasons_matches['ATLast3AnyMatches'] = 0
+    AwayTeam_dict = {'A': 1, 'D': 0, 'H': 0}
+
+    for team in seasons_matches.groupby('HomeTeam').median().T.columns:  # A way to iterate over teams
+        # Iterated by team, now we mask original df for aggregating league points. A new column is created for these values for each team. After loop,
+        # we set these value to original df by making a new column as sum of all these columns. On the way we actually compute and insert their means.
+        season_matches_of_team_when_home = seasons_matches[seasons_matches['HomeTeam'] == team].copy()
+        season_matches_of_team_when_home[team + 'AsHTSpecPastResults'] = season_matches_of_team_when_home['FTR']  # Duplicating column to remap it.
+        season_matches_of_team_when_home[team + 'AsHTSpecPastResults'] = season_matches_of_team_when_home[team + 'AsHTSpecPastResults'].map(HomeTeam_dict)
+        seasons_matches[team + 'AsHTSpec3PastResults'] = season_matches_of_team_when_home[team + 'AsHTSpecPastResults'].rolling(3).sum()
+
+        season_matches_of_team_when_away = seasons_matches[seasons_matches['AwayTeam'] == team].copy()
+        season_matches_of_team_when_away[team + 'AsATSpecPastResults'] = season_matches_of_team_when_away['FTR']  # Duplicating column to remap it.
+        season_matches_of_team_when_away[team + 'AsATSpecPastResults'] = season_matches_of_team_when_away[team + 'AsATSpecPastResults'].map(AwayTeam_dict)
+        seasons_matches[team + 'AsATSpec3PastResults'] = season_matches_of_team_when_away[team + 'AsATSpecPastResults'].rolling(3).sum()
+
+    seasons_matches.fillna(0, inplace=True)
+
+    for col in seasons_matches.columns:
+        if 'AsHTSpec3PastResults' in col:
+            seasons_matches['HTLast3SpecificMatches'] += seasons_matches[col]
+        elif 'AsATSpec3PastResults' in col:
+            seasons_matches['ATLast3SpecificMatches'] += seasons_matches[col]
 
     return seasons_matches
 
@@ -318,21 +351,21 @@ laLigaSeasonsFilteredList = [la_liga_season_0910_filtered_ML,
 
 experiment_list = [la_liga_season_0910_filtered_ML]
 
-# Update DFs with new relevant data (not on concatenated since it is per league)
-for la_Liga_season in experiment_list:
-    update_season_df_with_agg_goals_cols(la_Liga_season)
-    update_season_df_with_teams_points_col(la_Liga_season)
-
-# Get rid of non informative rows:
-for la_Liga_season in experiment_list:
-    la_Liga_season = drop_first_rows(la_Liga_season)
+# # Update DFs with new relevant data (not on concatenated since it is per league)
+# for la_Liga_season in experiment_list:
+#     update_season_df_with_agg_goals_cols(la_Liga_season)
+#     update_season_df_with_teams_points_col(la_Liga_season)
+#
+# # Get rid of non informative rows:
+# for la_Liga_season in experiment_list:
+#     la_Liga_season = drop_first_rows(la_Liga_season)
 
 laLiga0919FilteredML = pd.concat(file for file in experiment_list)
 # laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
 reset_index_df(laLiga0919FilteredML)
-update_concat_df_with_last_3_specific_FTRs_cols(laLiga0919FilteredML)
-update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredML)
-update_concat_df_with_team_location_influence(laLiga0919FilteredML)
-laLiga0919FilteredML = drop_unnecessary_cols(laLiga0919FilteredML)
-print(laLiga0919FilteredML.head(150))
+update_concat_df_with_last_3_specific_FTRs_cols1(laLiga0919FilteredML)
+# update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredML)
+# update_concat_df_with_team_location_influence(laLiga0919FilteredML)
+# laLiga0919FilteredML = drop_unnecessary_cols(laLiga0919FilteredML)
+print(laLiga0919FilteredML.head(250))
 print(laLiga0919FilteredML.columns)
