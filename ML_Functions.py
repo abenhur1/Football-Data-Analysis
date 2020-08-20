@@ -68,23 +68,24 @@ for clf in clf_list:
     print('')
 
 # Create the parameters list you wish to tune
-parameters = {'learning_rate': [0.1], 'n_estimators': [40], 'max_depth': [3], 'min_child_weight': [3], 'gamma': [0.4], 'subsample': [0.8],
-              'colsample_bytree': [0.8], 'scale_pos_weight': [1], 'reg_alpha': [1e-5]}
+parameters = {'learning_rate': [0.02, 0.05, 0.1], 'n_estimators': [40, 80, 160], 'max_depth': [3, 4, 5], 'min_child_weight': [1, 3, 5, 10],
+              'gamma': [0.4, 1, 1.5, 2, 5], 'subsample': [0.6, 0.8, 1.0],'colsample_bytree': [0.6, 0.8, 1.0], 'scale_pos_weight': [1],
+              'reg_alpha': [1e-5]}
 clf = xgb.XGBClassifier(seed=2)
 
 # Make an f1 scoring function using 'make_scorer':
-precision_scorer = make_scorer(precision_score, average='weighted')
+# precision_scorer = make_scorer(precision_score, average='weighted')
 recall_scorer = make_scorer(recall_score, average='weighted')
 f1_scorer = make_scorer(f1_score, average='weighted')
 
 # Perform grid search on the classifier using the different scorers:
-for scorer in [precision_scorer, recall_scorer, f1_scorer]:
+for scorer in [recall_scorer, f1_scorer]:
     grid_obj = GridSearchCV(estimator=clf, param_grid=parameters, scoring=scorer, cv=5)
     # Fit the grid search object to the training data and find the optimal parameters
-    grid_obj = grid_obj.fit(X_train_scaled, y_trained)
+    grid_object = grid_obj.fit(X_train_scaled, y_trained)
 
-    clf = grid_obj.best_estimator_  # Get the best estimator
-    print(str(scorer) + ': {}'.format(clf))
+clf = grid_object.best_estimator_  # Get the best estimator
+print(str(scorer) + ': {}'.format(clf))
 
 # Final F1 score for training and testing after GridSearch:
 f1Score, accuracy = predict_labels(clf, X_train_scaled, y_trained)
