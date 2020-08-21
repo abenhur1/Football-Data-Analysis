@@ -11,7 +11,7 @@ pd.set_option('display.max_rows', 250)
 
 
 ### Functions:
-def df_creator(path, file):
+def dataframe_creator(path, file):
     file = pd.read_csv(path + file)
     return file
 
@@ -234,17 +234,17 @@ con = sqlite3.connect("C:/Users/User/PycharmProjects/Football-Data-Analysis/EPL_
 dfRawTable = pd.read_sql_query("SELECT * FROM EPL", con)
 
 ### La Liga df modification:
-la_liga_season_0910_filtered_ML = df_creator(la_liga_path, 'season-0910_csv.csv')[relevant_ML_cols].copy()  # Every file separately because some
+la_liga_season_0910_filtered_ML = dataframe_creator(la_liga_path, 'season-0910_csv.csv')[relevant_ML_cols].copy()  # Every file separately because some
 # functions are per league.
-la_liga_season_1011_filtered_ML = df_creator(la_liga_path, 'season-1011_csv.csv')[relevant_ML_cols].copy()
-la_liga_season_1112_filtered_ML = df_creator(la_liga_path, 'season-1112_csv.csv')[relevant_ML_cols].copy()
-la_liga_season_1213_filtered_ML = df_creator(la_liga_path, 'season-1213_csv.csv')[relevant_ML_cols].copy()
-la_liga_season_1314_filtered_ML = df_creator(la_liga_path, 'season-1314_csv.csv')[relevant_ML_cols].copy()
-la_liga_season_1415_filtered_ML = df_creator(la_liga_path, 'season-1415_csv.csv')[relevant_ML_cols].copy()
-la_liga_season_1516_filtered_ML = df_creator(la_liga_path, 'season-1516_csv.csv')[relevant_ML_cols].copy()
-la_liga_season_1617_filtered_ML = df_creator(la_liga_path, 'season-1617_csv.csv')[relevant_ML_cols].copy()
-la_liga_season_1718_filtered_ML = df_creator(la_liga_path, 'season-1718_csv.csv')[relevant_ML_cols].copy()
-la_liga_season_1819_filtered_ML = df_creator(la_liga_path, 'season-1819_csv.csv')[relevant_ML_cols].copy()
+la_liga_season_1011_filtered_ML = dataframe_creator(la_liga_path, 'season-1011_csv.csv')[relevant_ML_cols].copy()
+la_liga_season_1112_filtered_ML = dataframe_creator(la_liga_path, 'season-1112_csv.csv')[relevant_ML_cols].copy()
+la_liga_season_1213_filtered_ML = dataframe_creator(la_liga_path, 'season-1213_csv.csv')[relevant_ML_cols].copy()
+la_liga_season_1314_filtered_ML = dataframe_creator(la_liga_path, 'season-1314_csv.csv')[relevant_ML_cols].copy()
+la_liga_season_1415_filtered_ML = dataframe_creator(la_liga_path, 'season-1415_csv.csv')[relevant_ML_cols].copy()
+la_liga_season_1516_filtered_ML = dataframe_creator(la_liga_path, 'season-1516_csv.csv')[relevant_ML_cols].copy()
+la_liga_season_1617_filtered_ML = dataframe_creator(la_liga_path, 'season-1617_csv.csv')[relevant_ML_cols].copy()
+la_liga_season_1718_filtered_ML = dataframe_creator(la_liga_path, 'season-1718_csv.csv')[relevant_ML_cols].copy()
+la_liga_season_1819_filtered_ML = dataframe_creator(la_liga_path, 'season-1819_csv.csv')[relevant_ML_cols].copy()
 laLigaSeasonsFilteredList = [la_liga_season_0910_filtered_ML,
                              la_liga_season_1011_filtered_ML,
                              la_liga_season_1112_filtered_ML,
@@ -274,9 +274,10 @@ update_concat_df_with_last_3_specific_FTRs_cols(laLiga0919FilteredML)
 update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredML)
 update_concat_df_with_team_location_influence(laLiga0919FilteredML)
 laLiga0919FilteredML = drop_unnecessary_cols(laLiga0919FilteredML)
-laLiga0919FilteredML = drop_first_rows(laLiga0919FilteredML, rows_to_drop=190)
 reset_index_df(laLiga0919FilteredML)
+laLiga0919FilteredML.to_pickle('laLiga0919MLFull.pkl')
+laLiga0919FilteredML = drop_first_rows(laLiga0919FilteredML, rows_to_drop=190)
 
-print(laLiga0919FilteredML.head(250))
-print(laLiga0919FilteredML.shape)
+# print(laLiga0919FilteredML.head(250))
+# print(laLiga0919FilteredML.shape)
 laLiga0919FilteredML.to_pickle('laLiga0919ML.pkl')
