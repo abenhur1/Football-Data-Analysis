@@ -275,7 +275,7 @@ update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredML)
 update_concat_df_with_team_location_influence(laLiga0919FilteredML)
 laLiga0919FilteredML = drop_unnecessary_cols(laLiga0919FilteredML)
 reset_index_df(laLiga0919FilteredML)
-laLiga0919FilteredML.to_pickle('laLiga0919MLFull.pkl')
+laLiga0919FilteredML.to_pickle('laLiga0919MLFullRows.pkl')
 laLiga0919FilteredML = drop_first_rows(laLiga0919FilteredML, rows_to_drop=190)
 
 # print(laLiga0919FilteredML.head(250))
