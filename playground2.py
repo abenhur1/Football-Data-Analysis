@@ -2,6 +2,17 @@
 
 # רעיונות נוספים: כמה אחוז מהנקודות הושגו בבית/אחוז נצחונות מתוך כלל המשחקים (לא רק בבית)נקודות ממושקלות לפי כמות גולים במשחק?
 
+# # Get Goal Difference
+# playing_stat['HTGD'] = playing_stat['HTGS'] - playing_stat['HTGC']
+# playing_stat['ATGD'] = playing_stat['ATGS'] - playing_stat['ATGC']
+#
+# # Diff in points
+# playing_stat['DiffPts'] = playing_stat['HTP'] - playing_stat['ATP']
+# playing_stat['DiffFormPts'] = playing_stat['HTFormPts'] - playing_stat['ATFormPts']
+#
+# # Diff in last year positions
+# playing_stat['DiffLP'] = playing_stat['HomeTeamLP'] - playing_stat['AwayTeamLP']
+
 import pandas as pd
 import xgboost as xgb
 from sklearn.linear_model import LogisticRegression
