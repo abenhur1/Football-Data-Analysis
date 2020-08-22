@@ -273,12 +273,12 @@ laLigaSeasonsFilteredList = [la_liga_season_0910_filtered_ML,
 experiment_list = [la_liga_season_0910_filtered_ML, la_liga_season_1011_filtered_ML]
 
 # # Update DFs with new relevant data (not on concatenated since it is per league)
-for la_Liga_season in experiment_list:
+for la_Liga_season in laLigaSeasonsFilteredList:
     update_season_df_with_teams_points_col(la_Liga_season, winner_points=2)
     update_season_df_with_agg_goals_cols(la_Liga_season)
 
 # laLiga0919FilteredML = pd.concat(file for file in experiment_list)
-laLiga0919FilteredML = pd.concat(file for file in experiment_list)
+laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
 reset_index_df(laLiga0919FilteredML)
 update_concat_df_with_last_3_specific_FTRs_cols(laLiga0919FilteredML)
 update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredML)
@@ -288,6 +288,6 @@ laLiga0919FilteredML['FTR'] = laLiga0919FilteredML['FTR'].apply(leave_only_Home_
 reset_index_df(laLiga0919FilteredML)
 laLiga0919FilteredML = drop_none_informative_rows(laLiga0919FilteredML, drop_first=True, drop_none_informative=True)
 
-print(laLiga0919FilteredML.head(250))
-print(laLiga0919FilteredML.shape)
-# laLiga0919FilteredML.to_pickle('laLiga0919ML.pkl')
+# print(laLiga0919FilteredML.head(250))
+# print(laLiga0919FilteredML.shape)
+laLiga0919FilteredML.to_pickle('laLiga0919ML.pkl')
