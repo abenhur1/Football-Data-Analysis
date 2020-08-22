@@ -2,23 +2,12 @@
 
 # רעיונות נוספים: כמה אחוז מהנקודות הושגו בבית/אחוז נצחונות מתוך כלל המשחקים (לא רק בבית)נקודות ממושקלות לפי כמות גולים במשחק?
 
-from time import time
-
-# data preprocessing
 import pandas as pd
-# produces a prediction model in the form of an ensemble of weak prediction models, typically decision tree
 import xgboost as xgb
-# the outcome (dependent variable) has only a limited number of possible values.
-# Logistic Regression is used when response variable is categorical in nature.
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import f1_score, make_scorer
 from sklearn.model_selection import train_test_split, GridSearchCV
-# Standardising the data.
 from sklearn.preprocessing import scale
-# A random forest is a meta estimator that fits a number of decision tree classifiers
-# on various sub-samples of the dataset and use averaging to improve the predictive
-# accuracy and control over-fitting.
-# a discriminative classifier formally defined by a separating hyperplane.
 from sklearn.svm import SVC
 
 pd.set_option('display.width', 400)
@@ -29,41 +18,23 @@ laLiga0919Filtered = pd.read_pickle('laLiga0919ML.pkl')
 
 # Separate into feature set and target variable
 X_La_Liga = laLiga0919Filtered.drop(['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR'], axis=1).copy()
-print(X_La_Liga.columns)
 # Center to the mean and component wise scale to unit variance.
 for col in X_La_Liga.columns:
     X_La_Liga[col] = scale(X_La_Liga[col])
 y_La_Liga = laLiga0919Filtered['FTR'].copy()
 
 # Shuffle and split the dataset into training and testing set.
-X_train, X_test, y_train, y_test = train_test_split(X_La_Liga, y_La_Liga,
-                                                    test_size=50,
-                                                    random_state=2,
-                                                    stratify=y_La_Liga)
+X_train, X_test, y_train, y_test = train_test_split(X_La_Liga, y_La_Liga, test_size=50, random_state=2, stratify=y_La_Liga)
 
 
 def train_classifier(classifier, X_trained, y_trained):
     """ Fits a classifier to the training data. """
-
-    # Start the clock, train the classifier, then stop the clock
-    start = time()
     classifier.fit(X_trained, y_trained)
-    end = time()
-
-    # Print the results
-    print("Trained model in {:.4f} seconds".format(end - start))
 
 
 def predict_labels(classifier, features, target):
     """ Makes predictions using a fit classifier based on F1 score. """
-
-    # Start the clock, make predictions, then stop the clock
-    start = time()
     y_pred = classifier.predict(features)
-
-    end = time()
-    # Print and return results
-    print("Made predictions in {:.4f} seconds.".format(end - start))
 
     return f1_score(target, y_pred, pos_label='H'), sum(target == y_pred) / float(len(y_pred))
 
