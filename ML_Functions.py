@@ -1,3 +1,7 @@
+# הולד אאוט דאטה של שתי עונות אחרונות. 
+# שמות של פונקציותפונקציית מיין 
+# רעיונות נוספים: כמה אחוז מהנקודות הושגו בבית/אחוז נצחונות מתוך כלל המשחקים (לא רק בבית)נקודות ממושקלות לפי כמות גולים במשחק?
+
 import pandas as pd
 import numpy as np
 from xgboost import XGBClassifier
@@ -14,7 +18,8 @@ from sklearn.metrics import make_scorer
 # from pandas.plotting import scatter_matrix
 # import matplotlib.pyplot as plt
 
-laLiga0919FilteredML = pd.read_pickle('laLiga0919ML.pkl')
+laLiga0919FilteredMLFULLROWS = pd.read_pickle('laLiga0919MLFullRows.pkl')
+laLiga0919Filtered = pd.read_pickle('laLiga0919ML.pkl')
 
 pd.set_option('display.width', 400)
 pd.set_option('display.max_columns', 20)
@@ -30,9 +35,9 @@ pd.set_option('display.max_rows', 200)
 #     train_predict(clf, X_trained_scaled, y_trained, X_tested_scaled, y_tested)
 #     print('')
 
-X_La_Liga = laLiga0919FilteredML.drop(['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR'], axis=1).copy()
+X_La_Liga = laLiga0919Filtered.drop(['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR'], axis=1).copy()
 print(X_La_Liga.columns)
-y_La_Liga = laLiga0919FilteredML['FTR'].copy()
+y_La_Liga = laLiga0919Filtered['FTR'].copy()
 scaler = MinMaxScaler()
 X_scaled = scaler.fit_transform(X_La_Liga)
 
