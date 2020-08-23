@@ -3,7 +3,7 @@
 import pandas as pd
 import xgboost as xgb
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import f1_score, make_scorer
+from sklearn.metrics import f1_score, make_scorer, accuracy_score
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.svm import SVC
@@ -15,7 +15,7 @@ pd.set_option('display.max_rows', 200)
 laLiga0919Filtered = pd.read_pickle('laLiga0919ML.pkl')
 laLiga0919FilteredHoldOut = pd.read_pickle('laLiga0919MLHoldOut.pkl')
 
-# Separate into feature set and target variable.
+## Separate into feature set and target variable.
 X_La_Liga = laLiga0919Filtered.drop(['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR'], axis=1).copy()
 print(X_La_Liga.columns)
 # Center to the mean and component wise scale to unit variance.
@@ -51,7 +51,7 @@ def train_predict(classifier, X_trained, y_trained, X_tested, y_tested):
     print("F1 score and accuracy score for test set: {:.4f} , {:.4f}.".format(f1Score, accuracy))
 
 
-# Initialize some models:
+## Initialize some models:
 clf_LogReg = LogisticRegression(random_state=42)
 clf_SVC = SVC(random_state=912, kernel='rbf')
 clf_xgb = xgb.XGBClassifier(seed=82)
@@ -63,8 +63,8 @@ train_predict(clf_SVC, X_train, y_train, X_test, y_test)
 print('')
 print('')
 train_predict(clf_xgb, X_train, y_train, X_test, y_test)
-print('')
 
+print('')
 print('------------MAJOR TUNING IS HAPPENING------------')
 print('')
 
@@ -96,9 +96,22 @@ grid_obj = grid_obj.fit(X_train, y_train)
 clf = grid_obj.best_estimator_
 print(clf)
 
+## Reports:
 # Report the final F1 score for training and testing after parameter tuning
 f1, acc = predict_labels(clf, X_train, y_train)
 print("F1 score and accuracy score for training set: {:.4f} , {:.4f}.".format(f1, acc))
 
 f1, acc = predict_labels(clf, X_test, y_test)
+print("F1 score and accuracy score for test set: {:.4f} , {:.4f}.".format(f1, acc))
+
+print('')
+print('------------VALIDATION HAPPENING------------')
+print('')
+
+## Validation on HoldOut data:
+X_La_Liga_HO = laLiga0919FilteredHoldOut.drop(['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR'], axis=1).copy()
+scaler = MinMaxScaler()
+X_La_Liga_HO = scaler.fit_transform(X_La_Liga_HO)
+y_La_Liga_HO = laLiga0919FilteredHoldOut['FTR'].copy()
+f1, acc = predict_labels(clf, X_La_Liga_HO, y_La_Liga_HO)
 print("F1 score and accuracy score for test set: {:.4f} , {:.4f}.".format(f1, acc))

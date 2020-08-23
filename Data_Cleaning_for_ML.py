@@ -12,6 +12,25 @@ def create_dataframe(path, file):
     return file
 
 
+def main_func(list_of_seasons):
+    for season in list_of_seasons:
+        update_season_df_with_teams_points_col(season)
+        update_season_df_with_agg_goals_cols(season)
+
+    league_concat = pd.concat(file for file in list_of_seasons)
+    reset_index_df(league_concat)
+
+    update_concat_df_with_last_3_specific_FTRs_cols(league_concat)
+    update_concat_df_with_last_3_any_FTRs_cols(league_concat)
+    update_concat_df_with_team_location_influence(league_concat)
+    league_concat = drop_unnecessary_cols(league_concat)
+    league_concat['FTR'] = league_concat['FTR'].apply(leave_only_Home_VS_NotHome)
+    reset_index_df(league_concat)
+    league_concat = drop_none_informative_rows(league_concat, drop_none_informative=True)
+
+    return league_concat
+
+
 def reset_index_df(dataframe):
     return dataframe.reset_index(drop=True, inplace=True)
 
@@ -273,27 +292,42 @@ laLigaSeasonsFilteredListHoldOutData = [la_liga_season_1819_filtered_ML,
 # for la_Liga_season in experiment_list:
 #     update_season_df_with_teams_points_col(la_Liga_season, winner_points=2)
 #     update_season_df_with_agg_goals_cols(la_Liga_season)
-## TRAIN AND TEST LIST
-for la_Liga_season in laLigaSeasonsFilteredList:
-    update_season_df_with_teams_points_col(la_Liga_season, winner_points=3)
-    update_season_df_with_agg_goals_cols(la_Liga_season)
-## HOLDOUT DATA
-for la_Liga_season in laLigaSeasonsFilteredListHoldOutData:
-    update_season_df_with_teams_points_col(la_Liga_season, winner_points=3)
-    update_season_df_with_agg_goals_cols(la_Liga_season)
 
-# laLiga0919FilteredML = pd.concat(file for file in experiment_list)
-laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
-laLiga0919FilteredMLHoldOut = pd.concat(file for file in laLigaSeasonsFilteredListHoldOutData)
-reset_index_df(laLiga0919FilteredML)
-update_concat_df_with_last_3_specific_FTRs_cols(laLiga0919FilteredML)
-update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredML)
-update_concat_df_with_team_location_influence(laLiga0919FilteredML)
-laLiga0919FilteredML = drop_unnecessary_cols(laLiga0919FilteredML)
-laLiga0919FilteredML['FTR'] = laLiga0919FilteredML['FTR'].apply(leave_only_Home_VS_NotHome)
-reset_index_df(laLiga0919FilteredML)
-laLiga0919FilteredML = drop_none_informative_rows(laLiga0919FilteredML, drop_first=True, drop_none_informative=True)
+# ## TRAIN AND TEST LIST:
+# for la_Liga_season in laLigaSeasonsFilteredList:
+#     update_season_df_with_teams_points_col(la_Liga_season)
+#     update_season_df_with_agg_goals_cols(la_Liga_season)
+# ## HOLDOUT DATA
+# for la_Liga_season in laLigaSeasonsFilteredListHoldOutData:
+#     update_season_df_with_teams_points_col(la_Liga_season)
+#     update_season_df_with_agg_goals_cols(la_Liga_season)
 
+
+# # laLiga0919FilteredML = pd.concat(file for file in experiment_list)
+# laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
+# laLiga0919FilteredMLHoldOut = pd.concat(file for file in laLigaSeasonsFilteredListHoldOutData)
+# reset_index_df(laLiga0919FilteredML)
+# reset_index_df(laLiga0919FilteredMLHoldOut)
+# update_concat_df_with_last_3_specific_FTRs_cols(laLiga0919FilteredML)
+# update_concat_df_with_last_3_specific_FTRs_cols(laLiga0919FilteredMLHoldOut)
+# update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredML)
+# update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredMLHoldOut)
+# update_concat_df_with_team_location_influence(laLiga0919FilteredML)
+# update_concat_df_with_team_location_influence(laLiga0919FilteredMLHoldOut)
+# laLiga0919FilteredML = drop_unnecessary_cols(laLiga0919FilteredML)
+# laLiga0919FilteredMLHoldOut = drop_unnecessary_cols(laLiga0919FilteredMLHoldOut)
+# laLiga0919FilteredML['FTR'] = laLiga0919FilteredML['FTR'].apply(leave_only_Home_VS_NotHome)
+# laLiga0919FilteredMLHoldOut['FTR'] = laLiga0919FilteredMLHoldOut['FTR'].apply(leave_only_Home_VS_NotHome)
+# reset_index_df(laLiga0919FilteredML)
+# reset_index_df(laLiga0919FilteredMLHoldOut)
+# laLiga0919FilteredML = drop_none_informative_rows(laLiga0919FilteredML, drop_first=True, drop_none_informative=True)
+# laLiga0919FilteredMLHoldOut = drop_none_informative_rows(laLiga0919FilteredMLHoldOut, drop_none_informative=True)
+
+
+## TRAIN AND TEST LIST:
+laLiga0919FilteredML = main_func(laLigaSeasonsFilteredList)
+## HOLDOUT DATA:
+laLiga0919FilteredMLHoldOut = main_func(laLigaSeasonsFilteredListHoldOutData)
 
 laLiga0919FilteredML.to_pickle('laLiga0919ML.pkl')
 laLiga0919FilteredMLHoldOut.to_pickle('laLiga0919MLHoldOut.pkl')
