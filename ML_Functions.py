@@ -73,8 +73,8 @@ print('')
 # Create the parameters list you wish to tune
 parameters = {'learning_rate': [0.1],
               'n_estimators': [40],
-              'max_depth': [3],
-              'min_child_weight': [5],
+              'max_depth': [4],
+              'min_child_weight': [3],
               'gamma': [0.4],
               'subsample': [0.8],
               'colsample_bytree': [0.8],
@@ -116,4 +116,5 @@ scaler = MinMaxScaler()
 X_La_Liga_HO = scaler.fit_transform(X_La_Liga_HO)
 y_La_Liga_HO = laLiga0919FilteredHoldOut['FTR'].copy()
 f1, acc = predict_labels(clf, X_La_Liga_HO, y_La_Liga_HO)
+print(X_La_Liga_HO.shape, y_La_Liga_HO.shape)
 print("F1 score and accuracy score for test set: {:.4f} , {:.4f}.".format(f1, acc))
