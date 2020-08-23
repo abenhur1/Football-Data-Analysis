@@ -1,7 +1,3 @@
-# ממוצע גולים למשחק עד המשחק הנתון. רק בהמשך העונה מתנרמל - האם להשאיר משחקים ראשונים?
-#
-# גולים מצטברים - מתחילת העונה בהכרח?
-
 import pandas as pd
 import sqlite3
 
@@ -24,6 +20,7 @@ def rename_leagues_columns(league_df, dictionary):
     league_df.rename(columns=dictionary, inplace=True)
 
 
+# Drop games from beginning of leagues and especially the first league - they never supply enough data.
 def drop_none_informative_rows(league_df, drop_first=False, drop_first_num=190, drop_none_informative=False):
     if drop_first:
         league_df = league_df.iloc[drop_first_num:]
@@ -243,13 +240,9 @@ def update_concat_df_with_team_location_influence(seasons_matches):  # Notice th
 la_liga_path = "C:/Users/User/PycharmProjects/Football-Data-Analysis/"
 relevant_ML_cols = ['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR']
 
-### Master Premier League df extracted:
-con = sqlite3.connect("C:/Users/User/PycharmProjects/Football-Data-Analysis/EPL_Seasons_1993-2017_RAW_Table.sqlite")
-dfRawTable = pd.read_sql_query("SELECT * FROM EPL", con)
-
 ### La Liga df modification:
 la_liga_season_0910_filtered_ML = create_dataframe(la_liga_path, 'season-0910_csv.csv')[relevant_ML_cols].copy()  # Every file separately because some
-# functions are per league.
+                                                                                                                  # functions are per league.
 la_liga_season_1011_filtered_ML = create_dataframe(la_liga_path, 'season-1011_csv.csv')[relevant_ML_cols].copy()
 la_liga_season_1112_filtered_ML = create_dataframe(la_liga_path, 'season-1112_csv.csv')[relevant_ML_cols].copy()
 la_liga_season_1213_filtered_ML = create_dataframe(la_liga_path, 'season-1213_csv.csv')[relevant_ML_cols].copy()
@@ -259,6 +252,10 @@ la_liga_season_1516_filtered_ML = create_dataframe(la_liga_path, 'season-1516_cs
 la_liga_season_1617_filtered_ML = create_dataframe(la_liga_path, 'season-1617_csv.csv')[relevant_ML_cols].copy()
 la_liga_season_1718_filtered_ML = create_dataframe(la_liga_path, 'season-1718_csv.csv')[relevant_ML_cols].copy()
 la_liga_season_1819_filtered_ML = create_dataframe(la_liga_path, 'season-1819_csv.csv')[relevant_ML_cols].copy()
+la_liga_season_1920_filtered_ML = create_dataframe(la_liga_path, 'season-1920_csv.csv')[relevant_ML_cols].copy()
+
+## Files' 3 lists. Experiment, Train and Test, Hold out.
+experiment_list = [la_liga_season_0910_filtered_ML, la_liga_season_1011_filtered_ML]
 laLigaSeasonsFilteredList = [la_liga_season_0910_filtered_ML,
                              la_liga_season_1011_filtered_ML,
                              la_liga_season_1112_filtered_ML,
@@ -267,18 +264,27 @@ laLigaSeasonsFilteredList = [la_liga_season_0910_filtered_ML,
                              la_liga_season_1415_filtered_ML,
                              la_liga_season_1516_filtered_ML,
                              la_liga_season_1617_filtered_ML,
-                             la_liga_season_1718_filtered_ML,
-                             la_liga_season_1819_filtered_ML]
+                             la_liga_season_1718_filtered_ML]
+laLigaSeasonsFilteredListHoldOutData = [la_liga_season_1819_filtered_ML,
+                                        la_liga_season_1920_filtered_ML]
 
-experiment_list = [la_liga_season_0910_filtered_ML, la_liga_season_1011_filtered_ML]
-
-# # Update DFs with new relevant data (not on concatenated since it is per league)
+### Update DFs with new relevant data. Not on concatenated df since per league for these functions.
+# ## EXPERIMENT LIST
+# for la_Liga_season in experiment_list:
+#     update_season_df_with_teams_points_col(la_Liga_season, winner_points=2)
+#     update_season_df_with_agg_goals_cols(la_Liga_season)
+## TRAIN AND TEST LIST
 for la_Liga_season in laLigaSeasonsFilteredList:
-    update_season_df_with_teams_points_col(la_Liga_season, winner_points=2)
+    update_season_df_with_teams_points_col(la_Liga_season, winner_points=3)
+    update_season_df_with_agg_goals_cols(la_Liga_season)
+## HOLDOUT DATA
+for la_Liga_season in laLigaSeasonsFilteredListHoldOutData:
+    update_season_df_with_teams_points_col(la_Liga_season, winner_points=3)
     update_season_df_with_agg_goals_cols(la_Liga_season)
 
 # laLiga0919FilteredML = pd.concat(file for file in experiment_list)
 laLiga0919FilteredML = pd.concat(file for file in laLigaSeasonsFilteredList)
+laLiga0919FilteredMLHoldOut = pd.concat(file for file in laLigaSeasonsFilteredListHoldOutData)
 reset_index_df(laLiga0919FilteredML)
 update_concat_df_with_last_3_specific_FTRs_cols(laLiga0919FilteredML)
 update_concat_df_with_last_3_any_FTRs_cols(laLiga0919FilteredML)
@@ -288,6 +294,6 @@ laLiga0919FilteredML['FTR'] = laLiga0919FilteredML['FTR'].apply(leave_only_Home_
 reset_index_df(laLiga0919FilteredML)
 laLiga0919FilteredML = drop_none_informative_rows(laLiga0919FilteredML, drop_first=True, drop_none_informative=True)
 
-# print(laLiga0919FilteredML.head(250))
-# print(laLiga0919FilteredML.shape)
+
 laLiga0919FilteredML.to_pickle('laLiga0919ML.pkl')
+laLiga0919FilteredMLHoldOut.to_pickle('laLiga0919MLHoldOut.pkl')

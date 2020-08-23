@@ -1,17 +1,4 @@
-# הולד אאוט דאטה של שתי עונות אחרונות.
-
-# רעיונות נוספים: כמה אחוז מהנקודות הושגו בבית/אחוז נצחונות מתוך כלל המשחקים (לא רק בבית)נקודות ממושקלות לפי כמות גולים במשחק?
-
-# # Get Goal Difference
-# playing_stat['HTGD'] = playing_stat['HTGS'] - playing_stat['HTGC']
-# playing_stat['ATGD'] = playing_stat['ATGS'] - playing_stat['ATGC']
-#
-# # Diff in points
-# playing_stat['DiffPts'] = playing_stat['HTP'] - playing_stat['ATP']
-# playing_stat['DiffFormPts'] = playing_stat['HTFormPts'] - playing_stat['ATFormPts']
-#
-# # Diff in last year positions
-# playing_stat['DiffLP'] = playing_stat['HomeTeamLP'] - playing_stat['AwayTeamLP']
+# לחשב את נוחות בבית עד המשחק ולא כל העשר שנים
 
 import pandas as pd
 import xgboost as xgb
@@ -26,8 +13,7 @@ pd.set_option('display.max_columns', 20)
 pd.set_option('display.max_rows', 200)
 
 laLiga0919Filtered = pd.read_pickle('laLiga0919ML.pkl')
-# Slight modification for processed dataset:
-laLiga0919Filtered.drop(['HTAggLeaguePointsMean', 'ATAggLeaguePointsMean', 'HTAggGoalScoredMean', 'HTAggGoalConcededMean', 'ATAggGoalScoredMean', 'ATAggGoalConcededMean'], axis=1)
+laLiga0919FilteredHoldOut = pd.read_pickle('laLiga0919MLHoldOut.pkl')
 
 # Separate into feature set and target variable.
 X_La_Liga = laLiga0919Filtered.drop(['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR'], axis=1).copy()
@@ -41,8 +27,8 @@ y_La_Liga = laLiga0919Filtered['FTR'].copy()
 X_train, X_test, y_train, y_test = train_test_split(X_La_Liga, y_La_Liga, test_size=50, random_state=2, stratify=y_La_Liga)
 
 
+# Makes predictions using a fit classifier based on F1 score.
 def predict_labels(classifier, features, target):
-    """ Makes predictions using a fit classifier based on F1 score. """
     y_pred = classifier.predict(features)
 
     return f1_score(target, y_pred, pos_label='H'), sum(target == y_pred) / float(len(y_pred))
@@ -52,7 +38,7 @@ def predict_labels(classifier, features, target):
 def train_predict(classifier, X_trained, y_trained, X_tested, y_tested):
 
     # Indicate the classifier and the training set size
-    print("Training a {} using a training set size of {}. . .".format(classifier.__class__.__name__, len(X_trained)))
+    print("Training a {} using a training set size of {}:".format(classifier.__class__.__name__, len(X_trained)))
 
     classifier.fit(X_trained, y_trained)
 
@@ -72,12 +58,15 @@ clf_xgb = xgb.XGBClassifier(seed=82)
 
 train_predict(clf_LogReg, X_train, y_train, X_test, y_test)
 print('')
+print('')
 train_predict(clf_SVC, X_train, y_train, X_test, y_test)
+print('')
 print('')
 train_predict(clf_xgb, X_train, y_train, X_test, y_test)
 print('')
 
 print('------------MAJOR TUNING IS HAPPENING------------')
+print('')
 
 # Create the parameters list you wish to tune
 parameters = {'learning_rate': [0.1],

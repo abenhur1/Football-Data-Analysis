@@ -80,3 +80,12 @@
 
 
 #### ML_Functions
+# # Slight modification for processed dataset (differences of columns instead of columns):
+# laLiga0919Filtered['HTScoredConcededMeanDiff'] = laLiga0919Filtered['HTAggGoalScoredMean'] - laLiga0919Filtered['HTAggGoalConcededMean']
+# laLiga0919Filtered['ATScoredConcededMeanDiff'] = laLiga0919Filtered['ATAggGoalScoredMean'] - laLiga0919Filtered['ATAggGoalConcededMean']
+# laLiga0919Filtered = laLiga0919Filtered.drop(['HTAggLeaguePointsMean', 'ATAggLeaguePointsMean', 'HTAggGoalScoredMean', 'HTAggGoalConcededMean',
+#                                               'ATAggGoalScoredMean', 'ATAggGoalConcededMean'], axis=1)
+
+# ### Master Premier League df extracted:
+# con = sqlite3.connect("C:/Users/User/PycharmProjects/Football-Data-Analysis/EPL_Seasons_1993-2017_RAW_Table.sqlite")
+# dfRawTable = pd.read_sql_query("SELECT * FROM EPL", con)
