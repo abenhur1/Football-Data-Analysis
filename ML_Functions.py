@@ -1,4 +1,6 @@
-# לחשב את נוחות בבית עד המשחק ולא כל העשר שנים
+# לחשב את נוחות בבית עד המשחק ולא כל העשר שנים?
+
+# חשוב: לעשות ידנית שטריין וטסט יהיו 6 עונות ראשונות ו2 אחרונות בהתאמה כי יכול להיות שזה דופק את הסיפור לאמן על משחקים שמשפיעים על הטסט דאטה
 
 import pandas as pd
 import xgboost as xgb
@@ -23,7 +25,7 @@ scaler = MinMaxScaler()
 X_La_Liga = scaler.fit_transform(X_La_Liga)
 y_La_Liga = laLiga0919Filtered['FTR'].copy()
 
-# Split the dataset into training and testing set.
+# Split the dataset into training and testing set.  ## SEE ABOVE COMMENT
 X_train, X_test, y_train, y_test = train_test_split(X_La_Liga, y_La_Liga, test_size=50, random_state=2, stratify=y_La_Liga)
 
 
