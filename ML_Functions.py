@@ -59,9 +59,9 @@ def train_predict(classifier, X_trained, y_trained, X_tested, y_tested):
 
 
 ## Initialize some models:
-clf_LogReg = LogisticRegression(random_state=42)
-clf_SVC = SVC(random_state=912, kernel='rbf')
-clf_xgb = xgb.XGBClassifier(seed=82)
+clf_LogReg = LogisticRegression(random_state=1)
+clf_SVC = SVC(random_state=2, kernel='rbf')
+clf_xgb = xgb.XGBClassifier(seed=3)
 
 train_predict(clf_LogReg, X_train, y_train, X_test, y_test)
 print('')
