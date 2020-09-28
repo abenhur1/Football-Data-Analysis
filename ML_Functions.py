@@ -22,15 +22,18 @@ pd.set_option('display.max_rows', 200)
 laLiga0919Filtered = pd.read_pickle('laLiga0919ML.pkl')
 laLiga0919FilteredHoldOut = pd.read_pickle('laLiga0919MLHoldOut.pkl')
 
-## Separate into feature set and target variable.
+## Separate into feature set and target variable, and split the dataset into training and testing set.
 X_La_Liga = laLiga0919Filtered.drop(['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR'], axis=1).copy()
-print(X_La_Liga.columns)
+y_La_Liga = laLiga0919Filtered['FTR'].copy()
+# print(X_La_Liga.columns)
+
 # Center to the mean and component wise scale to unit variance.
 scaler = MinMaxScaler()
 X_La_Liga = scaler.fit_transform(X_La_Liga)
-y_La_Liga = laLiga0919Filtered['FTR'].copy()
-
-# Split the dataset into training and testing set.  ## SEE ABOVE COMMENT
+# X_train = X_La_Liga[:2559]  # To take into account only 7 first seasons as training
+# X_test = X_La_Liga[2560:]
+# y_train = y_La_Liga[:2559]
+# y_test = y_La_Liga[2560:]
 X_train, X_test, y_train, y_test = train_test_split(X_La_Liga, y_La_Liga, test_size=50, random_state=2, stratify=y_La_Liga)
 
 
@@ -71,9 +74,11 @@ print('')
 print('')
 train_predict(clf_xgb, X_train, y_train, X_test, y_test)
 
+
 print('')
 print('------------MAJOR TUNING IS HAPPENING------------')
 print('')
+
 
 # Create the parameters list you wish to tune
 parameters = {'learning_rate': [0.1],
@@ -111,9 +116,11 @@ print("F1 score and accuracy score for training set: {:.4f} , {:.4f}.".format(f1
 f1, acc = predict_labels(clf, X_test, y_test)
 print("F1 score and accuracy score for test set: {:.4f} , {:.4f}.".format(f1, acc))
 
+
 print('')
 print('------------VALIDATION HAPPENING------------')
 print('')
+
 
 ## Validation on HoldOut data:
 X_La_Liga_HO = laLiga0919FilteredHoldOut.drop(['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR'], axis=1).copy()

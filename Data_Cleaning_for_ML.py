@@ -25,12 +25,13 @@ def main_func(list_of_seasons, drop_first=True):
     update_concat_df_with_team_location_influence(league_concat)
     league_concat = drop_unnecessary_cols(league_concat)
     league_concat['FTR'] = league_concat['FTR'].apply(leave_only_Home_VS_NotHome)
-    reset_index_df(league_concat)
 
     if drop_first:
         league_concat = drop_none_informative_rows(league_concat, drop_first=True, drop_none_informative=True)
     else:
         league_concat = drop_none_informative_rows(league_concat, drop_first=False, drop_none_informative=True)
+
+    reset_index_df(league_concat)
 
     return league_concat
 
