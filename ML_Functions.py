@@ -1,7 +1,3 @@
-# לחשב את נוחות בבית עד המשחק ולא כל העשר שנים?
-
-# חשוב: לעשות ידנית שטריין וטסט יהיו 6 עונות ראשונות ו2 אחרונות בהתאמה כי יכול להיות שזה דופק את הסיפור לאמן על משחקים שמשפיעים על הטסט דאטה
-
 # להתחשב בסיכויי הימורים של החברות!
 
 # להעמיס את קבצי הליגה האנגלית (קבצי אקסל מאותו אתר) ולהגדיל את קבוצת הטסט (כרגע היא 50 בלבד) וגם להוריד יותר שורות לא אינפורמטיביות (כרגע רק 10 יורדות)
@@ -25,15 +21,8 @@ laLiga0919FilteredHoldOut = pd.read_pickle('laLiga0919MLHoldOut.pkl')
 ## Separate into feature set and target variable, and split the dataset into training and testing set.
 X_La_Liga = laLiga0919Filtered.drop(['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR'], axis=1).copy()
 y_La_Liga = laLiga0919Filtered['FTR'].copy()
-# print(X_La_Liga.columns)
-
-# Center to the mean and component wise scale to unit variance.
-scaler = MinMaxScaler()
+scaler = MinMaxScaler()  # Center to the mean and component wise scale to unit variance.
 X_La_Liga = scaler.fit_transform(X_La_Liga)
-# X_train = X_La_Liga[:2559]  # To take into account only 7 first seasons as training
-# X_test = X_La_Liga[2560:]
-# y_train = y_La_Liga[:2559]
-# y_test = y_La_Liga[2560:]
 X_train, X_test, y_train, y_test = train_test_split(X_La_Liga, y_La_Liga, test_size=50, random_state=2, stratify=y_La_Liga)
 
 

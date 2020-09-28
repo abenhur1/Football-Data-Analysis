@@ -1,5 +1,6 @@
 import pandas as pd
 import sqlite3
+import time
 
 pd.set_option('display.width', 400)
 pd.set_option('display.max_columns', 20)
@@ -13,6 +14,8 @@ def create_dataframe(path, file):
 
 
 def main_func(list_of_seasons, drop_first=True):
+    start = time.time()
+
     for season in list_of_seasons:
         update_season_df_with_teams_points_col(season)
         update_season_df_with_agg_goals_cols(season)
@@ -32,6 +35,9 @@ def main_func(list_of_seasons, drop_first=True):
         league_concat = drop_none_informative_rows(league_concat, drop_first=False, drop_none_informative=True)
 
     reset_index_df(league_concat)
+
+    end = time.time()
+    print(end - start)
 
     return league_concat
 
