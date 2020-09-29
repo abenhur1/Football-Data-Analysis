@@ -296,7 +296,7 @@ EPL_1920_filtered_ML = create_df(EPL_path, 'season-1920.csv')[ML_cols].copy()
 
 
 ## Files' 3 lists. Experiment, Train and Test, Hold out.
-experiment_list = [SLL_0910_filtered_ML, SLL_1011_filtered_ML]
+experiment_list = [EPL_0910_filtered_ML, EPL_1011_filtered_ML, SLL_0910_filtered_ML, SLL_1011_filtered_ML]
 seasonsFilteredList = [SLL_0910_filtered_ML,
                        SLL_1011_filtered_ML,
                        SLL_1112_filtered_ML,
