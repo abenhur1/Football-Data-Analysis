@@ -23,7 +23,7 @@ X_La_Liga = laLiga0919Filtered.drop(['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FT
 y_La_Liga = laLiga0919Filtered['FTR'].copy()
 scaler = MinMaxScaler()  # Center to the mean and component wise scale to unit variance.
 X_La_Liga = scaler.fit_transform(X_La_Liga)
-X_train, X_test, y_train, y_test = train_test_split(X_La_Liga, y_La_Liga, test_size=50, random_state=2, stratify=y_La_Liga)
+X_train, X_test, y_train, y_test = train_test_split(X_La_Liga, y_La_Liga, test_size=190, random_state=2, stratify=y_La_Liga)
 
 
 # Makes predictions using a fit classifier based on F1 score.
@@ -70,13 +70,13 @@ print('')
 
 
 # Create the parameters list you wish to tune
-parameters = {'learning_rate': [0.1],
-              'n_estimators': [40],
-              'max_depth': [4],
-              'min_child_weight': [3],
-              'gamma': [0.4],
-              'subsample': [0.8],
-              'colsample_bytree': [0.8],
+parameters = {'learning_rate': [0.01, 0.1, 0.5],
+              'n_estimators': [40, 60],
+              'max_depth': [4, 5, 6],
+              'min_child_weight': [3, 4, 5],
+              'gamma': [0.4, 1],
+              'subsample': [0.8, 1],
+              'colsample_bytree': [0.8, 1],
               'scale_pos_weight': [1],
               'reg_alpha': [1e-5]
               }
@@ -95,6 +95,7 @@ grid_obj = grid_obj.fit(X_train, y_train)
 
 # Get the estimator
 clf = grid_obj.best_estimator_
+print(grid_obj.best_params_)
 print(clf)
 
 ## Reports:

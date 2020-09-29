@@ -294,15 +294,16 @@ laLigaSeasonsFilteredList = [la_liga_season_0910_filtered_ML,
                              la_liga_season_1415_filtered_ML,
                              la_liga_season_1516_filtered_ML,
                              la_liga_season_1617_filtered_ML,
-                             la_liga_season_1718_filtered_ML]
-laLigaSeasonsFilteredListHoldOutData = [la_liga_season_1819_filtered_ML,
-                                        la_liga_season_1920_filtered_ML]
+                             la_liga_season_1718_filtered_ML,
+                             la_liga_season_1819_filtered_ML,
+                             la_liga_season_1920_filtered_ML]
+laLigaSeasonsFilteredListHoldOutData = []
 
 
 ## TRAIN AND TEST LIST:
 laLiga0919FilteredML = main_func(laLigaSeasonsFilteredList)
-## HOLDOUT DATA:
-laLiga0919FilteredMLHoldOut = main_func(laLigaSeasonsFilteredListHoldOutData, drop_first=False)
+# ## HOLDOUT DATA:
+# laLiga0919FilteredMLHoldOut = main_func(laLigaSeasonsFilteredListHoldOutData, drop_first=False)
 
 laLiga0919FilteredML.to_pickle('laLiga0919ML.pkl')
-laLiga0919FilteredMLHoldOut.to_pickle('laLiga0919MLHoldOut.pkl')
+# laLiga0919FilteredMLHoldOut.to_pickle('laLiga0919MLHoldOut.pkl')
