@@ -1,5 +1,4 @@
 import pandas as pd
-import sqlite3
 import time
 
 pd.set_option('display.width', 400)
@@ -8,7 +7,7 @@ pd.set_option('display.max_rows', 250)
 
 
 ### Functions:
-def create_dataframe(path, file):
+def create_df(path, file):
     file = pd.read_csv(path + file)
     return file
 
@@ -267,43 +266,64 @@ def update_concat_df_with_team_location_influence(seasons_matches):  # Notice th
 
 
 ### Reading the La Liga data files and concatenate the DFs:
-la_liga_path = "C:/Users/User/PycharmProjects/Football-Data-Analysis/"
-relevant_ML_cols = ['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR']
+SLL_path = "C:/Users/User/PycharmProjects/Football-Data-Analysis/La Liga/"
+EPL_path = "C:/Users/User/PycharmProjects/Football-Data-Analysis/Premier League/"
+ML_cols = ['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR']
 
 ### La Liga df modification:
-la_liga_season_0910_filtered_ML = create_dataframe(la_liga_path, 'season-0910_csv.csv')[relevant_ML_cols].copy()  # Every file separately because some
-                                                                                                                  # functions are per league.
-la_liga_season_1011_filtered_ML = create_dataframe(la_liga_path, 'season-1011_csv.csv')[relevant_ML_cols].copy()
-la_liga_season_1112_filtered_ML = create_dataframe(la_liga_path, 'season-1112_csv.csv')[relevant_ML_cols].copy()
-la_liga_season_1213_filtered_ML = create_dataframe(la_liga_path, 'season-1213_csv.csv')[relevant_ML_cols].copy()
-la_liga_season_1314_filtered_ML = create_dataframe(la_liga_path, 'season-1314_csv.csv')[relevant_ML_cols].copy()
-la_liga_season_1415_filtered_ML = create_dataframe(la_liga_path, 'season-1415_csv.csv')[relevant_ML_cols].copy()
-la_liga_season_1516_filtered_ML = create_dataframe(la_liga_path, 'season-1516_csv.csv')[relevant_ML_cols].copy()
-la_liga_season_1617_filtered_ML = create_dataframe(la_liga_path, 'season-1617_csv.csv')[relevant_ML_cols].copy()
-la_liga_season_1718_filtered_ML = create_dataframe(la_liga_path, 'season-1718_csv.csv')[relevant_ML_cols].copy()
-la_liga_season_1819_filtered_ML = create_dataframe(la_liga_path, 'season-1819_csv.csv')[relevant_ML_cols].copy()
-la_liga_season_1920_filtered_ML = create_dataframe(la_liga_path, 'season-1920_csv.csv')[relevant_ML_cols].copy()
+SLL_0910_filtered_ML = create_df(SLL_path, 'season-0910_csv.csv')[ML_cols].copy()  # Every file separately because some functions are per league
+SLL_1011_filtered_ML = create_df(SLL_path, 'season-1011_csv.csv')[ML_cols].copy()
+SLL_1112_filtered_ML = create_df(SLL_path, 'season-1112_csv.csv')[ML_cols].copy()
+SLL_1213_filtered_ML = create_df(SLL_path, 'season-1213_csv.csv')[ML_cols].copy()
+SLL_1314_filtered_ML = create_df(SLL_path, 'season-1314_csv.csv')[ML_cols].copy()
+SLL_1415_filtered_ML = create_df(SLL_path, 'season-1415_csv.csv')[ML_cols].copy()
+SLL_1516_filtered_ML = create_df(SLL_path, 'season-1516_csv.csv')[ML_cols].copy()
+SLL_1617_filtered_ML = create_df(SLL_path, 'season-1617_csv.csv')[ML_cols].copy()
+SLL_1718_filtered_ML = create_df(SLL_path, 'season-1718_csv.csv')[ML_cols].copy()
+SLL_1819_filtered_ML = create_df(SLL_path, 'season-1819_csv.csv')[ML_cols].copy()
+SLL_1920_filtered_ML = create_df(SLL_path, 'season-1920_csv.csv')[ML_cols].copy()
+EPL_0910_filtered_ML = create_df(EPL_path, 'season-0910.csv')[ML_cols].copy()
+EPL_1011_filtered_ML = create_df(EPL_path, 'season-1011.csv')[ML_cols].copy()
+EPL_1112_filtered_ML = create_df(EPL_path, 'season-1112.csv')[ML_cols].copy()
+EPL_1213_filtered_ML = create_df(EPL_path, 'season-1213.csv')[ML_cols].copy()
+EPL_1314_filtered_ML = create_df(EPL_path, 'season-1314.csv')[ML_cols].copy()
+EPL_1415_filtered_ML = create_df(EPL_path, 'season-1415.csv')[ML_cols].copy()
+EPL_1516_filtered_ML = create_df(EPL_path, 'season-1516.csv')[ML_cols].copy()
+EPL_1617_filtered_ML = create_df(EPL_path, 'season-1617.csv')[ML_cols].copy()
+EPL_1718_filtered_ML = create_df(EPL_path, 'season-1718.csv')[ML_cols].copy()
+EPL_1819_filtered_ML = create_df(EPL_path, 'season-1819.csv')[ML_cols].copy()
+EPL_1920_filtered_ML = create_df(EPL_path, 'season-1920.csv')[ML_cols].copy()
+
 
 ## Files' 3 lists. Experiment, Train and Test, Hold out.
-experiment_list = [la_liga_season_0910_filtered_ML, la_liga_season_1011_filtered_ML]
-laLigaSeasonsFilteredList = [la_liga_season_0910_filtered_ML,
-                             la_liga_season_1011_filtered_ML,
-                             la_liga_season_1112_filtered_ML,
-                             la_liga_season_1213_filtered_ML,
-                             la_liga_season_1314_filtered_ML,
-                             la_liga_season_1415_filtered_ML,
-                             la_liga_season_1516_filtered_ML,
-                             la_liga_season_1617_filtered_ML,
-                             la_liga_season_1718_filtered_ML,
-                             la_liga_season_1819_filtered_ML,
-                             la_liga_season_1920_filtered_ML]
-laLigaSeasonsFilteredListHoldOutData = []
+experiment_list = [SLL_0910_filtered_ML, SLL_1011_filtered_ML]
+seasonsFilteredList = [SLL_0910_filtered_ML,
+                       SLL_1011_filtered_ML,
+                       SLL_1112_filtered_ML,
+                       SLL_1213_filtered_ML,
+                       SLL_1314_filtered_ML,
+                       SLL_1415_filtered_ML,
+                       SLL_1516_filtered_ML,
+                       SLL_1617_filtered_ML,
+                       SLL_1718_filtered_ML,
+                       EPL_0910_filtered_ML,
+                       EPL_1011_filtered_ML,
+                       EPL_1112_filtered_ML,
+                       EPL_1213_filtered_ML,
+                       EPL_1314_filtered_ML,
+                       EPL_1415_filtered_ML,
+                       EPL_1516_filtered_ML,
+                       EPL_1617_filtered_ML,
+                       EPL_1718_filtered_ML]
+filteredListHoldOutData = [SLL_1819_filtered_ML, SLL_1920_filtered_ML, EPL_1819_filtered_ML, EPL_1920_filtered_ML]
 
 
-## TRAIN AND TEST LIST:
-laLiga0919FilteredML = main_func(laLigaSeasonsFilteredList)
+## EXPERIMENT DATA:
+filteredForMLExperiment = main_func(experiment_list, drop_first=False)
+# ## TRAIN AND TEST LIST:
+# filteredForML = main_func(seasonsFilteredList)
 # ## HOLDOUT DATA:
-# laLiga0919FilteredMLHoldOut = main_func(laLigaSeasonsFilteredListHoldOutData, drop_first=False)
-
-laLiga0919FilteredML.to_pickle('laLiga0919ML.pkl')
-# laLiga0919FilteredMLHoldOut.to_pickle('laLiga0919MLHoldOut.pkl')
+# filteredForMLHoldOut = main_func(filteredListHoldOutData, drop_first=False)
+#
+# filteredForML.to_pickle('filteredForML.pkl')
+# filteredForMLHoldOut.to_pickle('filteredForMLHoldOut.pkl')
