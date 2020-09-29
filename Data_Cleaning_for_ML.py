@@ -297,31 +297,32 @@ EPL_1920_filtered_ML = create_df(EPL_path, 'season-1920.csv')[ML_cols].copy()
 
 ## Files' 3 lists. Experiment, Train and Test, Hold out.
 experiment_list = [EPL_0910_filtered_ML, EPL_1011_filtered_ML, SLL_0910_filtered_ML, SLL_1011_filtered_ML]
-seasonsFilteredList = [SLL_0910_filtered_ML,
-                       SLL_1011_filtered_ML,
-                       SLL_1112_filtered_ML,
-                       SLL_1213_filtered_ML,
-                       SLL_1314_filtered_ML,
-                       SLL_1516_filtered_ML,
-                       SLL_1617_filtered_ML,
-                       SLL_1718_filtered_ML,
-                       EPL_0910_filtered_ML,
-                       EPL_1011_filtered_ML,
-                       EPL_1112_filtered_ML,
-                       EPL_1213_filtered_ML,
-                       EPL_1314_filtered_ML,
-                       EPL_1516_filtered_ML,
-                       EPL_1617_filtered_ML,
-                       EPL_1718_filtered_ML]
-filteredListHoldOutData = [SLL_1819_filtered_ML, SLL_1920_filtered_ML, EPL_1819_filtered_ML, EPL_1920_filtered_ML]
+# seasonsFilteredList = [SLL_0910_filtered_ML,
+#                        SLL_1011_filtered_ML,
+#                        SLL_1112_filtered_ML,
+#                        SLL_1213_filtered_ML,
+#                        SLL_1314_filtered_ML,
+#                        SLL_1516_filtered_ML,
+#                        SLL_1617_filtered_ML,
+#                        SLL_1718_filtered_ML,
+#                        EPL_0910_filtered_ML,
+#                        EPL_1011_filtered_ML,
+#                        EPL_1112_filtered_ML,
+#                        EPL_1213_filtered_ML,
+#                        EPL_1314_filtered_ML,
+#                        EPL_1516_filtered_ML,
+#                        EPL_1617_filtered_ML,
+#                        EPL_1718_filtered_ML]
+# filteredListHoldOutData = [SLL_1819_filtered_ML, SLL_1920_filtered_ML, EPL_1819_filtered_ML, EPL_1920_filtered_ML]
 
 
-# ## EXPERIMENT DATA:
-# filteredForMLExperiment = main_func(experiment_list, drop_first=False)
-## TRAIN AND TEST LIST:
-filteredForML = main_func(seasonsFilteredList)
-## HOLDOUT DATA:
-filteredForMLHoldOut = main_func(filteredListHoldOutData, drop_first=False)
-
-filteredForML.to_pickle('filteredForML.pkl')
-filteredForMLHoldOut.to_pickle('filteredForMLHoldOut.pkl')
+## EXPERIMENT DATA:
+filteredForMLExperiment = main_func(experiment_list, drop_first=False)
+print(filteredForMLExperiment.head())
+# ## TRAIN AND TEST LIST:
+# filteredForML = main_func(seasonsFilteredList)
+# ## HOLDOUT DATA:
+# filteredForMLHoldOut = main_func(filteredListHoldOutData, drop_first=False)
+#
+# filteredForML.to_pickle('filteredForML.pkl')
+# filteredForMLHoldOut.to_pickle('filteredForMLHoldOut.pkl')

@@ -88,7 +88,7 @@ def update_season_df_with_agg_goals_cols(season_matches):
     season_matches['HTAggGoalConcededMean'] = 0
     season_matches['ATAggGoalScoredMean'] = 0
     season_matches['ATAggGoalConcededMean'] = 0
-    print(str(season_matches))
+
     for team in season_matches.groupby('HomeTeam').median().T.columns:  # A way to iterate over teams
         # Iterated by team, now we mask original df for aggregating goals. A new column is created for these values for each team. After loop,
         # we set these value to original df by making a new column as sum of all these columns. On the way we actually compute and insert their means.
@@ -287,7 +287,7 @@ EPL_1011_filtered_ML = create_df(EPL_path, 'season-1011.csv')[ML_cols].copy()
 EPL_1112_filtered_ML = create_df(EPL_path, 'season-1112.csv')[ML_cols].copy()
 EPL_1213_filtered_ML = create_df(EPL_path, 'season-1213.csv')[ML_cols].copy()
 EPL_1314_filtered_ML = create_df(EPL_path, 'season-1314.csv')[ML_cols].copy()
-EPL_1415_filtered_ML = create_df(EPL_path, 'season-1415.csv')[ML_cols].copy()
+# EPL_1415_filtered_ML = create_df(EPL_path, 'season-1415.csv')[ML_cols].copy()  # PROBLEMATIC FILE APPARENTLY
 EPL_1516_filtered_ML = create_df(EPL_path, 'season-1516.csv')[ML_cols].copy()
 EPL_1617_filtered_ML = create_df(EPL_path, 'season-1617.csv')[ML_cols].copy()
 EPL_1718_filtered_ML = create_df(EPL_path, 'season-1718.csv')[ML_cols].copy()
@@ -302,7 +302,6 @@ seasonsFilteredList = [SLL_0910_filtered_ML,
                        SLL_1112_filtered_ML,
                        SLL_1213_filtered_ML,
                        SLL_1314_filtered_ML,
-                       # SLL_1415_filtered_ML,  # PROBLEMATIC FILE APPARENTLY
                        SLL_1516_filtered_ML,
                        SLL_1617_filtered_ML,
                        SLL_1718_filtered_ML,
@@ -311,7 +310,6 @@ seasonsFilteredList = [SLL_0910_filtered_ML,
                        EPL_1112_filtered_ML,
                        EPL_1213_filtered_ML,
                        EPL_1314_filtered_ML,
-                       EPL_1415_filtered_ML,
                        EPL_1516_filtered_ML,
                        EPL_1617_filtered_ML,
                        EPL_1718_filtered_ML]
@@ -327,6 +325,7 @@ filteredForMLHoldOut = main_func(filteredListHoldOutData, drop_first=False)
 
 filteredForML.to_pickle('filteredForML.pkl')
 filteredForMLHoldOut.to_pickle('filteredForMLHoldOut.pkl')
+
 
 
 
